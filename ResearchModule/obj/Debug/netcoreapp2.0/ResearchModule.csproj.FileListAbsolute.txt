@@ -1,0 +1,11 @@
+D:\Files\Diplom\ResearchModule\ResearchModule\bin\Debug\netcoreapp2.0\ResearchModule.deps.json
+D:\Files\Diplom\ResearchModule\ResearchModule\bin\Debug\netcoreapp2.0\ResearchModule.runtimeconfig.json
+D:\Files\Diplom\ResearchModule\ResearchModule\bin\Debug\netcoreapp2.0\ResearchModule.runtimeconfig.dev.json
+D:\Files\Diplom\ResearchModule\ResearchModule\bin\Debug\netcoreapp2.0\ResearchModule.dll
+D:\Files\Diplom\ResearchModule\ResearchModule\bin\Debug\netcoreapp2.0\ResearchModule.pdb
+D:\Files\Diplom\ResearchModule\ResearchModule\obj\Debug\netcoreapp2.0\ResearchModule.csprojResolveAssemblyReference.cache
+D:\Files\Diplom\ResearchModule\ResearchModule\obj\Debug\netcoreapp2.0\ResearchModule.csproj.CoreCompileInputs.cache
+D:\Files\Diplom\ResearchModule\ResearchModule\obj\Debug\netcoreapp2.0\ResearchModule.AssemblyInfoInputs.cache
+D:\Files\Diplom\ResearchModule\ResearchModule\obj\Debug\netcoreapp2.0\ResearchModule.AssemblyInfo.cs
+D:\Files\Diplom\ResearchModule\ResearchModule\obj\Debug\netcoreapp2.0\ResearchModule.dll
+D:\Files\Diplom\ResearchModule\ResearchModule\obj\Debug\netcoreapp2.0\ResearchModule.pdb
