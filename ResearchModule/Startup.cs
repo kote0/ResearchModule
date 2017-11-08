@@ -23,8 +23,7 @@ namespace ResearchModule
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<DBContext>(options =>
-            options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<DBContext>();
             services.AddMvc();
         }
 
@@ -46,7 +45,7 @@ namespace ResearchModule
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
-                    name: "default",
+                    name: "Section",
                     template: "{controller}/{action=Index}/{id?}");
             });
         }

@@ -1,0 +1,16 @@
+﻿@model SelectList
+
+@{
+    if (Model == null)
+    {
+        <div class="label-text">Укажите вид публикации</div>
+        <div>
+            <input type="text" class="form-control" name="publicationType" />
+        </div>
+    }
+    else
+    {
+        @Html.DropDownList("typeid", Model, new { @class = "form-control" })
+    }
+
+}

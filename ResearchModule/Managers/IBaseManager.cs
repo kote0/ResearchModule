@@ -7,12 +7,14 @@ namespace ResearchModule.Managers
 {
     public interface IBaseManager<T>
     {
-        T Create();
+        void Create(T record);
 
-        T Get(long id);
+        T Get(long? id);
 
-        void Update(T user);
+        void Update(T record);
 
-        void Delete(T user);
+        void Delete(T record);
+
+        void Delete(long? id);
     }
 }

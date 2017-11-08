@@ -1,4 +1,5 @@
-﻿using ResearchModule.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using ResearchModule.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,32 +9,57 @@ namespace ResearchModule.Managers
 {
     public class BaseManager<T> : IBaseManager<T> where T : class
     {
-        private readonly DBContext _db;
+        public readonly DBContext _db;
 
-        public BaseManager(DBContext db)
+        public BaseManager()
         {
-            _db = db;
+            _db = new DBContext();
         }
 
-        public T Create()
+        public void Create(T record)
         {
-            throw new NotImplementedException();
+            _db.Add(record);
+            try
+            {
+                _db.SaveChanges();
+            }
+            catch(Exception ex)
+            {
+            }
         }
 
-        public void Delete(T table)
+        public void Delete(long? id)
         {
-            
-            throw new NotImplementedException();
+            var record = _db.Find<T>(id);
+
+            if (record != null)
+            {
+                _db.Remove(record);
+                _db.SaveChanges();
+            }
         }
 
-        public T Get(long id)
+        public void Delete(T record)
         {
-            throw new NotImplementedException();
+            if (record != null)
+            {
+                _db.Remove(record);
+                _db.SaveChanges();
+            }
         }
 
-        public void Update(T table)
+        public T Get(long? id)
         {
-            throw new NotImplementedException();
+            return (id != null) ? _db.Find<T>(id) : null;
+        }
+
+        public void Update(T record)
+        {
+            _db.Attach(record).State = EntityState.Modified;
+        }
+        public virtual List<T> GetAll()
+        {
+            return null;
         }
     }
 }
