@@ -10,9 +10,6 @@ namespace ResearchModule.Managers
 {
     public class SectionManager : BaseManager<Section>
     {
-        public override List<Section> GetAll()
-        {
-            return _db.Section.ToList();
-        }
+       
     }
 }

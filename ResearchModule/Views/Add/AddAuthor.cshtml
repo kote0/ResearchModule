@@ -3,28 +3,27 @@
     <div class="col-md-12">
         <div>
             Фамилия
-            <input type="text" class="form-control" name="surname"/>
+            <input type="text" class="form-control" name="Surname"/>
         </div>
         <div>
             Имя
-            <input type="text" class="form-control" name="name"/>
+            <input type="text" class="form-control" name="Name"/>
         </div>
         <div>
             Отчество
-            <input type="text" class="form-control" name="lastname"/>
+            <input type="text" class="form-control" name="LastName"/>
         </div>
         <div>
-            <input type="checkbox" class="checkbox-inline" name="coAuthor" />
+            <input type="checkbox" class="checkbox-inline" name="CoAuthor" />
             Соавтор
+        </div>
+        <div>
+            <button name="removeAuthor" class="btn btn-default" type="button">
+                <span class="glyphicon glyphicon-remove"></span>
+                Удалить автора // не работает
+            </button>
         </div>
     </div>
 </div>
 <hr style="margin:auto;" />
-<div class="row">
-    <div class="col-md-12">
-        <button name="addAuthor" class="btn btn-default" type="button" onclick="addAuthorName()">
-            <span class="glyphicon glyphicon-plus"></span>
-            Добавить автора
-        </button>
-    </div>
-</div>
+

@@ -10,30 +10,30 @@ namespace ResearchModule.Controllers
 {
     public class SectionController : Controller
     {
-        PublicationManager Pm = new PublicationManager();
-        SectionManager Manager = new SectionManager();
-        FormWorkManager fm = new FormWorkManager();
-
+        PublicationManager PM = new PublicationManager();
+        SectionManager SM = new SectionManager();
+        FormWorkManager FM = new FormWorkManager();
+        AuthorManager AM = new AuthorManager();
 
         public IActionResult Index()
         {
-            return View(Manager.GetAll());
+            return View(SM.GetAll());
         }
-        public IActionResult Add()
+        public IActionResult Add(long id)
         {
-            return View(fm.GetAll());
+            return View(SM.Get(id));
         }
         [HttpPost]
-        public IActionResult Add(string formName, string shortName)
+        public IActionResult AddPublication(Section section, Author author, Publication publication, FormWork formWork,
+            TypePublication typePublication)
         {
-            FormWork record = new FormWork()
-            {
-                FormName = formName,
-                ShortName = shortName
-            };
-            fm.Create(record);
+            
+            if (!(author.IsValid() && section.IsValid() && publication.IsValid()
+                && formWork.IsValid() && typePublication.IsValid()))
+                ViewBag.Message = "Заполните все поля.";
+            
             return RedirectToAction("Add");
         }
-       
+
     }
 }

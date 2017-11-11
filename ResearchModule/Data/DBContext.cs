@@ -30,5 +30,6 @@ namespace ResearchModule.Data
         public DbSet<FormWork> FormWork { get; set; }
         public DbSet<TypePublication> TypePublication { get; set; }
         public DbSet<Publication> Publication { get; set; }
+        public DbSet<PA> PA { get; set; }
     }
 }

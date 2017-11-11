@@ -8,9 +8,6 @@ namespace ResearchModule.Managers
 {
     public class PublicationManager : BaseManager<Publication>
     {
-        public override List<Publication> GetAll()
-        {
-            return _db.Publication.ToList();
-        }
+        
     }
 }

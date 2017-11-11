@@ -6,17 +6,12 @@ using System.Threading.Tasks;
 
 namespace ResearchModule.Models
 {
-    public class Section
+    public class PA
     {
         public long Id { get; set; }
         [Required]
-        public string SectionName { get; set; }
-
-        public bool IsValid()
-        {
-            if (SectionName != null)
-                return true;
-            return false;
-        }
+        public long PId { get; set; }
+        [Required]
+        public long AId { get; set; }
     }
 }

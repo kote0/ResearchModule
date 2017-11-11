@@ -1,111 +1,157 @@
-﻿<environment include="Development">
-    <script src="/lib/jquery/dist/jquery.js"></script>
+﻿@model  ResearchModule.Models.Section
+<environment include="Development">
+    <link href="~/css/Add.css" rel="stylesheet">
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/js/ResearchModule.js"></script>
 </environment>
-
-<style>
-    .glyphicon-plus {
-        color: green;
-    }
-
-    .col-md-12 {
-        margin-top: 10px;
-    }
-</style>
-@using (Html.BeginForm("Add", "Section"))
+@(ViewBag.Message)
+@using (Html.BeginForm("AddPublication", "Section", FormMethod.Post, new { id = "Add"}))
 {
     <div style="margin-top: 30px;">
-        <div class="row">
-            <div class="label-text col-md-4">Название публикации</div>
-            <div class="col-md-8">
-                <input type="text" class="form-control" name="publicationName" />
+        <div id="accordion3">
+            <input type="hidden" value="@(Model?.Id)" name="Id" />
+            <input type="hidden" value="@(Model?.SectionName)" name="SectionName" />
+            <h5>@(Model?.SectionName)</h5>
+        </div>
+        <div id="accordion" role="tablist">
+            <div class="card">
+                <div class="card-header" role="tab" id="headingOne">
+                    <h5 class="mb-0">
+                        <a data-toggle="collapse" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            Шаг 1 - Название
+                        </a>
+                    </h5>
+                </div>
+                <div id="collapseOne" class="collapse " role="tabpanel" aria-labelledby="headingOne" data-parent="#accordion" style="">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="label-text col-md-4">Название публикации</div>
+                            <div class="col-md-8">
+                                <input type="text" class="form-control" name="PublicationName" />
+                            </div>
+                        </div>
+                        <div class="row ">
+                            <div class="col-md-12">
+                                <input type="checkbox" name="IsTranslate" />
+                                На иностранном языке
+                                <div id="translateThis" style="margin-top:3px;display:none;">
+                                    Введите перевод названия публикации
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="row ">
-            <div class="col-md-12">
-                <button name="addType" class="btn btn-default"  type="button" onclick="addTypeName()">
-                    <span class="glyphicon glyphicon-plus"></span>
-                    Добавить вид
-                </button>
+        <div id="accordion0" role="tablist">
+            <div class="card">
+                <div class="card-header" role="tab" id="heading0">
+                    <h5 class="mb-0">
+                        <a data-toggle="collapse" href="#collapse0" aria-expanded="true" aria-controls="collapse0">
+                            Шаг 2 - Вид
+                        </a>
+                    </h5>
+                </div>
+                <div id="collapse0" class="collapse " role="tabpanel" aria-labelledby="heading0" data-parent="#accordion0" style="">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <button id="addType" class="btn btn-default" type="button" onclick="RM.AppendTo('@(Url.Action("AddType", "Add"))','div.col-md-12:has(#addType)', true)">
+                                    <span class="glyphicon glyphicon-plus"></span>
+                                    Добавить вид
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="row ">
-            <div class="col-md-12"  onclick="translateThis(this)">
-                <input type="checkbox" name="isTranslate"/>
-                На иностранном языке
+        <div id="accordion1" role="tablist">
+            <div class="card">
+                <div class="card-header" role="tab" id="heading1">
+                    <h5 class="mb-0">
+                        <a data-toggle="collapse" href="#collapse1" aria-expanded="true" aria-controls="collapse1">
+                            Шаг 3 - Авторы
+                        </a>
+                    </h5>
+                </div>
+                <div id="collapse1" class="collapse " role="tabpanel" aria-labelledby="heading1" data-parent="#accordion1" style="">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="dropdown">
+                                    <input type="text" class="form-control dropdown-toggle" id="searchAuthor" placeholder="Введите автора" data-toggle="dropdown" onkeyup="RM.SearchInput('searchAuthor','@(Url.Action("GetAuthors", "Add"))')" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <button name="addAuthor" class="btn btn-default" type="button" onclick="RM.AppendTo('@(Url.Action("AddAuthor", "Add"))','div.col-md-12:has([name=addAuthor])', false)">
+                                    <span class="glyphicon glyphicon-plus"></span>
+                                    Добавить автора
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-12">
-                <input type="text" class="form-control" name="searchAuthor" placeholder="Введите автора"/>
+        <div id="accordion2" role="tablist">
+            <div class="card">
+                <div class="card-header" role="tab" id="heading2">
+                    <h5 class="mb-0">
+                        <a data-toggle="collapse" href="#collapse2" aria-expanded="true" aria-controls="collapse2">
+                            Шаг 4 - Форма работы
+                        </a>
+                    </h5>
+                </div>
+                <div id="collapse2" class="collapse " role="tabpanel" aria-labelledby="heading2" data-parent="#accordion2" style="">
+                    <div class="card-body">
+                        <div class="row ">
+                            <div class="col-md-12">
+                                <button name="addFormWork" class="btn btn-default" type="button">
+                                    <span class="glyphicon glyphicon-plus"></span>
+                                    Добавить формы работы
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-12">
-                <button name="addAuthor" class="btn btn-default" type="button" onclick="addAuthorName()">
-                    <span class="glyphicon glyphicon-plus"></span>
-                    Добавить автора
-                </button>
-            </div>
-        </div>
-        <div class="row ">
-            <div class="col-md-12">
-                <button name="addFormWork" class="btn btn-default" type="button">
-                    <span class="glyphicon glyphicon-plus"></span>
-                    Добавить формы работы
-                </button>
-            </div>
-        </div>
-    </div>
-   
-}
-<script type="text/javascript">
-    $('[name=searchAuthor]').change(function () {
-        var elem = $('div.col-md-12:has([name=searchAuthor])');
-        $(elem).find("ul").remove();
-        if ($(this).val() === "") return;
-        $.get('@(Url.Action("GetAuthors", "Add"))' + '?character=' + $(this).val(),
-            function (data) {
-                var list = data.authors;
-                if (list == null)
-                    list = "<ul class='list-group'><em>Нет данных для отоборажения</em></ul>";
-                $(elem).append(list);
-        });
-    });
 
-    function translateThis(elem) {
-        var findinput = $(elem).find('[name=addTranslate]');
-        var checkbox = $(elem).find('[type=checkbox]');
-        if ($(findinput).length == 0) {
-            $(checkbox).attr("checked", "checked");
-            var div = $('<div>')
-                .attr("name", "addTranslate")
-                .css("margin-top", "3px");
-            var input = $('<input />')
-                .attr("type", "text")
-                .attr("class", "form-control");
-            $(div).append("Введите перевод названия публикации").append(input);
-            $(elem).append(div);
+        <button type="button" class="btn btn-success" onclick="RM.Submit('#Add')">Сохранить</button>
+    </div>
+
+}
+                        <script type="text/javascript">
+    // вынести в отдельный скрипт
+    // заменить названия на переменные
+    // placeholder
+    // создать перед этим div и отправить в этот метод id
+    $(":checkbox[name=isTranslate]").click(function () {
+        if ($('#translateThis  > *').is(':empty')) {
+            $('#translateThis > *').detach();
+            $('#translateThis').css("display", "none");
         }
         else {
-            $(checkbox).removeAttr("checked");
-            $(findinput).remove();
+            var input = $('<input />')
+                .attr("type", "text")
+                .attr("class", "form-control")
+                .attr("name", "TranslateText")
+                .attr("placeholder", "Введите перевод названия");
+            $('#translateThis').css("display", "block").append(input);
         }
-    }
-    function addName() {
-        $.get('@(Url.Action("AddType", "Add"))',
-                    function (data) {
-                        $('div.col-md-12:has([name=addType])').html(data);
-                });
-    }
-    function addAuthorName() {
-        $.get('@(Url.Action("AddAuthor", "Add"))',
-            function (data) {
-                $('div.col-md-12:has([name=addAuthor])').html(data);
-                });
-    }
-    $().ready(function () {
-
     });
-</script>
+    $('.dropdown-group-item').click(function () {
+
+        RM.DropdownGroupItemClick('.dropdown-group-item');
+        //что будет происходитьт после выбора элемента
+        //создается div
+        //добавляется еще div, внутри которого содержится
+        //название, иконка для удаления
+        //создать метод для удаления
+    });
+                        </script>
 
 

@@ -15,11 +15,14 @@
     <tbody>
         @foreach (var item in Model)
         {
-            <tr>
-                <td style="padding: 20px;">
-                    @Html.ActionLink(item.SectionName, "#", "#", new { }, new { style = "color:black;text-decoration:none;" })
-                </td>
-            </tr>
+            if (item.SectionName != null)
+            {
+                <tr>
+                    <td style="padding: 20px;">
+                        @Html.ActionLink(item.SectionName, "Add", "Section", new { id = item.Id }, new { style = "color:black;text-decoration:none;" })
+                    </td>
+                </tr>
+            }
         }
     </tbody>
 </table>

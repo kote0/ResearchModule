@@ -8,9 +8,6 @@ namespace ResearchModule.Managers
 {
     public class FormWorkManager : BaseManager<FormWork>
     {
-        public override List<FormWork> GetAll()
-        {
-            return _db.FormWork.ToList();
-        }
+        
     }
 }

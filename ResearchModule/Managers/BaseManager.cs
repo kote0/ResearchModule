@@ -18,14 +18,9 @@ namespace ResearchModule.Managers
 
         public void Create(T record)
         {
-            _db.Add(record);
-            try
-            {
-                _db.SaveChanges();
-            }
-            catch(Exception ex)
-            {
-            }
+            if (record == null) return;
+            _db.Entry(record).State = EntityState.Added;
+            _db.SaveChanges();        
         }
 
         public void Delete(long? id)
@@ -48,7 +43,7 @@ namespace ResearchModule.Managers
             }
         }
 
-        public T Get(long? id)
+        public T Get(long id)
         {
             return (id != null) ? _db.Find<T>(id) : null;
         }
@@ -57,9 +52,16 @@ namespace ResearchModule.Managers
         {
             _db.Attach(record).State = EntityState.Modified;
         }
-        public virtual List<T> GetAll()
+
+        public List<T> GetByFunction(Func<T, bool> func)
         {
-            return null;
+            var list = _db.Set<T>().Where(func);
+            return list?.ToList();
+        }
+
+        public List<T> GetAll()
+        {
+            return _db.Set<T>().ToList();
         }
     }
 }

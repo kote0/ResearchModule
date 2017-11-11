@@ -13124,11 +13124,11 @@
       "hideWarningsAndErrors": true
     },
     "restore": {
-      "projectUniqueName": "D:\\Files\\Diplom\\ResearchModule\\ResearchModule\\ResearchModule.csproj",
+      "projectUniqueName": "D:\\Files\\Diplom\\Module\\ResearchModule\\ResearchModule\\ResearchModule.csproj",
       "projectName": "ResearchModule",
-      "projectPath": "D:\\Files\\Diplom\\ResearchModule\\ResearchModule\\ResearchModule.csproj",
+      "projectPath": "D:\\Files\\Diplom\\Module\\ResearchModule\\ResearchModule\\ResearchModule.csproj",
       "packagesPath": "C:\\Users\\sharhumullina\\.nuget\\packages\\",
-      "outputPath": "D:\\Files\\Diplom\\ResearchModule\\ResearchModule\\obj\\",
+      "outputPath": "D:\\Files\\Diplom\\Module\\ResearchModule\\ResearchModule\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
