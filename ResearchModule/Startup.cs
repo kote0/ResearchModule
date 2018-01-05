@@ -46,7 +46,7 @@ namespace ResearchModule
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Section}/{action=Index}/{id?}");
+                    template: "{controller=Add}/{action=Add}/{id?}");
             });
         }
     }

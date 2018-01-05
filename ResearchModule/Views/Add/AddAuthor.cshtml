@@ -1,29 +1,38 @@
-﻿<hr style="margin:auto;" />
-<div class="row">
-    <div class="col-md-12">
-        <div>
-            Фамилия
-            <input type="text" class="form-control" name="Surname"/>
-        </div>
-        <div>
-            Имя
-            <input type="text" class="form-control" name="Name"/>
-        </div>
-        <div>
-            Отчество
-            <input type="text" class="form-control" name="LastName"/>
-        </div>
-        <div>
-            <input type="checkbox" class="checkbox-inline" name="CoAuthor" />
-            Соавтор
-        </div>
-        <div>
-            <button name="removeAuthor" class="btn btn-default" type="button">
-                <span class="glyphicon glyphicon-remove"></span>
-                Удалить автора // не работает
-            </button>
-        </div>
-    </div>
-</div>
-<hr style="margin:auto;" />
+﻿@using ResearchModule.Components
+@using ResearchModule.Components.Models
+@model long
+
+@{ 
+    var id = string.Format("_{0}", Model);
+    var name = string.Concat("CreateAuthorsModalBody", id);
+}
+@Html.Card(name).Style("margin-top: 10px; ").Row(c =>
+{
+    c.For()
+        .Content("Фамилия").Size(4)
+        .Row(Html.TextBox("SecondName" + id, "", new { @class = "form-control" })).Size(8);
+    c.For()
+       .Content("Имя").Size(4)
+       .Row(Html.TextBox("Name" + id, "", new { @class = "form-control" })).Size(8);
+    c.For()
+       .Content("Отчество").Size(4)
+       .Row(Html.TextBox("LastName" + id, "", new { @class = "form-control" })).Size(8);
+    c.For()
+     .Content(Html.CheckBox("SoAuthor" + id, false)).Content(" Соавтор").Size(4)
+     .Row(Html.Button("removeAuthor" + id, " Удалить автора", Html.Icon("remove"), new Dictionary<string, object> { { "type", "button" }, { "onClick", "Author.remove('" + name + "');" } })).Size(8);
+    /* c.For()
+         .Content("Фамилия").Size(4)
+         .Row(Html.TextBox("SecondName"+id, "", new { @class = "form-control" })).Size(8);
+     c.For()
+        .Content("Имя").Size(4)
+        .Row(Html.TextBox("Name" + id, "", new { @class = "form-control" })).Size(8);
+     c.For()
+        .Content("Отчество").Size(4)
+        .Row(Html.TextBox("LastName" + id, "", new { @class = "form-control" })).Size(8);
+     c.For()
+      .Content(Html.CheckBox("SoAuthor" + id, false)).Content(" Соавтор").Size(4)
+      .Row(Html.Button("removeAuthor"+id, " Удалить автора", Html.Icon("remove"), new Dictionary<string, object> { { "type", "button" }, { "onClick", "Author.remove('" + name+"');" } })).Size(8);*/
+
+}).Render()
+
 

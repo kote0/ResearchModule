@@ -10,6 +10,14 @@ namespace ResearchModule.Managers
 {
     public class AuthorManager : BaseManager<Author>
     {
+        public void Create(List<Author> authors)
+        {
+            foreach (var author in authors)
+            {
+                if (author.IsValid())
+                    Create(author);
+            }
+        }
         public StringBuilder DropbdownList(List<Author> authors)
         {
             if (authors == null) return null;
@@ -21,6 +29,16 @@ namespace ResearchModule.Managers
             }
             text.Append("</ul>");
             return text;
+        }
+        public bool IsValid(List<Author> authors)
+        {
+            if (authors.Count == 0) return false;
+            foreach(var author in authors)
+            {
+                if (!author.IsValid())
+                    return false;
+            }
+            return true;
         }
     }
 }

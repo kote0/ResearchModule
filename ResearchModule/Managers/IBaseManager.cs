@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ResearchModule.Managers
 {
-    public interface IBaseManager<T>
+    public interface IBaseManager<T> 
     {
         void Create(T record);
 
@@ -18,7 +19,7 @@ namespace ResearchModule.Managers
 
         void Delete(long? id);
 
-        List<T> GetByFunction(Func<T, bool> func);
+        IEnumerable<T> GetByFunction(Func<T, bool> func);
 
         List<T> GetAll();
         

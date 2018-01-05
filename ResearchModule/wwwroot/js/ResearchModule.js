@@ -8,16 +8,13 @@
 //</div>
 //добавить setTimeout!
 RM.SearchInput = function (id, url) {
-    var elem = $('div.dropdown:has(#' + id + ')');
-        $(elem).find("ul").remove();
-        if ($('#' + id).val() === "") return;
-        $.get(url + '?character=' + $('#' + id).val(),
-            function (data) {
-                var list = data;
-                if (list === null)
-                    list = "<ul class='dropdown-menu'><li class='dropdown-group-item'>Нет данных для отоборажения</li></ul>";
-                $(elem).append(list);
-            });
+    var elem = $('div.dropdown');
+    $(elem).find("select").remove();
+    if ($(id).val() === "") return;
+    $.get(url + '?character=' + $(id).val(),
+        function (data) {
+            $(elem).append(data);
+        });
 };
 
 //Добавление данных 
@@ -28,7 +25,7 @@ RM.AppendTo = function (url, setTo, isteadOff) {
             return;
         }
         //Поставить данные вместо него из ссылки
-        $(setTo).html(data);    
+        $(setTo).html(data);
     });
 }
 
@@ -38,69 +35,27 @@ RM.DropdownGroupItemClick = function (classDropdownGroupItem) {
     alert(5132);
 };
 RM.PreGetPostDataFuncs = new Array();
-RM.GetPostData = function (selector) {
-    var postData = null;
-        if (!postData) {
-            postData = {};
-        }
-        for (var j = 0; j < RM.PreGetPostDataFuncs.length; j++) {
-            if (!RM.PreGetPostDataFuncs[j].selector || RM.PreGetPostDataFuncs[j].selector === selector)
-                RM.PreGetPostDataFuncs[j].func.call();
-        }
-        var dataInputs = $(selector).find("input:not(:disabled),textarea:not(:disabled),select:not(:disabled)");
-        var checkboxes = {};
-        for (var j = 0; j < dataInputs.length; j++) {
-            if ($(dataInputs[j]).is(':checkbox')) {
-                var chName = dataInputs[j].name;
-                checkboxes[chName] = dataInputs[j];
-            }
-        }
-        for (var i = 0; i < dataInputs.length; i++) {
-            if ($(dataInputs[i]).attr('notposted') || $(dataInputs[i]).hasClass('autocompliteValidateField'))
-                continue;
-            var item = {};
-            var name = dataInputs[i].name;
-            if (!$(dataInputs[i]).is(':checkbox') && checkboxes[name])
-                continue;
 
-            item[name] = RM.GetInputValue($(dataInputs[i]));
-            postData = jQuery.extend(true, postData, item);
-        }
-        return postData;
+function getFormData($form) {
+    var unindexed_array = $form.serializeArray();
+    var indexed_array = {};
+
+    $.map(unindexed_array, function (n, i) {
+        indexed_array[n['name']] = n['value'];
+    });
+
+    return indexed_array;
 }
 
-RM.GetInputValue = function (input) {
-    if (input.is(':checkbox'))
-        return input.is(':checked');
-    if (input.is('[type=radio]'))
-        return $('input[name="' + input.attr('name') + '"]:checked').val();
-    if (input.is('textarea') && typeof tinymce == "object") {
-        var id = input.attr('id');
-        for (var i = 0; i < tinymce.editors.length; i++) {
-            if (tinymce.editors[i].id == id) {
-                tinymce.editors[i].editorManager.triggerSave();
-                break;
-            }
-        }
-    }
-    return input.val();
-};
-
 RM.Submit = function (form) {
-    debugger;
     $.ajax({
         url: $(form).attr('action'),
         type: "POST",
         data: {
-            section: RM.GetPostData("#accordion3"),
-            publication: RM.GetPostData("#accordion"),
-            typePublication: RM.GetPostData("#accordion0"),
-            author: RM.GetPostData("#accordion1"),
-            formWork: RM.GetPostData("#accordion2")
+            Data: JSON.stringify(getFormData($(form)))
         },
         success: function (data) {
-            alert(11111111111111111);
         }
     });
-    
+
 }

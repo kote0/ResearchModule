@@ -1,9 +1,4 @@
-﻿body {
-}
-[type=button]{
-    margin-top: 5px;
-}
-.glyphicon-plus {
+﻿.glyphicon-plus {
     color: green;
 }
 
@@ -15,7 +10,11 @@
 .dropdown-group-item {
     padding: 3px 20px;
 }
-
+.dropdown-group-item:hover {
+    /*background: rgba(0, 0, 0, .075)*/
+    background: rgb(65, 26, 198);
+    color: white;
+}
 .card {
     position: relative;
     display: -ms-flexbox;
@@ -62,4 +61,7 @@ a {
     color: #007bff;
     text-decoration: none;
     background-color: transparent;
+}
+.row {
+    margin-top: 10px;
 }

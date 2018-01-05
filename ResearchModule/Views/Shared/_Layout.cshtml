@@ -4,16 +4,24 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - ResearchModule</title>
-
+    <!--Нужно (2)-->
+    
     <environment include="Development">
-        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
-        <link rel="stylesheet" href="~/css/site.css" />
+        
     </environment>
     <environment exclude="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/css/site.css" />
         <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
               asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
               asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
+       
+        <link href="~/css/Add.css" rel="stylesheet">
+        <script src="~/lib/jquery/dist/jquery.js"></script>
+        <script src="~/js/ResearchModule.js"></script>
+        <link rel="stylesheet" href="~/lib/bootstrap-select-1.12.4/css/bootstrap-select.min.css" />
+<script src="~/lib/bootstrap-select-1.12.4/js/bootstrap-select.min.js"></script>
     </environment>
 </head>
 <body>
@@ -30,7 +38,7 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a asp-action="/Add">Добавить</a></li>
+                    <li><a asp-action="/AddPublication">Добавить</a></li>
                 </ul>
             </div>
         </div>
@@ -39,11 +47,12 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; 2017 - ResearchModule</p>
+            <p>&copy; 2017 - Список научных работ</p>
         </footer>
     </div>
 
     <environment include="Development">
+        <script src="~/js/ResearchModule.js"></script>
         <script src="/lib/jquery/dist/jquery.js"></script>
         <script src="/lib/bootstrap/dist/js/bootstrap.js"></script>
         <script src="/js/site.js" asp-append-version="true"></script>

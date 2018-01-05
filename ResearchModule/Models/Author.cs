@@ -19,7 +19,7 @@ namespace ResearchModule.Models
 
         public bool IsValid()
         {
-            if (Surname != null && Name != null)
+            if (!(string.IsNullOrEmpty(Surname) && string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(LastName)))
                 return true;
             return false;
         }

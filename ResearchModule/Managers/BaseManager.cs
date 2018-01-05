@@ -45,7 +45,7 @@ namespace ResearchModule.Managers
 
         public T Get(long id)
         {
-            return (id != null) ? _db.Find<T>(id) : null;
+            return _db.Find<T>(id);
         }
 
         public void Update(T record)
@@ -53,15 +53,20 @@ namespace ResearchModule.Managers
             _db.Attach(record).State = EntityState.Modified;
         }
 
-        public List<T> GetByFunction(Func<T, bool> func)
+        public IEnumerable<T> GetByFunction(Func<T, bool> func)
         {
             var list = _db.Set<T>().Where(func);
-            return list?.ToList();
+            return list;
         }
 
         public List<T> GetAll()
         {
             return _db.Set<T>().ToList();
+        }
+
+        public BaseManager<T> Set<TEntity>()
+        {
+            return new BaseManager<T>();
         }
     }
 }
