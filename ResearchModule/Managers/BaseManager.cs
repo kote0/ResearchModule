@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ResearchModule.Managers
 {
-    public class BaseManager<T> : IBaseManager<T> where T : class
+    public class BaseManager<T> : IBaseManager<T>, IDisposable where T : class
     {
         public readonly DBContext _db;
 
@@ -18,14 +18,9 @@ namespace ResearchModule.Managers
 
         public void Create(T record)
         {
-            _db.Add(record);
-            try
-            {
-                _db.SaveChanges();
-            }
-            catch(Exception ex)
-            {
-            }
+            if (record == null) return;
+            _db.Entry(record).State = EntityState.Added;
+            _db.SaveChanges();
         }
 
         public void Delete(long? id)
@@ -48,18 +43,66 @@ namespace ResearchModule.Managers
             }
         }
 
-        public T Get(long? id)
+        public T Get(long id)
         {
-            return (id != null) ? _db.Find<T>(id) : null;
+            return _db.Find<T>(id);
         }
 
         public void Update(T record)
         {
             _db.Attach(record).State = EntityState.Modified;
         }
-        public virtual List<T> GetAll()
+
+        public IEnumerable<T> GetByFunction(Func<T, bool> func)
         {
-            return null;
+            var list = _db.Set<T>().Where(func);
+            return list;
         }
+
+        public List<T> GetAll()
+        {
+            return _db.Set<T>().ToList();
+        }
+
+        public BaseManager<T> Set<TEntity>()
+        {
+            return new BaseManager<T>();
+        }
+
+        #region IDisposable Support
+        private bool disposedValue = false; // Для определения избыточных вызовов
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: освободить управляемое состояние (управляемые объекты).
+                }
+
+                // TODO: освободить неуправляемые ресурсы (неуправляемые объекты) и переопределить ниже метод завершения.
+                // TODO: задать большим полям значение NULL.
+
+                disposedValue = true;
+            }
+        }
+
+        // TODO: переопределить метод завершения, только если Dispose(bool disposing) выше включает код для освобождения неуправляемых ресурсов.
+        ~BaseManager()
+        {
+            // Не изменяйте этот код. Разместите код очистки выше, в методе Dispose(bool disposing).
+            Dispose(false);
+        }
+
+        // Этот код добавлен для правильной реализации шаблона высвобождаемого класса.
+        void IDisposable.Dispose()
+        {
+            // Не изменяйте этот код. Разместите код очистки выше, в методе Dispose(bool disposing).
+            Dispose(true);
+            // TODO: раскомментировать следующую строку, если метод завершения переопределен выше.
+            // GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 }

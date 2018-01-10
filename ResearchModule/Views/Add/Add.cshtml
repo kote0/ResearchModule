@@ -1,0 +1,212 @@
+﻿@using ResearchModule.Components
+@using ResearchModule.Components.Models
+@using Microsoft.AspNetCore.Html
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    var AuthorsModal = "AuthorsModal";
+}
+
+@using (Html.BeginForm("CreatePublication", "Add", FormMethod.Post, new { id = "Add" }))
+{
+    <div style="margin-top: 30px;">
+        @Html.Card("Name").Row(
+                r =>
+                {
+                    r.For()
+                        .Content("Название публикации").Size(4)
+                        .Row(Html.TextBox("PublicationName", "", new { @class = "form-control" })).Size(8);
+                    r.For()
+                        .Content(Html.CheckBox("IsTranslate", false, new { onClick = "clickIsTarslate(this)" })).Size(12)
+                        .Content(" Иностранный язык");
+                    r.For().Class("Translate");
+                    r.For()
+                        .Content("Раздел").Size(4)
+                        .RowAsync(Component.InvokeAsync("SectionSelect"), 8);
+                    r.For()
+                        .Content("Вид публикации").Size(4)
+                        .Row(Html.Button("CreateTP", "", Html.Icon("plus"), new { type = "button", onClick = "TypePublications.create()" })).Size(1)
+                        .RowAsync(Component.InvokeAsync("TypePublicationSelect"), 7);
+                    r.For().Class("CreateTypePublication");
+                    r.For()
+                        .Content("Форма работы").Size(4)
+                        .Row(Html.Button("CreateFW", "", Html.Icon("plus"), new { type = "button", onClick = "FormWorks.create()" })).Size(1)
+                        .RowAsync(Component.InvokeAsync("FormWorkSelect"), 7);
+                    r.For().IsRow(false).Class("CreateFormWork");
+                    r.For()
+                        .Content("Автор").Size(4)
+                        .Row(Html.Button("CreateAuthors", " Создать", Html.Icon("plus"), new { onClick = "Author.append()", type = "button" })).Size(2)
+                        .Row(Html.Button("SearchAuthors", " Найти", Html.Icon("search"),
+                            new Dictionary<string, object> { { "type", "button" }, { "data-toggle", "modal" }, { "data-target", "#Search" + AuthorsModal } })).Size(4);
+                    r.For().Class("SelectedAuthors").Content("");
+                    r.For().IsRow(false).Content(
+                        Html.Card("Author").Header("Список авторов").Row(a=>
+                        {
+                            a.For()
+                            .Id("countResult")
+                            .Row("").Id("createResult")
+                            .Row("").Id("searchResult");
+                        }).Render()).Size("col");
+                    r.For()
+                          .Content(Html.Button("Create", "Сохранить", null, new { type = "button", @class = "btn btn-success", onClick= "formSubmit()" }));
+                    r.For().Class("AdditionalMainCard");
+                }
+            ).Render()
+    </div>
+    @Html.Partial("SearchAuthorModal")
+}
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".selectpicker").selectpicker;
+    });
+    function formSubmit() {
+        $(".AdditionalSearchAuthorsModal").replaceWith("");
+        var searchResult = /*$("#searchResult").find("[type=hidden], input:checked");*/$(".SearchResultSearchAuthorsModal").find("[type=hidden], input:checked");
+        var createResult = $("#createResult").find("input");
+        convertName(searchResult);
+        convertName(createResult);
+        $("#Add").submit();
+    }
+
+    function convertName(list) {
+        let countItem = -1;
+        let id;
+        for (var item of list) {
+            let name = item.name.match(/\d/g)[0];
+            if (id != name) {
+                id = name;
+                countItem++;
+            }
+            $("[name='" + item.name + "']").attr("name", item.name.replace(/\d/g, countItem));
+          
+        }
+    }
+
+    TypePublications = function () {
+        return {
+            create: function () {
+                let click = '<div class="col-md-1">@Html.Button("Delete", "", Html.Icon("remove"), new { type = "button", onClick = "TypePublications.remove()" })</div>';
+                let text = "<div class='col-md-4' style='margin-top: 5px'>Название вида</div>";
+                let value = '<div class="col-md-7">@Html.TextBox("TypePublicationName", "", new{@class = "form-control" })</div>';
+                $(".CreateTypePublication").html(click + text + value);
+                $("._TypePublicationId button").prop("disabled", true);
+            },
+            remove: function () {
+                $(".CreateTypePublication").empty();
+                $("._TypePublicationId button").prop("disabled", false);
+            }
+        };
+    }();
+
+    FormWorks = function () {
+        return {
+            create: function () {
+                let click = '<div class="col-md-1">@Html.Button("Delete", "", Html.Icon("remove"), new { type = "button", onClick = "FormWorks.remove()" })</div>';
+                let text = "<div class='col-md-4' style='margin-top: 5px'>Название формы работы</div>";
+                let value = '<div class="col-md-7">@Html.TextBox("FormName", "", new {@class = "form-control", placeholder="Печатная" })</div>'; //!
+
+                $(".CreateFormWork").html("<div class='row'>" + click + text + value + "</div>");
+
+                click = "<div class='col-md-1'></div>";
+                text = "<div class='col-md-4' style='margin-top: 5px'>Сокращенное название</div>";
+                value = '<div class="col-md-7">@Html.TextBox("ShortName", "", new { @class = "form-control", placeholder = "Печ." })</div>';
+                $(".CreateFormWork").append("<div class='row'>" + click + text + value + "</div>");
+                $("._FormWorkId button").prop("disabled", true);
+            },
+            remove: function () {
+                $(".CreateFormWork").empty();
+                $("._FormWorkId button").prop("disabled", false);
+            }
+        };
+    }();
+
+    function clickIsTarslate(e) {
+        let text = "<div class='col-md-4'>Перевод названия</div>";
+        let value = '<div class="col-md-8">@Html.TextBox("TranslateText", "", new{@class = "form-control" })</div>';
+        if (e.checked) {
+            $(".Translate").append(text).append(value);
+                            }
+        else {
+            $(".Translate").empty();
+
+        }
+    }
+    
+
+    var timers = timers || [];
+    timers[0] = 0;
+    Author = function () {
+        var resultauthorJson = [];
+        var countAuthor = 0;
+        let c = 0;
+        return {
+            append: function () {
+                $.ajax({
+                type: 'POST',
+                url: '@Url.Action("Add", "Author")?id=' + countAuthor,
+                success: function (data) {
+                    countAuthor++;
+                    $("#createResult").append(data);
+                }
+                });
+            },
+            remove: function (cardName) {
+                let cardId = "[id$='" + cardName + "']";
+                $(cardId).detach();
+            },
+            search: function (elem) {
+                return {
+                    onKeyUp: function () {
+                        if (elem.value === "") return;
+                        clearTimeout(timers[0]);
+                        Author.search(elem).start();
+                    },
+                    start: function () {
+                        timers[0] = setTimeout(function () { Author.search(elem).onChange() }, 500);
+                    },
+                    onChange: function () {
+                        $.ajax({
+                            type: 'POST',
+                            url: '@Url.Action("Search", "Author")?character=' + elem.value,
+                            success: function (data) {
+                                $(".AdditionalSearchAuthorsModal").html(data);
+                            }
+                        });
+                    }
+                }
+            },
+            searchResult: function () {
+                return {
+                    append: function (elem, id) {
+                        let selector = "#AuthorItem_" + id;
+                        if (elem.checked) {
+                            let tr = $(selector).clone();
+                            $(".SearchResultSearchAuthorsModal").append(tr);
+                        }
+                        else {
+                            let checkBoxs = $("[name='Search[" + id + "].Selected'");
+                            let firstCheckBox = checkBoxs[0];
+                            if (firstCheckBox != undefined) {
+                                firstCheckBox.checked = false;
+                            }
+                            let secondCheckBox = checkBoxs[2];
+                            if (secondCheckBox != undefined) {
+                                secondCheckBox.checked = false;
+                            }
+                            $(".SearchResultSearchAuthorsModal " + selector).detach();
+                        }
+                    },
+                    serialize: function () {
+                        resultauthorJson = site.tableToJson(document.getElementById("SearchResult"));
+                        $("#countResult > *").html("Добавленo: " + (resultauthorJson.length + c) + " автор(а)(ов)");
+                    }
+                }
+            }
+        };
+    }();
+    
+
+</script>

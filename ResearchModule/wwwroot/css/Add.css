@@ -1,0 +1,75 @@
+﻿.glyphicon-plus {
+    color: green;
+}
+
+.glyphicon-remove {
+    color: red;
+}
+
+
+.dropdown-group-item {
+    padding: 3px 20px;
+}
+.dropdown-group-item:hover {
+    /*background: rgba(0, 0, 0, .075)*/
+    background: rgb(65, 26, 198);
+    color: white;
+}
+.card {
+    position: relative;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 1px solid rgba(0,0,0,.125);
+    border-radius: .25rem;
+}
+
+.card-header:first-child {
+    border-radius: calc(.25rem - 1px) calc(.25rem - 1px) 0 0;
+}
+
+.card-header {
+    padding: .75rem 1.25rem;
+    margin-bottom: 0;
+    background-color: rgba(0,0,0,.03);
+    border-bottom: 1px solid rgba(0,0,0,.125);
+}
+
+.mb-0, .my-0 {
+    margin-bottom: 0 !important;
+}
+
+.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
+    font-family: inherit;
+    font-weight: 600;
+    line-height: 1.2;
+    color: inherit;
+}
+
+.card-body {
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto;
+    padding: 1.00rem;
+}
+
+a {
+    color: #007bff;
+    text-decoration: none;
+    background-color: transparent;
+}
+.row {
+    margin-top: 10px;
+}
+
+.card .card .row {
+    margin-top: 0;
+}
+
+.card .card .card {
+    border: none;
+}

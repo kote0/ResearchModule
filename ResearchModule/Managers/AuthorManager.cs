@@ -10,31 +10,35 @@ namespace ResearchModule.Managers
 {
     public class AuthorManager : BaseManager<Author>
     {
-        public override List<Author> GetAll()
+        public void Create(List<Author> authors)
         {
-            return _db.Author.ToList();
+            foreach (var author in authors)
+            {
+                if (author.IsValid())
+                    Create(author);
+            }
         }
-        public List<Author> GetAuthors(string character)
+        public StringBuilder DropbdownList(List<Author> authors)
         {
-            if (character == null) return null;
-            var text = character.ToLower();
-            var authors = _db.Author.Where(a => a.LastName.ToLower().Contains(text)
-                || a.Surname.ToLower().Contains(text)
-                || a.Name.ToLower().Contains(text))
-                .ToList();
-            return authors;
-        }
-        public StringBuilder ListAuthors(List<Author> authors)
-        {
-            if (authors.Count == 0) return null;
+            if (authors == null) return null;
             StringBuilder text = new StringBuilder();
-            text.Append("<ul class='list-group'>");
+            text.Append("<ul class='dropdown-menu'>");
             foreach(var author in authors)
             {
-                text.AppendFormat("<li class='list-group-item'>{0} {1} {2}</li>", author.Surname, author.Name, author.LastName);
+                text.AppendFormat("<li class='dropdown-group-item'>{0} {1} {2}</li>", author.Surname, author.Name, author.LastName);
             }
             text.Append("</ul>");
             return text;
+        }
+        public bool IsValid(List<Author> authors)
+        {
+            if (authors.Count == 0) return false;
+            foreach(var author in authors)
+            {
+                if (!author.IsValid())
+                    return false;
+            }
+            return true;
         }
     }
 }

@@ -45,8 +45,8 @@ namespace ResearchModule
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
-                    name: "Section",
-                    template: "{controller}/{action=Index}/{id?}");
+                    name: "default",
+                    template: "{controller=Add}/{action=Add}/{id?}");
             });
         }
     }
