@@ -1,0 +1,81 @@
+﻿@model ResearchModule.Models.Publication
+
+<br />
+<h4>@ViewBag.Result</h4>
+
+@if (Model != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Навание</th>
+                <th>Раздел</th>
+                <th>Вид</th>
+                <th>Форма работы</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>@Model.PublicationName</td>
+                <td>@Model.Section.SectionName</td>
+                <td>@Model.TypePublication.TypePublicationName</td>
+                <td>@Model.FormWork.FormName</td>
+            </tr>
+        </tbody>
+    </table>
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    @*
+        <h3>Список научных работ</h3>
+        <table class="table" style="margin-top:30px;">
+            <thead>
+                <tr>
+                    <th>Название</th>
+                    <th>Вид</th>
+                    <th>Раздел</th>
+                    <th>Авторы</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td style="padding: 20px;">
+                            @item.PublicationName
+                        </td>
+                        <td style="padding: 20px;">
+                            @item.TypePublicationId
+                        </td>
+                        <td style="padding: 20px;" onclick="RM.AppendTo('@(Url.Action("Authors", "Section", new { idPublication = item.Id }))', '#Authors', false)">
+                            <script type="text/html">
+                                $().ready(function(){
+                                RM.AppendTo('@(Url.Action("Authors", "Section", new { idPublication = item.Id }))', '#Authors', false);
+                                });
+                            </script>
+                        </td>
+                        <td id="Authors"style="padding: 20px;">
+
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>*@
+

@@ -1,0 +1,45 @@
+﻿@using Microsoft.AspNetCore.Html
+@using ResearchModule.Components.Models
+@model List<CardRow>
+
+    @if (Model.Count == 0)
+    {
+        return;
+    }
+    else
+    {
+        @foreach(var row in Model)
+        {
+            <div class="@(row.isRow ? "row": null) @row.className">
+                <div class="@row.ContentSize" id="@row.id">
+                    @row.contentText
+                </div>
+                @await GetList(row.contents)
+            </div>
+
+        }
+
+    }
+    
+
+@functions {
+    public async Task<HtmlContentBuilder> GetList(List<CardRow> list)
+    {
+        var str = new HtmlContentBuilder();
+        GetChildList(str, list);
+        return str;
+    }
+
+    private void GetChildList(HtmlContentBuilder str, List<CardRow> list)
+    {
+        foreach (var cardRow in list)
+        {
+            str.AppendFormat("<div class='{0}' id='{2}'>{1}</div>",
+             cardRow.ContentSize, cardRow.contentText, cardRow.id);
+            if (cardRow.contents.Count > 0)
+            {
+                GetChildList(str, cardRow.contents);
+            }
+        }
+    }
+}

@@ -3,35 +3,23 @@
 @model long
 
 @{ 
-    var id = string.Format("_{0}", Model);
-    var name = string.Concat("CreateAuthorsModalBody", id);
+    var id = string.Format("Author[{0}].", Model);
+    var name = string.Concat("CreateAuthorsModalBody_", id);
 }
 @Html.Card(name).Style("margin-top: 10px; ").Row(c =>
 {
     c.For()
         .Content("Фамилия").Size(4)
-        .Row(Html.TextBox("SecondName" + id, "", new { @class = "form-control" })).Size(8);
+        .Row(Html.TextBox(id+ "Surname", "", new { @class = "form-control" })).Size(8);
     c.For()
        .Content("Имя").Size(4)
-       .Row(Html.TextBox("Name" + id, "", new { @class = "form-control" })).Size(8);
+       .Row(Html.TextBox(id+"Name", "", new { @class = "form-control" })).Size(8);
     c.For()
        .Content("Отчество").Size(4)
-       .Row(Html.TextBox("LastName" + id, "", new { @class = "form-control" })).Size(8);
+       .Row(Html.TextBox(id+"LastName", "", new { @class = "form-control" })).Size(8);
     c.For()
-     .Content(Html.CheckBox("SoAuthor" + id, false)).Content(" Соавтор").Size(4)
-     .Row(Html.Button("removeAuthor" + id, " Удалить автора", Html.Icon("remove"), new Dictionary<string, object> { { "type", "button" }, { "onClick", "Author.remove('" + name + "');" } })).Size(8);
-    /* c.For()
-         .Content("Фамилия").Size(4)
-         .Row(Html.TextBox("SecondName"+id, "", new { @class = "form-control" })).Size(8);
-     c.For()
-        .Content("Имя").Size(4)
-        .Row(Html.TextBox("Name" + id, "", new { @class = "form-control" })).Size(8);
-     c.For()
-        .Content("Отчество").Size(4)
-        .Row(Html.TextBox("LastName" + id, "", new { @class = "form-control" })).Size(8);
-     c.For()
-      .Content(Html.CheckBox("SoAuthor" + id, false)).Content(" Соавтор").Size(4)
-      .Row(Html.Button("removeAuthor"+id, " Удалить автора", Html.Icon("remove"), new Dictionary<string, object> { { "type", "button" }, { "onClick", "Author.remove('" + name+"');" } })).Size(8);*/
+     .Content(Html.CheckBox(id+"SoAuthor", false)).Content(" Соавтор").Size(4)
+     .Row(Html.Button("removeAuthor_"+Model, " Удалить автора", Html.Icon("remove"), new Dictionary<string, object> { { "type", "button" }, { "onClick", "Author.remove('" + name+"');" } })).Size(8);
 
 }).Render()
 

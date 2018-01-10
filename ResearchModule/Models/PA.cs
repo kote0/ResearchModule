@@ -14,6 +14,7 @@ namespace ResearchModule.Models
         [Required]
         public long AId { get; set; }
 
+        public PA() { }
         public PA(long pid, long aid)
         {
             PId = pid;

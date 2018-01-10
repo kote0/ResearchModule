@@ -13,8 +13,11 @@ namespace ResearchModule.Models
 
         [Required]
         public string PublicationName { get; set; }
+        [Required]
         public long TypePublicationId { get; set; }
+        [Required]
         public long SectionId { get; set; }
+        [Required]
         public long FormWorkId { get; set; }
         public bool? IsTranslate { get; set; }
         public string TranslateText { get; set; }
@@ -27,7 +30,7 @@ namespace ResearchModule.Models
 
         public bool IsValid()
         {
-            if (PublicationName != null)
+            if (!string.IsNullOrEmpty(PublicationName) && TypePublicationId != null && SectionId != null && FormWorkId != null)
                 return true;
             return false;
         }

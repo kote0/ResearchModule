@@ -1,22 +1,24 @@
-﻿var Site = function () { };
+﻿var site = function () { };
 
-Site.select = function () {
-    return {
-        //входной параметр  $('.selectpicker > :selected');
-        //return массив
-        serialize: function (selectedList) {
-            debugger;
-            let selected = selectedList;
-            let selectedCount = selected.length;
-            if (selectedCount == 0) { return; }
-            let result = [], SearchInResult;
-            for (let i = 0; i < selectedCount; i++) {
-                SearchInResult = result.findIndex(o => o === selected[i].value);
-                if (SearchInResult == -1) {
-                    result.push(selected[i].value);
-                }
+site.tableToJson = function(table) { 
+    var data = [];
+    var headers = [];
+
+    for (var i = 0; i < table.rows[0].cells.length; i++) {
+        headers[i] = table.rows[0].cells[i].getAttribute("data_id"); // todo: id изменить на data_id
+    }
+    for (var i = 1; i < table.rows.length; i++) {
+        var tableRow = table.rows[i]; var rowData = {}; let d;
+        for (var j = 0; j < tableRow.cells.length; j++) {
+            d = tableRow.cells[j].childNodes[0];
+            if (d == undefined) continue;
+            if (d.nodeValue != null) {
+                rowData[headers[j]] = d.nodeValue;
             }
-            return result;
-        }
-    };
-}();
+            else {
+                rowData[headers[j]] = d.value;
+            }
+        } data.push(rowData);
+    }
+    return data;
+}

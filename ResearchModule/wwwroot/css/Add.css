@@ -54,7 +54,7 @@
 .card-body {
     -ms-flex: 1 1 auto;
     flex: 1 1 auto;
-    padding: 1.25rem;
+    padding: 1.00rem;
 }
 
 a {
@@ -64,4 +64,12 @@ a {
 }
 .row {
     margin-top: 10px;
+}
+
+.card .card .row {
+    margin-top: 0;
+}
+
+.card .card .card {
+    border: none;
 }
