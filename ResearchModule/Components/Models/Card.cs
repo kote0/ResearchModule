@@ -70,7 +70,6 @@ namespace ResearchModule.Components.Models
 
     public class CardRow
     {
-        private IHtmlHelper html;
         public string className { get; set; }
         public string id;
         public bool isRow = true;

@@ -8,7 +8,7 @@ using ResearchModule.Models;
 
 namespace ResearchModule.Controllers
 {
-    public class TestController : Controller
+    public class TestController : BaseController
     {
         public IActionResult Index()
         {
@@ -17,8 +17,8 @@ namespace ResearchModule.Controllers
 
         public IActionResult List()
         {
-            BaseManager<Author> mng = new BaseManager<Author>();
-            var list = mng.GetByFunction(a => a.IsValid())
+            
+            var list = manager.GetByFunction<Author>(a => a.IsValid())
                 .Select(a =>
                     new SelectListItem
                     {

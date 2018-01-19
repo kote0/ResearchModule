@@ -8,13 +8,11 @@ using ResearchModule.Managers;
 
 namespace ResearchModule.Controllers
 {
-    public class AuthorController : Controller
+    public class AuthorController : BaseController
     {
-        BaseManager<Author> mng = new BaseManager<Author>();
-
         public PartialViewResult SelectList()
         {
-            var list = mng.GetByFunction(a => a.IsValid())
+            var list = manager.GetByFunction<Author>(a => a.IsValid())
                 .Select(a =>
                     new SelectListItem
                     {
@@ -38,7 +36,7 @@ namespace ResearchModule.Controllers
         {
             if (character == null) return null;
             var text = character.ToLower();
-            var authors = mng.GetByFunction(a => {
+            var authors = manager.GetByFunction<Author>(a => {
                 if (a.IsValid())
                 {
                     return a.LastName.ToLower().Contains(text) || a.Surname.ToLower().Contains(text) || a.Name.ToLower().Contains(text);

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ResearchModule.Managers
 {
-    public class TypePublicationManager : BaseManager<TypePublication>
+    public class TypePublicationManager : BaseManager
     {
         public List<string> AllTypePublication()
         {

@@ -7,21 +7,21 @@ using System.Threading.Tasks;
 
 namespace ResearchModule.Managers
 {
-    public interface IBaseManager<T> 
+    public interface IBaseManager
     {
-        void Create(T record);
+        void Create<T>(T record); 
 
-        T Get(long id);
+        T Get<T>(long id) where T:class;
 
-        void Update(T record);
+        void Update<T>(T record);
 
-        void Delete(T record);
+        void Delete<T>(T record);
 
-        void Delete(long? id);
+        void Delete<T>(long id) where T : class;
 
-        IEnumerable<T> GetByFunction(Func<T, bool> func);
+        IEnumerable<T> GetByFunction<T>(Func<T, bool> func) where T:class;
 
-        List<T> GetAll();
-        
+        List<T> GetAll<T>() where T:class;
+
     }
 }

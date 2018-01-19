@@ -69,11 +69,13 @@ namespace ResearchModule.Components
 
     public class AuthorSelectViewComponent : ViewComponent
     {
-        BaseManager<Author> mng = new BaseManager<Author>();
+        BaseManager mng = new BaseManager();
+        
 
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            var list = mng.GetByFunction(a => a.IsValid())
+            //--- TODO: Вынести в private метод
+            var list = mng.GetByFunction<Author>(a => a.IsValid()) //сделать асинхронным
                 .Select(a =>
                     new ResearchModule.Models.SelectListItem
                     {
@@ -82,21 +84,33 @@ namespace ResearchModule.Components
                     })
                 .ToList();
 
-            var selectList = new ResearchModule.Models.SelectList();
+           /* var selectList = new ResearchModule.Models.SelectList();
             selectList.SetName("Author");
+            selectList.AddRange(list);*/
+            //--- 
+            return View("../SelectList", selectListCreate(list, "Author"));
+        }
+
+        // перенести в единый класс для компонентов
+        // изучить, как работать с ViewComponent
+        private ResearchModule.Models.SelectList selectListCreate(List<ResearchModule.Models.SelectListItem> list, string name)
+        {
+            var selectList = new ResearchModule.Models.SelectList();
+            selectList.SetName(name);
             selectList.AddRange(list);
-                
-            return View("../SelectList", selectList);
+            return selectList;
         }
     }
 
+
+
     public class SectionSelectViewComponent : ViewComponent
     {
-        BaseManager<Section> mng = new BaseManager<Section>();
+        BaseManager mng = new BaseManager();
 
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            var list = mng.GetByFunction(a => a.IsValid())
+            var list = mng.GetByFunction<Section>(a => a.IsValid())
                 .Select(a =>
                     new ResearchModule.Models.SelectListItem
                     {
@@ -115,11 +129,11 @@ namespace ResearchModule.Components
 
     public class TypePublicationSelectViewComponent : ViewComponent
     {
-        BaseManager<TypePublication> mng = new BaseManager<TypePublication>();
+        BaseManager mng = new BaseManager();
 
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            var list = mng.GetByFunction(a => a.IsValid())
+            var list = mng.GetByFunction<TypePublication>(a => a.IsValid())
                 .Select(a =>
                     new ResearchModule.Models.SelectListItem
                     {
@@ -137,11 +151,11 @@ namespace ResearchModule.Components
     }
     public class FormWorkSelectViewComponent : ViewComponent
     {
-        BaseManager<FormWork> mng = new BaseManager<FormWork>();
+        BaseManager mng = new BaseManager();
 
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            var list = mng.GetByFunction(a => a.IsValid())
+            var list = mng.GetByFunction<FormWork>(a => a.IsValid())
                 .Select(a =>
                     new ResearchModule.Models.SelectListItem
                     {

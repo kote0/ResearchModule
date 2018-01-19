@@ -4,10 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace ResearchModule.Managers
 {
-    public class BaseManager<T> : IBaseManager<T>, IDisposable where T : class
+    public class BaseManager : IBaseManager, IDisposable 
     {
         public readonly DBContext _db;
 
@@ -16,14 +17,15 @@ namespace ResearchModule.Managers
             _db = new DBContext();
         }
 
-        public void Create(T record)
+        public void Create<T>(T record)
         {
-            if (record == null) return;
-            _db.Entry(record).State = EntityState.Added;
+            var t = record as EntityEntry;
+            if (t.Entity == null) return;
+            _db.Entry(t.Entity).State = EntityState.Added;
             _db.SaveChanges();
         }
 
-        public void Delete(long? id)
+        public void Delete<T>(long id) where T : class
         {
             var record = _db.Find<T>(id);
 
@@ -34,43 +36,43 @@ namespace ResearchModule.Managers
             }
         }
 
-        public void Delete(T record)
+        public void Delete<T>(T record)
         {
-            if (record != null)
+            var t = record as EntityEntry;
+            if (t.Entity != null)
             {
-                _db.Remove(record);
+                _db.Remove(t.Entity);
                 _db.SaveChanges();
             }
         }
 
-        public T Get(long id)
+        public T Get<T>(long id) where T : class
         {
             return _db.Find<T>(id);
         }
 
-        public void Update(T record)
+        public void Update<T>(T record)
         {
-            _db.Attach(record).State = EntityState.Modified;
+            var t = record as EntityEntry;
+            if (t.Entity != null)
+            {
+                _db.Attach(t.Entity).State = EntityState.Modified;
+            }
         }
 
-        public IEnumerable<T> GetByFunction(Func<T, bool> func)
+        public IEnumerable<T> GetByFunction<T>(Func<T, bool> func) where T : class
         {
             var list = _db.Set<T>().Where(func);
             return list;
         }
 
-        public List<T> GetAll()
+        public List<T> GetAll<T>() where T : class 
         {
             return _db.Set<T>().ToList();
         }
 
-        public BaseManager<T> Set<TEntity>()
-        {
-            return new BaseManager<T>();
-        }
-
         #region IDisposable Support
-        private bool disposedValue = false; // Для определения избыточных вызовов
+        private bool disposedValue = false;
 
         protected virtual void Dispose(bool disposing)
         {
@@ -88,7 +90,7 @@ namespace ResearchModule.Managers
             }
         }
 
-        // TODO: переопределить метод завершения, только если Dispose(bool disposing) выше включает код для освобождения неуправляемых ресурсов.
+       
         ~BaseManager()
         {
             // Не изменяйте этот код. Разместите код очистки выше, в методе Dispose(bool disposing).

@@ -6,9 +6,12 @@ using System.Threading.Tasks;
 
 namespace ResearchModule.Managers
 {
-    public class PAManager : BaseManager<PA>
+    /// <summary>
+    /// Таблица, хранящая в себе авторов и их публикации
+    /// Связь М:М
+    /// </summary>
+    public class PAManager : BaseManager
     {
-        AuthorManager AM = new AuthorManager();
         public void Create(IEnumerable<Author> authors, long pid)
         {
             foreach (var author in authors)
@@ -26,11 +29,11 @@ namespace ResearchModule.Managers
         }
         public List<Author> FindAuthorByPublication(long idPublication)
         {
-            var pas = GetByFunction(pa => pa.PId == idPublication).ToList();
+            var pas = GetByFunction<PA>(pa => pa.PId == idPublication).ToList();
             List<Author> authors = new List<Author>();
             foreach(var item in pas)
             {
-                var author = AM.GetByFunction(a => a.Id == item.AId).FirstOrDefault();
+                var author = GetByFunction<Author>(a => a.Id == item.AId).FirstOrDefault();
                 if (author != null)
                     authors.Add(author);
             }

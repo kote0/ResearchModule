@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ResearchModule.Managers
 {
-    public class AuthorManager : BaseManager<Author>
+    public class AuthorManager : BaseManager
     {
         public void Create(List<Author> authors)
         {
