@@ -2,10 +2,10 @@
 
 @*multiple*@
 
-<select class="selectpicker selectpicker_@Model.GetName()"  data-width="100%" name="@Model.GetName()" title="Ничего не выбрано">
+<select class="form-control selectpicker_@Model.GetName()"  data-width="100%" name="@Model.GetName()" title="Ничего не выбрано">
     @foreach (var elem in Model.Elements)
     {
-        <option value="@elem.Value">@elem.Text</option>
+        <option value="@(elem.Value)">@(elem.Text)</option>
 
     }
 </select>

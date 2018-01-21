@@ -1,0 +1,14 @@
+﻿1. -- Вынести в единый компонент менеджер AuthorSelectViewComponent
+	// отправлен в Add констроллер 
+2. -- Добавить туда SelectList
+3. -- Создать BaseController
+4. -- delete DropbdownList
+5. delete Manager лишнее
+6. -- using (PAManager mngPA = new PAManager()) вывести в private
+7. Реализовать Html.Capthon для обязательный атрибутов
+8. Создать конструктор для CardRow и вынести туда isRow
+9. Добавление авторов отправит в паршал
+10. Создать валидацию в виде добавления к элементу "_validator"
+11. Перенести в интерфесы ICardRow
+12. delete лишние паршалы
+13. Изменить входные параметры CreatePubliction или нет?

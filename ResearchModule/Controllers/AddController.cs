@@ -12,11 +12,13 @@ namespace ResearchModule.Controllers
 {
     public class AddController : BaseController
     {
+        [HttpGet]
         public IActionResult Add()
         {
             return View();
         }
 
+        // TODO: Изменить входные параметры CreatePublication или нет?
         public IActionResult CreatePublication(List<Author> Author, [Bind(Prefix = "Search")]List<Author> Search,
             Publication publication, FormWork formWork, long Section, TypePublication typePublication, long TypePublicationId, long FormWorkId)
         {
@@ -50,8 +52,8 @@ namespace ResearchModule.Controllers
                 publication.SectionId = Section;
                 manager.Create(publication);
             }
-            CreatePA(publication.Id, createdAuthors, selectedAuthors);
 
+            CreatePA(publication.Id, createdAuthors, selectedAuthors);
             return View("Publication", publication);
         }
 
@@ -69,7 +71,7 @@ namespace ResearchModule.Controllers
 
         public ActionResult Publication()
         {
-            return PartialView(manager.GetAll<Publication>());
+            return PartialView(manager.GetByFunction<Publication>(p=>p.IsValid()).ToList());
         }
 
         #region privateMembers
@@ -107,6 +109,81 @@ namespace ResearchModule.Controllers
             mngPA.Create(listAuthors, publicationId);
         }
 
+
+        #endregion
+
+        #region select list
+
+        private ResearchModule.Models.SelectList selectListCreate(List<ResearchModule.Models.SelectListItem> list, string name)
+        {
+            var selectList = new ResearchModule.Models.SelectList();
+            if (list.Count != 0)
+                selectList.AddRange(list);
+
+            selectList.SetName(name);
+            return selectList;
+        }
+
+        public PartialViewResult LoadSelectAuthor()
+        {
+            var list = manager.GetByFunction<Author>(a => a.IsValid()) //сделать асинхронным
+                .Select(a =>
+                    new ResearchModule.Models.SelectListItem
+                    {
+                        Value = a.Id,
+                        Text = string.Format("{0}.{1}. {2}", a.Surname.Substring(0, 1), a.LastName.Substring(0, 1), a.Name)
+                    })
+                .ToList();
+
+            return PartialView("Components/SelectList", selectListCreate(list, "Author"));
+        }
+
+
+        public PartialViewResult LoadSelectSection()
+        {
+            var list = manager.GetByFunction<Section>(a => a.IsValid())
+                .Select(a =>
+                    new ResearchModule.Models.SelectListItem
+                    {
+                        Value = a.Id,
+                        Text = a.SectionName
+                    })
+                .ToList();
+
+            return PartialView("Components/SelectList", selectListCreate(list, "Section"));
+        }
+
+        public PartialViewResult LoadSelectTypePublication()
+        {
+            var list = manager.GetByFunction<TypePublication>(a => a.IsValid())
+                .Select(a =>
+                    new ResearchModule.Models.SelectListItem
+                    {
+                        Value = a.Id,
+                        Text = a.TypePublicationName
+                    })
+                .ToList();
+
+            return PartialView("Components/SelectList", selectListCreate(list, "TypePublicationId"));
+        }
+
+        public PartialViewResult LoadSelectFormWork()
+        {
+            var list = manager.GetByFunction<FormWork>(a => a.IsValid())
+                .Select(a =>
+                    new ResearchModule.Models.SelectListItem
+                    {
+                        Value = a.Id,
+                        Text = string.Format("{0}({1})", a.FormName, a.ShortName)
+                    })
+                .ToList();
+
+            var selectList = new ResearchModule.Models.SelectList();
+            selectList.SetName("FormWorkId");
+            selectList.AddRange(list);
+
+            return PartialView("Components/SelectList", selectListCreate(list, "FormWorkId"));
+        }
 
         #endregion
     }

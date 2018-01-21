@@ -8,24 +8,13 @@ using System.Threading.Tasks;
 
 namespace ResearchModule.Managers
 {
+    //TODO: Удалить TypePublicationManager
     public class TypePublicationManager : BaseManager
     {
         public List<string> AllTypePublication()
         {
-            var typePublications = _db.Set<TypePublication>().Select(m => m.TypePublicationName);
+            var typePublications = GetByFunction<TypePublication>(p => p.IsValid()).Select(m => m.TypePublicationName);
             return typePublications?.ToList();
-        }
-        public StringBuilder DropbdownList(List<TypePublication> types)
-        {
-            if (types == null) return null;
-            StringBuilder text = new StringBuilder();
-            text.Append("<ul class='dropdown-menu'>");
-            foreach (var type in types)
-            {
-                text.AppendFormat("<li class='dropdown-group-item'>{0}</li>", type.TypePublicationName);
-            }
-            text.Append("</ul>");
-            return text;
         }
         
     }

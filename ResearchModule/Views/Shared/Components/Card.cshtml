@@ -1,7 +1,4 @@
-﻿@model ResearchModule.Components.Models.Card
-@using ResearchModule.Components.Models
-@using Microsoft.AspNetCore.Html
-@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+﻿@model ResearchModule.Components.Models.Card.Card
 
 @{ 
     var headerExistense = string.IsNullOrEmpty(Model.headerName);
@@ -19,7 +16,7 @@
                 </h5>
             </div>
         }
-        <div id="collapse_@Model.id" class="collapse @(headerExistense? " in" : null)" aria-expanded="@(headerExistense)" role="tabpanel" aria-labelledby="heading_@Model.id" data-parent="#accordion_@Model.id" style="">
+        <div id="collapse_@Model.id" class="collapse @(headerExistense || Model.collapse ? " in" : null)" aria-expanded="@(headerExistense)" role="tabpanel" aria-labelledby="heading_@Model.id" data-parent="#accordion_@Model.id" style="">
             <div class="card-body " id="body_@Model.id">
                 @Html.Partial("Components/CardRow", Model.rows)
             </div>

@@ -6,7 +6,7 @@
     var id = string.Format("Author[{0}].", Model);
     var name = string.Concat("CreateAuthorsModalBody_", id);
 }
-@Html.Card(name).Style("margin-top: 10px; ").Row(c =>
+@Html.Card(name).Collapse().Style("margin-top: 10px; ").Row(c =>
 {
     c.For()
         .Content("Фамилия").Size(4)

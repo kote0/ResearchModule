@@ -5,7 +5,7 @@ site.tableToJson = function(table) {
     var headers = [];
 
     for (var i = 0; i < table.rows[0].cells.length; i++) {
-        headers[i] = table.rows[0].cells[i].getAttribute("data_id"); // todo: id изменить на data_id
+        headers[i] = table.rows[0].cells[i].getAttribute("data_id"); // TODO: id изменить на data_id
     }
     for (var i = 1; i < table.rows.length; i++) {
         var tableRow = table.rows[i]; var rowData = {}; let d;
@@ -21,4 +21,11 @@ site.tableToJson = function(table) {
         } data.push(rowData);
     }
     return data;
+}
+
+function disable(selctor, disabled) {
+    $(selctor).attr("disabled", disabled);
+}
+function empty(selector) {
+    $(selector).empty();
 }
