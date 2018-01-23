@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ResearchModule.Models
 {
-    public class Author
+    public partial class Author
     {
         public long Id { get; set; }
         [Required]
@@ -27,6 +27,11 @@ namespace ResearchModule.Models
             if (!(string.IsNullOrEmpty(Surname) && string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(LastName)))
                 return true;
             return false;
+        }
+
+        public string ToStringFormat()
+        {
+            return string.Format("{0} {1}.{2}.",Surname, Name.Substring(0,1), LastName.Substring(0, 1));
         }
     }
 }

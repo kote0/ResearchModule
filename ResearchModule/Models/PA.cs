@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ResearchModule.Models
 {
-    public class PA
+    public partial class PA
     {
         public long Id { get; set; }
         [Required]

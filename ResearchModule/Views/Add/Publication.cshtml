@@ -1,4 +1,5 @@
-﻿@model ResearchModule.Models.Publication
+﻿@using ResearchModule.Components
+@model List<ResearchModule.Models.Publication>
 
 <br />
 <h4>@ViewBag.Result</h4>
@@ -12,19 +13,31 @@
                 <th>Раздел</th>
                 <th>Вид</th>
                 <th>Форма работы</th>
+                <th>Авторы</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>@Model.PublicationName</td>
-                <td>@Model.Section.SectionName</td>
-                <td>@Model.TypePublication.TypePublicationName</td>
-                <td>@Model.FormWork.FormName</td>
-            </tr>
+            @foreach (var item in Model)
+            {
+                item.GetOutherProperty();
+                <tr>
+                    <td>@item.PublicationName</td>
+                    <td data_id="@item.SectionId">@item.Section.SectionName</td>
+                    <td data_id="@item.TypePublicationId">@item.TypePublication.TypePublicationName</td>
+                    <td data_id="@item.FormWorkId">@(item.FormWork.ToStringFormat())</td>
+                    <td>
+                        @foreach (var author in item.AuthorsOfPublication())
+                        {
+                            <div>@author.ToStringFormat()</div>
+                        }
+                    </td>
+                    <td><a href="@Url.Action("EditPublication", "Add",  new { id = item.Id })" data-toggle="tooltip" title="Редактировать">@Html.Icon("pencil")</a></td>
+                </tr>
+            }
         </tbody>
     </table>
 }
-
 
 
 

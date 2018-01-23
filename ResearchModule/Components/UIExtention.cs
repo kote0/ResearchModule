@@ -61,7 +61,6 @@ namespace ResearchModule.Components
         /// <summary>
         /// Иконка
         /// </summary>
-        /// <param name="html"></param>
         /// <param name="iconName">Название иконки</param>
         /// <returns></returns>
         public static IHtmlContent Icon(this IHtmlHelper html, string iconName)
@@ -69,6 +68,26 @@ namespace ResearchModule.Components
             var tagBuilder = new TagBuilder("span");
             var className = string.Format("glyphicon glyphicon-{0}", iconName);
             tagBuilder.AddCssClass(className);
+            tagBuilder.RenderSelfClosingTag();
+
+            return tagBuilder;
+        }
+
+        /// <summary>
+        /// Иконка
+        /// </summary>
+        /// <param name="iconName">Название иконки</param>
+        /// <param name="routeValues">new { onClick ="onClick(this)" }</param>
+        /// <returns></returns>
+        public static IHtmlContent Icon(this IHtmlHelper html, string iconName, object routeValues)
+        {
+            var tagBuilder = new TagBuilder("span");
+            var className = string.Format("glyphicon glyphicon-{0}", iconName);
+            tagBuilder.AddCssClass(className);
+            if (routeValues != null)
+            {
+                tagBuilder.MergeAttributes(new RouteValueDictionary(routeValues), true);
+            }
             tagBuilder.RenderSelfClosingTag();
 
             return tagBuilder;

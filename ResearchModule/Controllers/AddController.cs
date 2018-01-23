@@ -71,7 +71,7 @@ namespace ResearchModule.Controllers
 
         public ActionResult Publication()
         {
-            return PartialView(manager.GetByFunction<Publication>(p=>p.IsValid()).ToList());
+            return View(manager.GetByFunction<Publication>(p=>p.IsValid()).ToList());
         }
 
         #region privateMembers

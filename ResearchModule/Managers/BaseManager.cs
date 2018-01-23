@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System.Linq.Expressions;
 
 namespace ResearchModule.Managers
 {
@@ -46,9 +47,11 @@ namespace ResearchModule.Managers
             }
         }
 
-        public T Get<T>(long id) where T : class
+        public T Get<T>(params object[] keyValues) where T : class
         {
-            return _db.Find<T>(id);
+            if (keyValues!= null)
+                return _db.Find<T>(keyValues);
+            return null;
         }
 
         public void Update<T>(T record)

@@ -156,7 +156,7 @@
                     `@Render(CustomCreate(
                     null,
                     "Сокращенное название",
-                    Html.TextBox("ShortName", "", new { @class = "form-control", placeholder = "Печ." })
+                    Html.TextBox("ShortName", "", new { @class = "form-control", placeholder = "Печ" })
                 ))`;
                 $(".CreateFormWork").append("<div class='row'>" + val + "</div>");
                 disable(".selectpicker_" + name + "Id", true);
@@ -246,6 +246,7 @@
                         }
                     },
                     serialize: function () {
+                        $("#searchResult").html($("#SearchResult").clone());
                         resultauthorJson = site.tableToJson(document.getElementById("SearchResult"));
                         $("#countResult > *").html("Добавленo: " + (resultauthorJson.length + c) + " автор(а)(ов)");
                     }

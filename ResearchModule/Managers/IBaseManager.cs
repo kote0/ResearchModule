@@ -11,7 +11,7 @@ namespace ResearchModule.Managers
     {
         void Create<T>(T record); 
 
-        T Get<T>(long id) where T:class;
+        T Get<T>(params object[] keyValues) where T:class;
 
         void Update<T>(T record);
 
@@ -22,6 +22,6 @@ namespace ResearchModule.Managers
         IEnumerable<T> GetByFunction<T>(Func<T, bool> func) where T:class;
 
         List<T> GetAll<T>() where T:class;
-
+        
     }
 }

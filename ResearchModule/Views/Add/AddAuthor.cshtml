@@ -20,7 +20,7 @@
     c.For()
      .Content(Html.CheckBox(id+"SoAuthor", false)).Content(" Соавтор").Size(4)
      .Row(Html.Button("removeAuthor_"+Model, " Удалить автора", Html.Icon("remove"), new Dictionary<string, object> { { "type", "button" }, { "onClick", "Author.remove('" + name+"');" } })).Size(8);
-
+    return c;
 }).Render()
 
 

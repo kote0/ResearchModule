@@ -1,5 +1,5 @@
 ﻿@using ResearchModule.Components
-@using ResearchModule.Components.Models
+@using ResearchModule.Components.Models.Card
 @model long
 @{
     //настроить стили
@@ -7,7 +7,7 @@
     var name = string.Concat("CreateAuthors_", id);
 }
 
-@Html.Card(name).Row(a =>
+@Html.Card(name).Row((Card a) =>
 {
     a.For()
         .Content(Html.Button(id, "", Html.Icon("remove"), new { type = "button", onClick = string.Format("Author.remove('body_{0}')", name) })).Size(1)
@@ -15,4 +15,5 @@
         .Row(Html.TextBox(id + "Name", "", new { @class = "form-control", placeHolder = "Имя" })).Size(3)
         .Row(Html.TextBox(id + "LastName", "", new { @class = "form-control", placeHolder = "Отчетсво" })).Size(3)
         .Row(Html.CheckBox(id + "SoAuthor", false)).Content(" Соавтор").Size(2);
+    return a;
 }).Render()
