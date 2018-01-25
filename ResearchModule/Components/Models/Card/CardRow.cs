@@ -43,6 +43,13 @@ namespace ResearchModule.Components.Models.Card
             return cardRow;
         }
 
+
+        public CardRow Content(Func<object, IHtmlContent> htmlContent)
+        {
+            Content(HtmlContent.ToHtmlContent(htmlContent));
+            return this;
+        }
+
         public CardRow Content(string content)
         {
             contentText.AppendHtml(content);
@@ -60,6 +67,7 @@ namespace ResearchModule.Components.Models.Card
             contentText.AppendHtml(content);
             return this;
         }
+
 
         #endregion
 

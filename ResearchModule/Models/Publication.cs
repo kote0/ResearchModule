@@ -34,7 +34,7 @@ namespace ResearchModule.Models
 
         public bool IsValid()
         {
-            if (!string.IsNullOrEmpty(PublicationName) && TypePublicationId != null && SectionId != null && FormWorkId != null)
+            if (!string.IsNullOrEmpty(PublicationName) && TypePublicationId.HasValue && SectionId.HasValue && FormWorkId.HasValue)
                 return true;
             return false;
         }

@@ -7,49 +7,46 @@
     var AuthorsModal = "AuthorsModal";
 }
 
+<style>
+    td.author_Remove {
+        text-align: center;
+    }
+</style>
+
 @using (Html.BeginForm("CreatePublication", "Add", FormMethod.Post, new { id = "Add" }))
 {
     <div style="margin-top: 30px;">
         @Html.Card("Name").Row(
               (Card r) =>
               {
-                  r.For()
-                      .Content("Название публикации").Size(4)
-                      .Row(Html.TextBox("PublicationName", "", new { @class = "form-control" })).Size(8);
-                  r.For()
-                      .Content(Html.CheckBox("IsTranslate", false, new { onClick = "clickIsTarslate(this)" })).Size(12)
-                      .Content(" Иностранный язык");
-                  r.For().Class("Translate");
-                  r.For()
-                      .Content("Раздел").Size(4)
-                      .Row().Id("load_select-Section").Size(8);
-                  r.For()
-                      .Content("Вид публикации").Size(4)
-                      .Row(Html.Button("CreateTP", "", Html.Icon("plus"), new { type = "button", onClick = "TypePublications.create()" })).Size(1)
-                      .Row().Id("load_select-TypePublication").Size(7);
-                  r.For().Class("CreateTypePublication");
-                  r.For()
-                      .Content("Форма работы").Size(4)
-                      .Row(Html.Button("CreateFW", "", Html.Icon("plus"), new { type = "button", onClick = "FormWorks.create()" })).Size(1)
-                      .Row().Id("load_select-FormWork").Size(7);
-                  r.For().IsRow(false).Class("CreateFormWork");
-                  r.For()
-                      .Content("Автор").Size(4)
-                      .Row(Html.Button("CreateAuthors", " Создать", Html.Icon("plus"), new { onClick = "Author.append()", type = "button" })).Size(2)
-                      .Row(Html.Button("SearchAuthors", " Найти", Html.Icon("search"),
-                          new Dictionary<string, object> { { "type", "button" }, { "data-toggle", "modal" }, { "data-target", "#Search" + AuthorsModal } })).Size(4);
-                  r.For().Class("SelectedAuthors").Content("");
-                  r.For().IsRow(false).Content(
-                      //TODO: Отправить в partial
-                      Html.Card("Author").Collapse().Header("Список авторов").Row((Card a) =>
-                      {
-                          a.For()
-                             .Id("countResult")
-                             .Row().Id("createResult")
-                             .Row().Id("searchResult");
-                          return a;
-                      }).Render()).Size("col");
-                  r.For().Content("TODO: Добавьте файл");
+              r.For()
+                  .Content("Название публикации").Size(4)
+                  .Row(Html.TextBox("PublicationName", "", new { @class = "form-control" })).Size(8);
+              r.For()
+                  .Content(Html.CheckBox("IsTranslate", false, new { onClick = "clickIsTarslate(this)" })).Size(12)
+                  .Content(" Иностранный язык");
+              r.For().Class("Translate");
+              r.For()
+                  .Content("Раздел").Size(4)
+                  .Row().Id("load_select-Section").Size(8);
+              r.For()
+                  .Content("Вид публикации").Size(4)
+                  .Row(Html.Button("CreateTP", "", Html.Icon("plus"), new { type = "button", onClick = "TypePublications.create()" })).Size(1)
+                  .Row().Id("load_select-TypePublication").Size(7);
+              r.For().Class("CreateTypePublication");
+              r.For()
+                  .Content("Форма работы").Size(4)
+                  .Row(Html.Button("CreateFW", "", Html.Icon("plus"), new { type = "button", onClick = "FormWorks.create()" })).Size(1)
+                  .Row().Id("load_select-FormWork").Size(7);
+              r.For().IsRow(false).Class("CreateFormWork");
+              r.For()
+                  .Content("Автор").Size(4)
+                  .Row(Html.Button("CreateAuthors", " Создать", Html.Icon("plus"), new { onClick = "Author.append()", type = "button" })).Size(2)
+                  .Row(Html.Button("SearchAuthors", " Найти", Html.Icon("search"),
+                      new Dictionary<string, object> { { "type", "button" }, { "data-toggle", "modal" }, { "data-target", "#Search" + AuthorsModal } })).Size(4);
+              r.For().Class("SelectedAuthors").Content("");
+              r.For().IsRow(false).Content(Html.Partial("CreateListOfAuthors")).Size("col");
+                  r.For().Content("  TODO: Добавьте файл");
                   r.For()
                         .Content(Html.Button("Create", "Сохранить", null, new { type = "button", @class = "btn btn-success", onClick = "formSubmit()" }));
                   r.For().Class("AdditionalMainCard");
@@ -57,9 +54,8 @@
               }
           ).Render()
     </div>
-    @Html.Partial("SearchAuthorModal")
 }
-
+@Html.Partial("SearchAuthorModal")
 
 
 @{
@@ -68,9 +64,9 @@
 
     Func<object, IHtmlContent> CustomCreate(IHtmlContent click, string name, IHtmlContent value) =>
         (@<text>
-            <div class="col-md-1">@click</div>
-            <div class="col-md-4" style="margin-top: 5px">@name</div>
-            <div class="col-md-7">@value</div>
+        <div class="col-md-1">@click</div>
+        <div class="col-md-4" style="margin-top: 5px">@name</div>
+        <div class="col-md-7">@value</div>
         </text>);
 }
 
@@ -94,11 +90,12 @@
     }
 
     function formSubmit() {
-        $(".AdditionalSearchAuthorsModal").replaceWith("");
-        var searchResult = /*$("#searchResult").find("[type=hidden], input:checked");*/$(".SearchResultSearchAuthorsModal").find("[type=hidden], input:checked");
+        //$(".AdditionalSearchAuthorsModal").replaceWith(""); 
+        var searchResult = $("#searchResult").find("[type=hidden], input:checked");
         var createResult = $("#createResult").find("input");
         convertName(searchResult);
         convertName(createResult);
+        debugger;
         $("#Add").submit();
     }
 
@@ -243,12 +240,17 @@
                                 secondCheckBox.checked = false;
                             }
                             $(".SearchResultSearchAuthorsModal " + selector).detach();
+                            $("#searchResult " + selector).detach();
                         }
                     },
                     serialize: function () {
-                        $("#searchResult").html($("#SearchResult").clone());
-                        resultauthorJson = site.tableToJson(document.getElementById("SearchResult"));
-                        $("#countResult > *").html("Добавленo: " + (resultauthorJson.length + c) + " автор(а)(ов)");
+                        debugger;
+                        var searchResult = $("#searchResult").html($("#tbodySearchResult tr").clone());
+                        searchResult.find("tr:has(td)").append(`<td>@Html.TextBox("Author[00].Weight", "", new { @class="form-control", placeHolder = "Вес" })</td>`);
+                        //searchResult.find("tr:has(th)").append("<th>Вес*</th>")
+                        
+                        //resultauthorJson = site.tableToJson(document.getElementById("SearchResult"));
+                        //$("#countResult > *").html("Добавленo: " + (resultauthorJson.length + c) + " автор(а)(ов)");
                     }
                 }
             }

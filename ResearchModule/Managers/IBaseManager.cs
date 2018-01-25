@@ -9,13 +9,13 @@ namespace ResearchModule.Managers
 {
     public interface IBaseManager
     {
-        void Create<T>(T record); 
+        //bool Create<T>(T record); 
 
         T Get<T>(params object[] keyValues) where T:class;
 
-        void Update<T>(T record);
-
-        void Delete<T>(T record);
+        //bool Update<T>(T record);
+        
+        //bool Delete<T>(T record);
 
         void Delete<T>(long id) where T : class;
 

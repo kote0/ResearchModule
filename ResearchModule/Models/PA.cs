@@ -14,6 +14,11 @@ namespace ResearchModule.Models
         [Required]
         public long AId { get; set; }
 
+        /// <summary>
+        /// Вес автора в публикации
+        /// </summary>
+        public double Weight { get; set; }
+
         public PA() { }
         public PA(long pid, long aid)
         {

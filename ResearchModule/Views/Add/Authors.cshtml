@@ -4,16 +4,14 @@
 @{
     //настроить стили
     var id = string.Format("Author[{0}].", Model);
-    var name = string.Concat("CreateAuthors_", id);
+    var name = string.Concat(id,"CreateAuthors_");
 }
 
-@Html.Card(name).Row((Card a) =>
-{
-    a.For()
-        .Content(Html.Button(id, "", Html.Icon("remove"), new { type = "button", onClick = string.Format("Author.remove('body_{0}')", name) })).Size(1)
-        .Row(Html.TextBox(id + "Surname", "", new { @class = "form-control", placeHolder="Фамилия" })).Size(3)
-        .Row(Html.TextBox(id + "Name", "", new { @class = "form-control", placeHolder = "Имя" })).Size(3)
-        .Row(Html.TextBox(id + "LastName", "", new { @class = "form-control", placeHolder = "Отчетсво" })).Size(3)
-        .Row(Html.CheckBox(id + "SoAuthor", false)).Content(" Соавтор").Size(2);
-    return a;
-}).Render()
+
+<tr class ="CreateAuthors" id="@name">
+    <td class="author_Remove">@Html.Button("", "", Html.Icon("remove"), new { type = "button", onClick = string.Format("Author.remove('"+name+"')", name) })</td>
+    <td>@Html.TextBox(id + "Surname", "", new { @class = "form-control", placeHolder = "Фамилия" })</td>
+    <td>@Html.TextBox(id + "Name", "", new { @class = "form-control", placeHolder = "Имя" })         </td>
+    <td>@Html.TextBox(id + "LastName", "", new { @class = "form-control", placeHolder = "Отчетсво" })</td>
+    <td>@Html.TextBox(id + "Weight", "", new { @class = "form-control", placeHolder = "Вес" })       </td>
+</tr>

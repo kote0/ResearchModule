@@ -14,13 +14,11 @@ namespace ResearchModule.Models
         public string Surname { get; set; }
         public string Name { get; set; }
         public string LastName { get; set; }
-        
-        public bool CoAuthor { get; set; }
-
-        public virtual ICollection<Publication> Publication { get; set; }
 
         [NotMapped]
         public bool Selected { get; set; }
+        [NotMapped]
+        public double Weight { get; set; }
 
         public bool IsValid()
         {

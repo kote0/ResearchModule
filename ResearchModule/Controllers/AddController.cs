@@ -24,7 +24,7 @@ namespace ResearchModule.Controllers
         {
             var selectedAuthors = Search.Where(s => s.Id != 0);
             var createdAuthors = Author.Where(a => a.IsValid());
-            if (!(publication.IsValid() && Section != 0 && (createdAuthors.Count() > 0 || selectedAuthors.Count() > 0)))
+            if (!(!string.IsNullOrEmpty(publication.PublicationName) && Section != 0 && (createdAuthors.Count() > 0 || selectedAuthors.Count() > 0)))
             {
                 ViewBag.Result = "Данные не введены";
                 return View("Publication");
@@ -33,6 +33,7 @@ namespace ResearchModule.Controllers
             {
                 manager.Create(formWork);
                 publication.FormWork = formWork;
+                publication.FormWorkId = formWork.Id;
             }
             if (typePublication.IsValid())
             {
@@ -47,14 +48,16 @@ namespace ResearchModule.Controllers
             {
                 publication.FormWorkId = FormWorkId;
             }
+            publication.SectionId = Section;
             if (publication.IsValid())
             {
-                publication.SectionId = Section;
                 manager.Create(publication);
             }
 
             CreatePA(publication.Id, createdAuthors, selectedAuthors);
-            return View("Publication", publication);
+            var list = new List<Publication>();
+            list.Add(publication);
+            return View("Publication", list);
         }
 
 
@@ -66,7 +69,7 @@ namespace ResearchModule.Controllers
 
         public PartialViewResult Authors(long idPublication)
         {
-            return PartialView("Authors", new PAManager().FindAuthorByPublication(idPublication));
+            return PartialView("Authors", new PAManager().FindAuthorsByPublication(idPublication));
         }
 
         public ActionResult Publication()
@@ -79,9 +82,6 @@ namespace ResearchModule.Controllers
         /// <summary>
         /// Создание PA
         /// </summary>
-        /// <param name="publicationId"></param>
-        /// <param name="createdAuthors"></param>
-        /// <param name="selectedAuthors"></param>
         private void CreatePA(long publicationId, IEnumerable<Author> createdAuthors, IEnumerable<Author> selectedAuthors)
         {
             var mngPA = new PAManager();

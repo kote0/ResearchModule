@@ -18,16 +18,17 @@ namespace ResearchModule.Managers
             {
                 PA pa = new PA();
                 pa.AId = author.Id;
+                pa.Weight = author.Weight;
                 pa.PId = pid;
                 Create(pa);
             }
         }
-        public void Create(Author author, long pid)
+        public void Create(long aid, long pid)
         {
-            PA pa = new PA(pid, author.Id);
+            PA pa = new PA(pid, aid);
             Create(pa);
         }
-        public List<Author> FindAuthorByPublication(long idPublication)
+        public List<Author> FindAuthorsByPublication(long idPublication)
         {
             var pas = GetByFunction<PA>(pa => pa.PId == idPublication).ToList();
             List<Author> authors = new List<Author>();

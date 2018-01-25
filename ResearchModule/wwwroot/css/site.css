@@ -37,3 +37,7 @@ body {
 tr:hover {
     background: rgba(0, 0, 0, 0.03)
 }
+
+td.author_checkboxRemove {
+    text-align: center;
+}

@@ -9,7 +9,7 @@ using System.Linq.Expressions;
 
 namespace ResearchModule.Managers
 {
-    public class BaseManager : IBaseManager, IDisposable 
+    public class BaseManager : IBaseManager, IDisposable
     {
         public readonly DBContext _db;
 
@@ -18,12 +18,17 @@ namespace ResearchModule.Managers
             _db = new DBContext();
         }
 
-        public void Create<T>(T record)
+        public void Create<T>(T record) where T : class
         {
-            var t = record as EntityEntry;
-            if (t.Entity == null) return;
-            _db.Entry(t.Entity).State = EntityState.Added;
-            _db.SaveChanges();
+            try
+            {
+                if (record == null) return;
+                _db.Entry(record).State = EntityState.Added;
+                _db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+            }
         }
 
         public void Delete<T>(long id) where T : class
@@ -37,30 +42,42 @@ namespace ResearchModule.Managers
             }
         }
 
-        public void Delete<T>(T record)
+        public void Delete<T>(T record) where T : class
         {
-            var t = record as EntityEntry;
-            if (t.Entity != null)
+            try
             {
-                _db.Remove(t.Entity);
-                _db.SaveChanges();
+                if (record != null)
+                {
+                    _db.Remove(record);
+                    _db.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
             }
         }
 
         public T Get<T>(params object[] keyValues) where T : class
         {
-            if (keyValues!= null)
+            if (keyValues != null)
                 return _db.Find<T>(keyValues);
             return null;
         }
 
-        public void Update<T>(T record)
+        public void Update<T>(T record) where T : class
         {
-            var t = record as EntityEntry;
-            if (t.Entity != null)
+            try
             {
-                _db.Attach(t.Entity).State = EntityState.Modified;
+                if (record != null)
+                {
+                    _db.Attach(record).State = EntityState.Modified;
+                    _db.SaveChanges();
+                }
             }
+            catch (Exception ex)
+            {
+            }
+            
         }
 
         public IEnumerable<T> GetByFunction<T>(Func<T, bool> func) where T : class
@@ -69,7 +86,7 @@ namespace ResearchModule.Managers
             return list;
         }
 
-        public List<T> GetAll<T>() where T : class 
+        public List<T> GetAll<T>() where T : class
         {
             return _db.Set<T>().ToList();
         }
@@ -88,7 +105,7 @@ namespace ResearchModule.Managers
             }
         }
 
-       
+
         ~BaseManager()
         {
             // Не изменяйте этот код. Разместите код очистки выше, в методе Dispose(bool disposing).
