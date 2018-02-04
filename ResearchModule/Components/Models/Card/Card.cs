@@ -44,7 +44,7 @@ namespace ResearchModule.Components.Models.Card
             return cardRow;
         }
 
-        //[Obsolete("Лучше не использовать из-за FindLastIndex")]
+        [Obsolete("Лучше не использовать из-за FindLastIndex")]
         public Card For(Action<CardRow> bild)
         {
             var row = new CardRow();

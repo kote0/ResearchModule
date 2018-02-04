@@ -10,7 +10,7 @@
     {
         @foreach(var row in Model)
         {
-            <div class="@(row.isRow ? "row": null) @row.className">
+            <div class="@(row.isRow ? "row": null) @row.className" style="@(row.hide ? "display: none;" : null)">
                 <div class="@row.ContentSize" id="@row.id">
                     @row.contentText
                 </div>
@@ -34,8 +34,12 @@
     {
         foreach (var cardRow in list)
         {
-            str.AppendFormat("<div class='{0}' id='{2}'>{1}</div>",
-             cardRow.ContentSize, cardRow.contentText, cardRow.id);
+            str.AppendFormat("<div class='{0}' id='{2}' {3} >{1}</div>",
+             cardRow.ContentSize,                               //0
+             cardRow.contentText,                               //1
+             cardRow.id,                                        //2
+             (cardRow.hide ? " style='display: none;'" : null)    //3
+            );
             if (cardRow.contents.Count > 0)
             {
                 GetChildList(str, cardRow.contents);

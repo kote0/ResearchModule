@@ -26,24 +26,24 @@
 </head>
 <body>
     <nav class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
+        <div class="container container-fluid">
             <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <button type="button" class="navbar-toggle collapse" data-toggle="collapse" data-target="#menu" aria-expanded="false">
                     <span class="sr-only">Toggle navigation</span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a asp-action="@Url.Action("Publication", "Add")" class="navbar-brand">Публикации</a>
+                <a href="@Url.Action("Publications", "Publication")" class="navbar-brand">Публикации</a>
             </div>
-            <div class="navbar-collapse collapse">
+            <div class="navbar-collapse collapse" id="menu">
                 <ul class="nav navbar-nav">
-                    <li><a asp-action="@Url.Action("Add", "Add")">@Html.Icon("plus", new { style="color: white"}) Добавить</a></li>
+                    <li><a asp-action="@Url.Action("Create", "Publication")">@Html.Icon("plus", new { style="color: white"}) Добавить</a></li>
                 </ul>
             </div>
         </div>
     </nav>
-    <div class="container body-content">
+    <div class="container body-content main-content">
         @RenderBody()
         <hr />
         <footer>

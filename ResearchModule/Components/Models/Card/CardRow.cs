@@ -11,6 +11,7 @@ namespace ResearchModule.Components.Models.Card
         public string className { get; set; }
         public string id { get; set; }
         public bool isRow { get; set; }
+        public bool hide { get; set; }
         public HtmlContentBuilder contentText { get; set; }
         public List<CardRow> contents { get; set; }
         public string ContentSize { get; set; }
@@ -21,6 +22,7 @@ namespace ResearchModule.Components.Models.Card
             contentText = new HtmlContentBuilder();
             ContentSize = "col-md-12";
             isRow = true;
+            hide = false;
         }
 
         #region Работа с строками и контентом 
@@ -95,6 +97,18 @@ namespace ResearchModule.Components.Models.Card
             this.isRow = isRow;
             return this;
         }
+
+        /// <summary>
+        /// Показать строку
+        /// </summary>
+        /// <param name="hide">по умолчанию false - не скрывается</param>
+        /// <returns></returns>
+        public CardRow Show(bool hide)
+        {
+            this.hide = hide;
+            return this;
+        }
+
         public CardRow Id(string id)
         {
             this.id = id;

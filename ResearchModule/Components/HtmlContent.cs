@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ResearchModule.Components.Models
+namespace ResearchModule.Components
 {
     /// <summary>
     /// Преобразование в IHtmlContent

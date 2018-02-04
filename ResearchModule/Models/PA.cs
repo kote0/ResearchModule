@@ -10,20 +10,20 @@ namespace ResearchModule.Models
     {
         public long Id { get; set; }
         [Required]
-        public long PId { get; set; }
+        public long PublicationId { get; set; }
         [Required]
-        public long AId { get; set; }
+        public long AuthorId { get; set; }
 
         /// <summary>
-        /// Вес автора в публикации
+        /// Вес - вклад автора в публикацию
         /// </summary>
         public double Weight { get; set; }
 
         public PA() { }
-        public PA(long pid, long aid)
+        public PA(long publicationId, long authorId)
         {
-            PId = pid;
-            AId = aid;
+            PublicationId = publicationId;
+            AuthorId = authorId;
         }
     }
 }

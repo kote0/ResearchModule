@@ -17,9 +17,9 @@ namespace ResearchModule.Managers
             foreach (var author in authors)
             {
                 PA pa = new PA();
-                pa.AId = author.Id;
+                pa.AuthorId = author.Id;
                 pa.Weight = author.Weight;
-                pa.PId = pid;
+                pa.PublicationId = pid;
                 Create(pa);
             }
         }
@@ -28,15 +28,18 @@ namespace ResearchModule.Managers
             PA pa = new PA(pid, aid);
             Create(pa);
         }
-        public List<Author> FindAuthorsByPublication(long idPublication)
+        public IEnumerable<Author> FindAuthorsByPublication(long idPublication)
         {
-            var pas = GetByFunction<PA>(pa => pa.PId == idPublication).ToList();
+            var pas = GetByFunction<PA>(pa => pa.PublicationId == idPublication);
             List<Author> authors = new List<Author>();
             foreach(var item in pas)
             {
-                var author = GetByFunction<Author>(a => a.Id == item.AId).FirstOrDefault();
+                var author = GetByFunction<Author>(a => a.Id == item.AuthorId).FirstOrDefault();
                 if (author != null)
+                {
+                    author.Selected = true;
                     authors.Add(author);
+                }
             }
             return authors;
         }

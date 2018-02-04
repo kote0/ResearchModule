@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using ResearchModule.Data;
+using ResearchModule.Service;
 
 namespace ResearchModule
 {
@@ -23,6 +24,8 @@ namespace ResearchModule
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<PublicationService>();
+            services.AddTransient<SelectListService>();
             services.AddDbContext<DBContext>();
             services.AddMvc();
         }
@@ -46,7 +49,7 @@ namespace ResearchModule
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Add}/{action=Publication}/{id?}");
+                    template: "{controller=Publication}/{action=Create}/{id?}");
             });
         }
     }

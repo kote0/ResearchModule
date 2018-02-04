@@ -9,7 +9,7 @@ using System.Linq.Expressions;
 
 namespace ResearchModule.Managers
 {
-    public class BaseManager : IBaseManager, IDisposable
+    public class BaseManager : IDisposable
     {
         public readonly DBContext _db;
 

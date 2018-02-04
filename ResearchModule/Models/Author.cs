@@ -13,8 +13,10 @@ namespace ResearchModule.Models
         [Required]
         public string Surname { get; set; }
         public string Name { get; set; }
-        public string LastName { get; set; }
+        public string Lastname { get; set; }
+        public DateTime BDay { get; set; }
 
+        // TODO: Убрать Selected
         [NotMapped]
         public bool Selected { get; set; }
         [NotMapped]
@@ -22,14 +24,14 @@ namespace ResearchModule.Models
 
         public bool IsValid()
         {
-            if (!(string.IsNullOrEmpty(Surname) && string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(LastName)))
+            if (!(string.IsNullOrEmpty(Surname) && string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(Lastname)))
                 return true;
             return false;
         }
 
         public string ToStringFormat()
         {
-            return string.Format("{0} {1}.{2}.",Surname, Name.Substring(0,1), LastName.Substring(0, 1));
+            return string.Format("{0} {1}.{2}.",Surname, Name.Substring(0,1), Lastname.Substring(0, 1));
         }
     }
 }

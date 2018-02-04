@@ -97,6 +97,41 @@ namespace ResearchModule.Components
 
         #endregion
 
+        #region SelectList
+
+        public static IHtmlContent Option(this IHtmlHelper html, object value, bool selected, string text)
+        {
+            var tagBuilder = new TagBuilder("option");
+            tagBuilder.InnerHtml.AppendHtml(text);
+            var dictionary = new Dictionary<string, object>() { { "value", value } };
+            if (selected)
+            {
+                dictionary.Add("selected", "");
+            }
+            tagBuilder.MergeAttributes(dictionary, true);
+            tagBuilder.RenderSelfClosingTag();
+
+            return tagBuilder;
+        }
+
+        public static IHtmlContent SelectList(this IHtmlHelper html, ResearchModule.Models.SelectList selectList, string title = null)
+        {
+            var tagBuilder = new TagBuilder("select");
+            tagBuilder.AddCssClass("form-control selectpicker_" + selectList.GetName());
+
+            foreach (var elem in selectList.Elements)
+            {
+                tagBuilder.InnerHtml.AppendHtml(html.Option(elem.Value, elem.Selected, elem.Text));
+            }
+            tagBuilder.MergeAttributes(new RouteValueDictionary(new { title = title ?? "Ничего не выбрано", name=selectList.GetName() }), true);
+            tagBuilder.RenderSelfClosingTag();
+
+            return tagBuilder;
+        }
+
+        #endregion
+
+
         #region Card
 
         public static Card Card(this IHtmlHelper html, string id)
@@ -106,5 +141,5 @@ namespace ResearchModule.Components
         
         #endregion
     }
-
+    
 }

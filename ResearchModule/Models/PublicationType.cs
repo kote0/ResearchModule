@@ -6,23 +6,15 @@ using System.Threading.Tasks;
 
 namespace ResearchModule.Models
 {
-    public partial class TypePublication
+    public partial class PublicationType
     {
-        public TypePublication()
-        {
-            Publication = new HashSet<Publication>();
-        }
-
         public long Id { get; set; }
         [Required]
-        public string TypePublicationName { get; set; }
-
-        public ICollection<Publication> Publication { get; set; }
-
+        public string Name { get; set; }
 
         public bool IsValid()
         {
-            if (TypePublicationName != null)
+            if (Name != null)
                 return true;
             return false;
         }
