@@ -8,9 +8,15 @@ using System.Threading.Tasks;
 
 namespace ResearchModule.Data
 {
-    public class DBContext : DbContext
+    public partial class DBContext : DbContext
     {
         private string options = "Data Source=w0044;Initial Catalog=Researches;Integrated Security=True;";
+        
+        public virtual DbSet<Author> Author { get; set; }
+        public virtual DbSet<PublicationType> TypePublication { get; set; }
+        public virtual DbSet<Publication> Publication { get; set; }
+        public virtual DbSet<PA> PA { get; set; }
+        
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -19,18 +25,21 @@ namespace ResearchModule.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Section>(entity =>
+            modelBuilder.Entity<Author>(entity =>
             {
-                entity.Property(e => e.Id).HasColumnName("Id");
+                entity.Property(e => e.Lastname).HasColumnType("nchar(100)");
 
-                entity.Property(e => e.SectionName).HasMaxLength(50);
+                entity.Property(e => e.Name).HasColumnType("nchar(100)");
+
+                entity.Property(e => e.Surname).HasColumnType("nchar(100)");
+            });
+            
+
+            modelBuilder.Entity<PublicationType>(entity =>
+            {
+                entity.Property(e => e.Name).HasColumnType("nchar(100)");
             });
         }
-        public DbSet<Section> Section { get; set; }
-        public DbSet<Author> Author { get; set; }
-        public DbSet<FormWork> FormWork { get; set; }
-        public DbSet<TypePublication> TypePublication { get; set; }
-        public DbSet<Publication> Publication { get; set; }
-        public DbSet<PA> PA { get; set; }
+        
     }
 }

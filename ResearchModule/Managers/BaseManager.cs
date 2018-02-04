@@ -4,10 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System.Linq.Expressions;
 
 namespace ResearchModule.Managers
 {
-    public class BaseManager<T> : IBaseManager<T>, IDisposable where T : class
+    public class BaseManager : IDisposable
     {
         public readonly DBContext _db;
 
@@ -16,14 +18,20 @@ namespace ResearchModule.Managers
             _db = new DBContext();
         }
 
-        public void Create(T record)
+        public void Create<T>(T record) where T : class
         {
-            if (record == null) return;
-            _db.Entry(record).State = EntityState.Added;
-            _db.SaveChanges();
+            try
+            {
+                if (record == null) return;
+                _db.Entry(record).State = EntityState.Added;
+                _db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+            }
         }
 
-        public void Delete(long? id)
+        public void Delete<T>(long id) where T : class
         {
             var record = _db.Find<T>(id);
 
@@ -34,43 +42,57 @@ namespace ResearchModule.Managers
             }
         }
 
-        public void Delete(T record)
+        public void Delete<T>(T record) where T : class
         {
-            if (record != null)
+            try
             {
-                _db.Remove(record);
-                _db.SaveChanges();
+                if (record != null)
+                {
+                    _db.Remove(record);
+                    _db.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
             }
         }
 
-        public T Get(long id)
+        public T Get<T>(params object[] keyValues) where T : class
         {
-            return _db.Find<T>(id);
+            if (keyValues != null)
+                return _db.Find<T>(keyValues);
+            return null;
         }
 
-        public void Update(T record)
+        public void Update<T>(T record) where T : class
         {
-            _db.Attach(record).State = EntityState.Modified;
+            try
+            {
+                if (record != null)
+                {
+                    _db.Attach(record).State = EntityState.Modified;
+                    _db.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+            
         }
 
-        public IEnumerable<T> GetByFunction(Func<T, bool> func)
+        public IEnumerable<T> GetByFunction<T>(Func<T, bool> func) where T : class
         {
             var list = _db.Set<T>().Where(func);
             return list;
         }
 
-        public List<T> GetAll()
+        public List<T> GetAll<T>() where T : class
         {
             return _db.Set<T>().ToList();
         }
 
-        public BaseManager<T> Set<TEntity>()
-        {
-            return new BaseManager<T>();
-        }
-
         #region IDisposable Support
-        private bool disposedValue = false; // Для определения избыточных вызовов
+        private bool disposedValue = false;
 
         protected virtual void Dispose(bool disposing)
         {
@@ -78,17 +100,12 @@ namespace ResearchModule.Managers
             {
                 if (disposing)
                 {
-                    // TODO: освободить управляемое состояние (управляемые объекты).
                 }
-
-                // TODO: освободить неуправляемые ресурсы (неуправляемые объекты) и переопределить ниже метод завершения.
-                // TODO: задать большим полям значение NULL.
-
                 disposedValue = true;
             }
         }
 
-        // TODO: переопределить метод завершения, только если Dispose(bool disposing) выше включает код для освобождения неуправляемых ресурсов.
+
         ~BaseManager()
         {
             // Не изменяйте этот код. Разместите код очистки выше, в методе Dispose(bool disposing).
@@ -100,7 +117,6 @@ namespace ResearchModule.Managers
         {
             // Не изменяйте этот код. Разместите код очистки выше, в методе Dispose(bool disposing).
             Dispose(true);
-            // TODO: раскомментировать следующую строку, если метод завершения переопределен выше.
             // GC.SuppressFinalize(this);
         }
         #endregion

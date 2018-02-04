@@ -6,33 +6,40 @@ using System.Threading.Tasks;
 
 namespace ResearchModule.Managers
 {
-    public class PAManager : BaseManager<PA>
+    /// <summary>
+    /// Таблица, хранящая в себе авторов и их публикации
+    /// Связь М:М
+    /// </summary>
+    public class PAManager : BaseManager
     {
-        AuthorManager AM = new AuthorManager();
         public void Create(IEnumerable<Author> authors, long pid)
         {
             foreach (var author in authors)
             {
                 PA pa = new PA();
-                pa.AId = author.Id;
-                pa.PId = pid;
+                pa.AuthorId = author.Id;
+                pa.Weight = author.Weight;
+                pa.PublicationId = pid;
                 Create(pa);
             }
         }
-        public void Create(Author author, long pid)
+        public void Create(long aid, long pid)
         {
-            PA pa = new PA(pid, author.Id);
+            PA pa = new PA(pid, aid);
             Create(pa);
         }
-        public List<Author> FindAuthorByPublication(long idPublication)
+        public IEnumerable<Author> FindAuthorsByPublication(long idPublication)
         {
-            var pas = GetByFunction(pa => pa.PId == idPublication).ToList();
+            var pas = GetByFunction<PA>(pa => pa.PublicationId == idPublication);
             List<Author> authors = new List<Author>();
             foreach(var item in pas)
             {
-                var author = AM.GetByFunction(a => a.Id == item.AId).FirstOrDefault();
+                var author = GetByFunction<Author>(a => a.Id == item.AuthorId).FirstOrDefault();
                 if (author != null)
+                {
+                    author.Selected = true;
                     authors.Add(author);
+                }
             }
             return authors;
         }

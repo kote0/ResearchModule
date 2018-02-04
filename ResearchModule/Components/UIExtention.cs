@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
-using ResearchModule.Components.Models;
+using ResearchModule.Components.Models.Card;
 using ResearchModule.Managers;
 using ResearchModule.Models;
 using System;
@@ -16,19 +16,26 @@ namespace ResearchModule.Components
 {
     public static class UIExtention
     {
-        public const string Components  = "Components/";
+        private const string Components  = "Components/";
+       
 
-        public static IHtmlContent TestElement(this IHtmlHelper html, string id)
-        {
-            return html.Partial("Index", id);
-        }
+        #region Button
 
+        /// <summary>
+        /// Кнопка
+        /// </summary>
+        /// <param name="routeValues">new Dictionary<string, object> { { "enctype", "multipart/form-data" }, { "data-ajax", "false"} })</param>
+        /// <returns></returns>
         public static IHtmlContent Button(this IHtmlHelper html, string id, string value, IHtmlContent icon = null, object routeValues = null)
         {
-            //new Dictionary<string, object> { { "enctype", "multipart/form-data" }, { "data-ajax", "false"} })
             return Button(html, id, value, icon, new RouteValueDictionary(routeValues));
         }
 
+        /// <summary>
+        /// Кнопка
+        /// </summary>
+        /// <param name="routeValues">new { onClick ="onClick(this)" }</param>
+        /// <returns></returns>
         public static IHtmlContent Button(this IHtmlHelper html, string id, string value, IHtmlContent icon = null, RouteValueDictionary routeValues = null)
         {
             var tagBuilder = new TagBuilder("button");
@@ -38,24 +45,92 @@ namespace ResearchModule.Components
             tagBuilder.InnerHtml.AppendHtml(icon);
             tagBuilder.InnerHtml.AppendHtml(value);
 
-            if (routeValues != null) {
+            if (routeValues != null)
+            {
                 tagBuilder.MergeAttributes(routeValues, true);
             }
             tagBuilder.RenderSelfClosingTag();
-            
+
             return tagBuilder;
         }
 
+
+        #endregion
+
+        #region Icon
+
+        /// <summary>
+        /// Иконка
+        /// </summary>
+        /// <param name="iconName">Название иконки</param>
+        /// <returns></returns>
         public static IHtmlContent Icon(this IHtmlHelper html, string iconName)
         {
             var tagBuilder = new TagBuilder("span");
-            var icon = string.Format("glyphicon-{0}", iconName);
-            tagBuilder.AddCssClass(icon);
-            tagBuilder.AddCssClass("glyphicon");
+            var className = string.Format("glyphicon glyphicon-{0}", iconName);
+            tagBuilder.AddCssClass(className);
             tagBuilder.RenderSelfClosingTag();
 
             return tagBuilder;
         }
+
+        /// <summary>
+        /// Иконка
+        /// </summary>
+        /// <param name="iconName">Название иконки</param>
+        /// <param name="routeValues">new { onClick ="onClick(this)" }</param>
+        /// <returns></returns>
+        public static IHtmlContent Icon(this IHtmlHelper html, string iconName, object routeValues)
+        {
+            var tagBuilder = new TagBuilder("span");
+            var className = string.Format("glyphicon glyphicon-{0}", iconName);
+            tagBuilder.AddCssClass(className);
+            if (routeValues != null)
+            {
+                tagBuilder.MergeAttributes(new RouteValueDictionary(routeValues), true);
+            }
+            tagBuilder.RenderSelfClosingTag();
+
+            return tagBuilder;
+        }
+
+
+        #endregion
+
+        #region SelectList
+
+        public static IHtmlContent Option(this IHtmlHelper html, object value, bool selected, string text)
+        {
+            var tagBuilder = new TagBuilder("option");
+            tagBuilder.InnerHtml.AppendHtml(text);
+            var dictionary = new Dictionary<string, object>() { { "value", value } };
+            if (selected)
+            {
+                dictionary.Add("selected", "");
+            }
+            tagBuilder.MergeAttributes(dictionary, true);
+            tagBuilder.RenderSelfClosingTag();
+
+            return tagBuilder;
+        }
+
+        public static IHtmlContent SelectList(this IHtmlHelper html, ResearchModule.Models.SelectList selectList, string title = null)
+        {
+            var tagBuilder = new TagBuilder("select");
+            tagBuilder.AddCssClass("form-control selectpicker_" + selectList.GetName());
+
+            foreach (var elem in selectList.Elements)
+            {
+                tagBuilder.InnerHtml.AppendHtml(html.Option(elem.Value, elem.Selected, elem.Text));
+            }
+            tagBuilder.MergeAttributes(new RouteValueDictionary(new { title = title ?? "Ничего не выбрано", name=selectList.GetName() }), true);
+            tagBuilder.RenderSelfClosingTag();
+
+            return tagBuilder;
+        }
+
+        #endregion
+
 
         #region Card
 
@@ -66,96 +141,5 @@ namespace ResearchModule.Components
         
         #endregion
     }
-
-    public class AuthorSelectViewComponent : ViewComponent
-    {
-        BaseManager<Author> mng = new BaseManager<Author>();
-
-        public async Task<IViewComponentResult> InvokeAsync()
-        {
-            var list = mng.GetByFunction(a => a.IsValid())
-                .Select(a =>
-                    new ResearchModule.Models.SelectListItem
-                    {
-                        Value = a.Id,
-                        Text = string.Format("{0}.{1}. {2}", a.Surname.Substring(0, 1), a.LastName.Substring(0, 1), a.Name)
-                    })
-                .ToList();
-
-            var selectList = new ResearchModule.Models.SelectList();
-            selectList.SetName("Author");
-            selectList.AddRange(list);
-                
-            return View("../SelectList", selectList);
-        }
-    }
-
-    public class SectionSelectViewComponent : ViewComponent
-    {
-        BaseManager<Section> mng = new BaseManager<Section>();
-
-        public async Task<IViewComponentResult> InvokeAsync()
-        {
-            var list = mng.GetByFunction(a => a.IsValid())
-                .Select(a =>
-                    new ResearchModule.Models.SelectListItem
-                    {
-                        Value = a.Id,
-                        Text =  a.SectionName
-                    })
-                .ToList();
-
-            var selectList = new ResearchModule.Models.SelectList();
-            selectList.SetName("Section");
-            selectList.AddRange(list);
-
-            return View("../SelectList", selectList);
-        }
-    }
-
-    public class TypePublicationSelectViewComponent : ViewComponent
-    {
-        BaseManager<TypePublication> mng = new BaseManager<TypePublication>();
-
-        public async Task<IViewComponentResult> InvokeAsync()
-        {
-            var list = mng.GetByFunction(a => a.IsValid())
-                .Select(a =>
-                    new ResearchModule.Models.SelectListItem
-                    {
-                        Value = a.Id,
-                        Text = a.TypePublicationName
-                    })
-                .ToList();
-
-            var selectList = new ResearchModule.Models.SelectList();
-            selectList.SetName("TypePublicationId");
-            selectList.AddRange(list);
-
-            return View("../SelectList", selectList);
-        }
-    }
-    public class FormWorkSelectViewComponent : ViewComponent
-    {
-        BaseManager<FormWork> mng = new BaseManager<FormWork>();
-
-        public async Task<IViewComponentResult> InvokeAsync()
-        {
-            var list = mng.GetByFunction(a => a.IsValid())
-                .Select(a =>
-                    new ResearchModule.Models.SelectListItem
-                    {
-                        Value = a.Id,
-                        Text = string.Format("{0}({1})", a.FormName, a.ShortName)
-                    })
-                .ToList();
-
-            var selectList = new ResearchModule.Models.SelectList();
-            selectList.SetName("FormWorkId");
-            selectList.AddRange(list);
-
-            return View("../SelectList", selectList);
-        }
-    }
-
+    
 }

@@ -1,28 +1,17 @@
-﻿@model List<ResearchModule.Models.Author>
+﻿@using ResearchModule.Models
+@model IEnumerable<Author>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th></th>
-            <th>Фамилия</th>
-            <th>Имя</th>
-            <th>Отчество</th>
-            <th>Соавтор</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr id="AuthorItem_@item.Id">
-                @Html.Hidden("Search[" + item.Id + "].Id", item.Id)
-                <td>@*<input type="checkbox" name="Search[@(item.Id)].Selected" onclick="Author.searchResult().append(this,@(item.Id))" />*@
-                    @Html.CheckBox("Search[" + item.Id+"].Selected", false, new { onClick = "Author.searchResult().append(this," + item.Id + ")" })</td>
-                <td>@item.Surname</td>
-                <td>@item.Name</td>
-                <td>@item.LastName</td>
-                <td>@Html.CheckBox("Search[" + item.Id + "].CoAuthor", false)</td>
-                
-            </tr>
-         }
-    </tbody>
-</table>
+@foreach (var item in Model)
+{
+    
+    <tr id="AuthorItem_@item.Id">
+        @Html.Hidden("Search[" + item.Id + "].Id", item.Id)
+        <td class="author_Remove">
+            @Html.CheckBox(string.Concat("Selected_",item.Id.ToString()), item.Selected, new { onClick = "Author.searchResult().append(this," + item.Id + ")" })
+        </td>
+        <td>@item.Surname</td>
+        <td>@item.Name</td>
+        <td>@item.Lastname</td>
+        <td>@item.BDay</td>
+    </tr>
+}

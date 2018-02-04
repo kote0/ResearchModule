@@ -1,0 +1,19 @@
+﻿@using ResearchModule.Components
+@model long
+
+@{
+    //настроить стили
+    var id = string.Format("Author[{0}].", Model);
+    var name = string.Concat(id, "CreateAuthors_");
+}
+
+
+<tr class="CreateAuthors" id="@name">
+    <td class="author_Remove">@Html.Button("", "", Html.Icon("remove"), new { type = "button", onClick = string.Format("Author.remove('" + name + "')", name) })</td>
+    <td>@Html.TextBox(id + "Surname", "", new { @class = "form-control" })      </td>
+    <td>@Html.TextBox(id + "Name", "", new { @class = "form-control" })         </td>
+    <td>@Html.TextBox(id + "Lastname", "", new { @class = "form-control" })     </td>
+    <td>@Html.TextBox(id + "BDay", "", new { @class = "form-control" })         </td>
+    <td>@Html.TextBox(id + "Weight", "", new { @class = "form-control"})        </td>
+    
+</tr>
