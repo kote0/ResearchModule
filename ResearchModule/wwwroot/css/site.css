@@ -1,6 +1,4 @@
-body {
-    /*padding-bottom: 20px;*/
-}
+
 
 /* Wrapping element */
 /* Set some basic padding to keep content from hitting the edges */
@@ -34,10 +32,10 @@ body {
 }
 
 tr:hover {
-    background: rgba(0, 0, 0, 0.03)
+    background:   rgba(0, 0, 0, 0.03)
 }
 
-td.author_checkboxRemove {
+.author_checkboxRemove {
     text-align: center;
 }
 

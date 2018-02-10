@@ -17,18 +17,10 @@
     <tbody>
 @foreach (var item in Model) {
         <tr>
-            <td>
-                @item.PublicationName
-            </td>
-            <td>
-                @PublicationService.GetPartitionName(item.PublicationPartition)
-            </td>
-            <td>
-                @PublicationService.GetTypeName(item.PublicationType)
-            </td>
-            <td>
-              @PublicationService.GetFormName(item.PublicationForm)
-            </td>
+            <td>@item.PublicationName</td>
+            <td>@PublicationService.GetPartitionName(item.PublicationPartition)</td>
+            <td>@PublicationService.GetTypeName(item.PublicationType)</td>
+            <td>@PublicationService.GetFormName(item.PublicationForm)</td>
             <td>
                 @foreach (var author in PublicationService.GetAuthorsByPublication(item.Id))
                 {

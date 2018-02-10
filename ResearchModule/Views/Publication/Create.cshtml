@@ -31,11 +31,10 @@
 {
     <div>
         <div class="row">
-            <div class="col-md-4">
-                Название публикации
-            </div>
+            <div class="col-md-4">@Html.DisplayNameFor(m=>m.PublicationName)</div>
             <div class="col-md-8">
-                @Html.TextBox(name + "PublicationName", "", new { @class = "form-control" })
+               <req-input name="@(name + "PublicationName")"></req-input>
+                @*@Html.TextBox(name + "PublicationName", "", new { @class = "form-control" })*@
             </div>
         </div>
         <div class="row">
@@ -43,21 +42,14 @@
                 @Html.CheckBox("IsTranslate", false, new { onClick = "clickIsTarslate(this)" }) Иностранный язык
             </div>
         </div>
-        @if (false)
-        {
-            <div class="row Translate">
-                <div class="col-md-4">
-                    Перевод названия
-                </div>
-                <div class="col-md-8">
-                    @Html.TextBox(name + "TranslateText", "", new { @class = "form-control" })
-                </div>
+        <div class="row" id="translate_Publication" style="display: none;">
+            <div class="col-md-4">@Html.DisplayNameFor(m => m.TranslateText)</div>
+            <div class="col-md-8">
+                @Html.TextBox(name+ "TranslateText", "", new { @class = "form-control" })
             </div>
-        }
+        </div>
         <div class="row">
-            <div class="col-md-4">
-                Раздел
-            </div>
+            <div class="col-md-4">@Html.DisplayNameFor(m => m.PublicationPartition)</div>
             <div class="col-md-8" id="load_select-Section">
                 @Html.SelectList(SelectListService.LoadSelectPublicationPartition())
             </div>
@@ -69,44 +61,33 @@
         <div class="row CreateTypePublication">
         </div>
         <div class="row">
-            <div class="col-md-4">
-                Форма работы
-            </div>
+            <div class="col-md-4">@Html.DisplayNameFor(m => m.PublicationForm)</div>
             <div class="col-md-8" id="load_select-PublicationForm">
                 @Html.SelectList(SelectListService.LoadSelectPublicationForm())
             </div>
         </div>
         <div class="row">
-            <div class="col-md-4">
-                Издательство
+            <div class="col-md-4">@Html.DisplayNameFor(m => m.OutputData)</div>
+            <div class="col-md-8">
+                @Html.TextArea(name + "OutputData", new { @class = "form-control", rows = "5", style = "max-width: 100%;" })
             </div>
-            <div class="col-md-8" >
-                //указать размеры, чтобы не было проблем при расширении
-                @Html.TextArea(name + "OutputData", new { @class="form-control", rows="5", style= "max-width: 100%;" })
-            </div>            
         </div>
         <div class="row VolumeCreate">
-            <div class="col-md-4">
-                Объем
-            </div>
+            <div class="col-md-4">@Html.DisplayNameFor(m => m.Volume)</div>
             <div class="col-md-8">
                 @Html.TextBox(name + "Volume", "", new { @class = "form-control" })
             </div>
         </div>
         <div class="row">
-            <div class="col-md-4">
-                Файл
-            </div>
+            <div class="col-md-4">Файл</div>
             <div class="col-md-8">
                 @Html.File("FormFile")
             </div>
         </div>
         <div class="row">
-            <div class="col-md-4">
-                Автор
-            </div>
+            <div class="col-md-4">Автор</div>
             <div class="col-md-8">
-                @Html.Button("CreateAuthors", " Создать", Html.Icon("plus"), new { onClick = "Author.append()", type = "button" })
+                @Html.Button("CreateAuthors", " Создать", Html.Icon("plus"), new { onClick = string.Format("Author.append('{0}')", Url.Action("CreateForm", "Author")), type = "button" })
                 @Html.Button("SearchAuthors", " Найти", Html.Icon("search"),
                           new Dictionary<string, object> { { "type", "button" }, { "data-toggle", "modal" }, { "data-target", "#SearchAuthorsModal" } })
             </div>
@@ -119,7 +100,7 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                @Html.Button("Create", "Сохранить", null, new { type = "button", @class = "btn btn-success", onClick = "formSubmit()" })
+                @Html.Button("Create", "Сохранить", null, new { type = "button", @class = "btn btn-success", onClick = string.Format("formSubmit('{0}')",formId) })
             </div>
         </div>
     </div>
@@ -128,63 +109,8 @@
 @Html.Partial("SearchAuthorModal")
 
 
-
+<script type="text/javascript" src="~/js/publication.js"></script>
 <script type="text/javascript">
-    $(function() {
-
-  // We can attach the `fileselect` event to all file inputs on the page
-        $(document).on('change', ':file', function () {
-            debugger;
-    var input = $(this),
-        numFiles = input.get(0).files ? input.get(0).files.length : 1,
-        label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
-    input.trigger('fileselect', [numFiles, label]);
-  });
-
-  // We can watch for our custom `fileselect` event like this
-        $(document).ready(function () {
-            debugger;
-      $(':file').on('fileselect', function(event, numFiles, label) {
-
-          var input = $(this).parents('.input-group').find(':text'),
-              log = numFiles > 1 ? numFiles + ' files selected' : label;
-
-          if( input.length ) {
-              input.val(log);
-          } else {
-              if( log ) alert(log);
-          }
-
-      });
-  });
-
-});
-
-
-
-    //конвертирование листа на корректные номера
-    function convertName(list) {
-        let countItem = -1;
-        let id;
-        for (var item of list) {
-            let name = item.name.match(/\d/g)[0];
-            if (id != name) {
-                id = name;
-                countItem++;
-            }
-            $("[name='" + item.name + "']").attr("name", item.name.replace(/\d/g, countItem));
-
-        }
-    }
-
-    // обработка перед submit
-    function formSubmit(){
-        var searchResult = $("#searchResult").find("[type=hidden], input:checked");
-        var createResult = $("#createResult").find("input");
-        convertName(searchResult);
-        convertName(createResult);
-        $("#@(formId)").submit();
-    }
 
     var timers = timers || [];
     timers[0] = 0;
@@ -196,10 +122,10 @@
         let select = "Selected";
         let add = "Additional";
         return {
-            append: function () {
+            append: function (url) {
                 $.ajax({
                 type: 'POST',
-                url: '@Url.Action("CreateForm", "Author")?id=' + countAuthor,
+                url: url+'?id=' + countAuthor,
                 success: function (data) {
                     countAuthor++;
                     $("#createResult").append(data);
@@ -253,39 +179,6 @@
                         searchResult.find("tr:has(td)").append(`<td>@Html.TextBox("Author[00].Weight", "", new { @class="form-control", placeHolder = "Вес" })</td>`);
                     }
                 }
-            }
-        };
-    }();
-
-
-    function clickIsTarslate(e) {
-        let display;
-        if (e.checked) {
-            display = "";
-        }
-        else {
-            display = "none";
-        }
-        $(".Translate").css("display", display);
-    }
-
-    PublicationTypes = function () {
-        let name = "PublicationType";
-        return {
-            create: function () {
-                let val =
-                `@Render(CustomCreate(
-                "Название вида",
-                 Html.TextBox("PublicationType.Name", "", new { @class = "form-control ", placeholder = "Название вида" }),
-                 Html.Button("Delete", "", Html.Icon("remove"), new { type = "button", onClick = "PublicationTypes.remove()"  })
-                ))`;
-                $(".CreateTypePublication").html(val);
-                disable(".selectpicker_" + name, true);
-
-            },
-            remove: function () {
-                $(".CreateTypePublication").empty();
-                disable(".selectpicker_" + name, false);
             }
         };
     }();

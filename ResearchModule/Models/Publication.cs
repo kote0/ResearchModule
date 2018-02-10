@@ -3,6 +3,7 @@ using ResearchModule.Components.Models;
 using ResearchModule.Managers;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -14,28 +15,20 @@ namespace ResearchModule.Models
     {
         public long Id { get; set; }
 
-        /// <summary>
-        /// Название
-        /// </summary>
         [Required]
+        [DisplayName("Название публикации")]
         public string   PublicationName { get; set; }
-
-        /// <summary>
-        /// Вид
-        /// </summary>
+        
         [Required]
+        [DisplayName("Вид публикации")]
         public long PublicationType { get; set; }
-
-        /// <summary>
-        /// Раздел
-        /// </summary>
+        
         [Required]
+        [DisplayName("Раздел")]
         public long     PublicationPartition { get; set; }
-
-        /// <summary>
-        /// Форма
-        /// </summary>
+        
         [Required]
+        [DisplayName("Форма работы")]
         public long     PublicationForm { get; set; }
 
         /// <summary>
@@ -43,18 +36,15 @@ namespace ResearchModule.Models
         /// Издательство
         /// </summary>
         [Required]
+        [DisplayName("Издательство")]
         public string   OutputData { get; set; }
 
-        /// <summary>
-        /// Объем
-        /// </summary>
         [Required]
+        [DisplayName("Объем")]
         public long     Volume { get; set; }
 
-        /// <summary>
-        /// Дата создания/Изменения
-        /// </summary>
         [Required]
+        [DisplayName("Дата создания/изменения")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
@@ -72,6 +62,7 @@ namespace ResearchModule.Models
         /// <summary>
         /// Перевод(может отсутствовать)
         /// </summary>
+        [DisplayName("Перевод названия публикации")]
         public string   TranslateText { get; set; }
 
 

@@ -58,13 +58,15 @@ namespace ResearchModule.Controllers
                     Publication.Volume = 0;
                 }
             }
-            
-            Publication.PublicationType = Create_PublicationType(PublicationType);
+
+            if (!string.IsNullOrEmpty(PublicationType.Name)) {
+                Publication.PublicationType = Create_PublicationType(PublicationType);
+            }
 
             Create_PA(
                 CreateOrUpdate_Publication(Publication), 
                 createdAuthors, selectedAuthors);
-                
+
             var list = new List<Publication>();
             list.Add(Publication);
             return View("Publications", list);
@@ -77,8 +79,18 @@ namespace ResearchModule.Controllers
             FileDetails fileDetails = new FileDetails() {
                 Uid = Guid.NewGuid().ToString("N"), 
                 Size = file.Length,
-                Name = file.FileName
+                Name = file.FileName,
+                FormFile = file
             };
+            SaveFile(fileDetails);
+            return fileDetails;
+        }
+
+        /// <summary>
+        /// Сохранение файла в директории Files
+        /// </summary>
+        private void SaveFile(FileDetails fileDetails)
+        {
             var path = Path.Combine(Directory.GetCurrentDirectory(), "Files");
             // Проверка на существование директории Files
             if (!Directory.Exists(path))
@@ -87,9 +99,8 @@ namespace ResearchModule.Controllers
             }
             using (var stream = new FileStream(Path.Combine(path, fileDetails.Uid), FileMode.Create))
             {
-                file.CopyTo(stream);
+                fileDetails.FormFile.CopyTo(stream);
             }
-            return fileDetails;
         }
 
         private long Create_PublicationType(PublicationType publicationType)

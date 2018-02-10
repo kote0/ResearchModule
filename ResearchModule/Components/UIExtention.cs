@@ -1,14 +1,17 @@
 ﻿using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.AspNetCore.Routing;
 using ResearchModule.Managers;
 using ResearchModule.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace ResearchModule.Components
@@ -137,6 +140,25 @@ namespace ResearchModule.Components
             html.ViewData["description"] = description;
             return html.Partial(Components+"File");
         }
+
+        private static IHtmlContent MetaDataFor<TModel, TValue>(this IHtmlHelper<TModel> html,
+            Expression<Func<TModel, TValue>> expression,
+            Func<ModelMetadata, string> property)
+        {
+            if (html == null) throw new ArgumentNullException(nameof(html));
+            if (expression == null) throw new ArgumentNullException(nameof(expression));
+
+            var modelExplorer = ExpressionMetadataProvider.FromLambdaExpression(expression, html.ViewData, html.MetadataProvider);
+            if (modelExplorer == null) throw new InvalidOperationException($"Failed to get model explorer for {ExpressionHelper.GetExpressionText(expression)}");
+            return new HtmlString(property(modelExplorer.Metadata));
+        }
+
+
+        public static IHtmlContent DisplayNameFor<TModel, TValue>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression)
+        {
+            return html.MetaDataFor(expression, m => m.DisplayName);
+        }
+
     }
     
 }
