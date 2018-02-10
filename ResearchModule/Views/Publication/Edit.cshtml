@@ -4,8 +4,14 @@
 @model ResearchModule.Models.Publication
 
 @{
-    var formId = "createPublication";
+    // наличие перевода
+    var isTranslate = false;//Model.TranslateText != null;
+    var formId = "editPublication";
     var name = "Publication.";
+    if (Model == null)
+    {
+        return;
+    }
     //TODO: Убрать Label. Ужасно смотрится
 }
 
@@ -15,7 +21,7 @@
 
     Func<object, IHtmlContent> CustomCreate(string names, IHtmlContent value, IHtmlContent click) =>
     (@<text>
-        <div class="col-md-4">@(names)</div>
+        <div class="col-md-4">@Html.Label(names)</div>
         <div class="col-md-8">
             <div class="input-group">
                 @value
@@ -32,65 +38,66 @@
     <div>
         <div class="row">
             <div class="col-md-4">
-                Название публикации
+                @Html.Label("Название публикации")
             </div>
             <div class="col-md-8">
-                @Html.TextBox(name + "PublicationName", "", new { @class = "form-control" })
+                @Html.TextBox(name + "PublicationName", Model.PublicationName, new { @class = "form-control" })
             </div>
         </div>
         <div class="row">
             <div class="col-md-12">
-                @Html.CheckBox("IsTranslate", false, new { onClick = "clickIsTarslate(this)" }) Иностранный язык
+                @Html.CheckBox("IsTranslate", isTranslate, new { onClick = "clickIsTarslate(this)" }) Иностранный язык
             </div>
         </div>
-        @if (false)
+        @if (!isTranslate)
         {
             <div class="row Translate">
                 <div class="col-md-4">
-                    Перевод названия
+                    @Html.Label("Перевод названия")
                 </div>
                 <div class="col-md-8">
-                    @Html.TextBox(name + "TranslateText", "", new { @class = "form-control" })
+                    @Html.TextBox(name + "TranslateText", Model.TranslateText, new { @class = "form-control" })
                 </div>
             </div>
         }
         <div class="row">
             <div class="col-md-4">
-                Раздел
+                @Html.Label("Раздел")
             </div>
             <div class="col-md-8" id="load_select-Section">
-                @Html.SelectList(SelectListService.LoadSelectPublicationPartition())
+                @Html.SelectList(SelectListService.LoadSelectPublicationPartition(Model.PublicationPartition))
             </div>
         </div>
         <div class="row">
-            @Render(CustomCreate("Вид публикации", Html.SelectList(SelectListService.LoadSelectPublicationType()),
+            @Render(CustomCreate("Вид публикации", Html.SelectList(SelectListService.LoadSelectPublicationType(Model.PublicationType)),
             Html.Button("CreateTP", "", Html.Icon("plus"), new { type = "button", onClick = "PublicationTypes.create()" })))
         </div>
         <div class="row CreateTypePublication">
         </div>
         <div class="row">
             <div class="col-md-4">
-                Форма работы
+                @Html.Label("Форма работы")
             </div>
             <div class="col-md-8" id="load_select-PublicationForm">
-                @Html.SelectList(SelectListService.LoadSelectPublicationForm())
+                @Html.SelectList(SelectListService.LoadSelectPublicationForm(Model.PublicationForm))
             </div>
         </div>
         <div class="row">
             <div class="col-md-4">
-                Издательство
+                @Html.Label("Издательство")
             </div>
-            <div class="col-md-8" >
+            <div class="col-md-8">
                 //указать размеры, чтобы не было проблем при расширении
-                @Html.TextArea(name + "OutputData", new { @class="form-control", rows="5", style= "max-width: 100%;" })
-            </div>            
+                @Html.TextArea(name + "OutputData", Model.OutputData ?? "", new { @class = "form-control", rows = "5", style = "max-width: 100%;" })
+            </div>
         </div>
         <div class="row VolumeCreate">
             <div class="col-md-4">
-                Объем
+                @Html.Label("Объем")
             </div>
             <div class="col-md-8">
-                @Html.TextBox(name + "Volume", "", new { @class = "form-control" })
+
+                @Html.TextBox(name + "Volume", Model.Volume , new { @class = "form-control" })
             </div>
         </div>
         <div class="row">
@@ -103,7 +110,7 @@
         </div>
         <div class="row">
             <div class="col-md-4">
-                Автор
+                @Html.Label("Автор")
             </div>
             <div class="col-md-8">
                 @Html.Button("CreateAuthors", " Создать", Html.Icon("plus"), new { onClick = "Author.append()", type = "button" })
@@ -115,7 +122,7 @@
 
         </div>
         <div style="margin-top: 10px;">
-            @Html.Partial("CreateListOfAuthors")
+            @Html.Partial("CreateListOfAuthors", Model.Id)
         </div>
         <div class="row">
             <div class="col-md-12">
@@ -123,6 +130,7 @@
             </div>
         </div>
     </div>
+    @Html.Hidden(name + "PublicationFile", Model.PublicationFileName ?? "")
 }
 
 @Html.Partial("SearchAuthorModal")

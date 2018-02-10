@@ -1,0 +1,11 @@
+﻿<div class="input-group">
+    <label class="input-group-btn">
+        <span class="btn btn-default">
+            Обзор&hellip; <input type="file" name="@(ViewData["filename"])" style="display: none;" @*multiple*@>
+        </span>
+    </label>
+    <input type="text" class="form-control" readonly>
+</div>
+<span class="help-block">
+    @(ViewData["description"])
+</span>

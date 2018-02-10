@@ -38,15 +38,21 @@
                 <h4 class="modal-title">Поиск авторов</h4>
             </div>
             <div class="modal-body">
-                @Html.Card(name).Row(s =>
-               {
-                   s.For().Content(Html.TextBox("SerchAuthor", "", new { @class = "form-control", placeholder = "Иванов", onkeyUp = "Author.search(this).onKeyUp()" }));
-                   s.For()
-                        .Content(Render(CustomCreate("Найдено","Additional"))).Size(6)
-                        .Row(Render(CustomCreate("Выбраны","Selected"))).Size(6);
-                   return s;
-               }).Render()
-
+                <div id="@(name)">
+                    <div class="row">
+                        <div class="col-md-12">
+                            @Html.TextBox("SerchAuthor", "", new { @class = "form-control", placeholder = "Иванов", onkeyUp = "Author.search(this).onKeyUp()" })
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            @Render(CustomCreate("Найдено", "Additional"))
+                        </div>
+                        <div class="col-md-6">
+                            @Render(CustomCreate("Выбраны", "Selected"))
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 @Html.Button(string.Concat("Button", name), "Добавить", null,

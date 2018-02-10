@@ -1,8 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
+using ResearchModule.Components.Models;
 using ResearchModule.Managers;
 using ResearchModule.Models;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ResearchModule.Controllers
 {
@@ -20,9 +26,11 @@ namespace ResearchModule.Controllers
             return View();
         }
 
+        #region CreatePublication
+
         [HttpPost]
         public ActionResult Create(IEnumerable<Author> Author, [Bind("Id", Prefix = "Search")]IEnumerable<Author> Search,
-            Publication Publication, PublicationType PublicationType, string TranslateText)
+            Publication Publication, PublicationType PublicationType, IFormFile FormFile)
         {
             var selectedAuthors = Search.Where(s => s.Id != 0);
             var createdAuthors = Author.Where(a => a.IsValid());
@@ -31,46 +39,97 @@ namespace ResearchModule.Controllers
                 ViewBag.Result = "Данные введены не корректно";
                 return View("Publication");
             }
-            if (PublicationType.IsValid())
+            
+            var file = (Publication.PublicationFileUid == null)
+                ? Create_FileDetails(FormFile)
+                : null;
+            if (file != null)
             {
-                manager.Create(PublicationType);
-                Publication.PublicationType = PublicationType.Id;
+                Publication.PublicationFileName = file.Name;
+                Publication.PublicationFileUid = file.Uid;
+                // электронное или аудиальное
+                if (Publication.PublicationForm == 2 || Publication.PublicationForm == 4)
+                {
+                    Publication.Volume = file.Size;
+                }
+                else
+                {
+                    // TODO: Исправить
+                    Publication.Volume = 0;
+                }
             }
-            if(!string.IsNullOrEmpty(TranslateText))
-            {
-                Publication.TranslateText = TranslateText;
-            }
-            if (Publication.Id != 0)
-            {
-                manager.Update<Publication>(Publication);
-            }
-            else
-            {
-                manager.Create(Publication);
-            }
-            CreatePA(Publication.Id, createdAuthors, selectedAuthors);
+            
+            Publication.PublicationType = Create_PublicationType(PublicationType);
+
+            Create_PA(
+                CreateOrUpdate_Publication(Publication), 
+                createdAuthors, selectedAuthors);
+                
             var list = new List<Publication>();
             list.Add(Publication);
             return View("Publications", list);
         }
 
-        // TODO: исправить на страницы
-        public ActionResult Publications()
+
+        private FileDetails Create_FileDetails(IFormFile file)
         {
-            return View(manager.GetAll<Publication>());
+            if (file == null) return null;
+            FileDetails fileDetails = new FileDetails() {
+                Uid = Guid.NewGuid().ToString("N"), 
+                Size = file.Length,
+                Name = file.FileName
+            };
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "Files");
+            // Проверка на существование директории Files
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            using (var stream = new FileStream(Path.Combine(path, fileDetails.Uid), FileMode.Create))
+            {
+                file.CopyTo(stream);
+            }
+            return fileDetails;
         }
 
-        public ActionResult Edit(long id)
+        private long Create_PublicationType(PublicationType publicationType)
         {
-            return View("Create", manager.Get<Publication>(id));
+            try
+            {
+                if (publicationType.IsValid())
+                {
+                    manager.Create(publicationType);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Не удалось создать Вид публикации", ex);
+            }
+            return publicationType.Id;
         }
 
-        #region privateMembers
+        private long CreateOrUpdate_Publication(Publication publication)
+        {
+            try
+            {
+                publication.CreateDate = DateTime.Now;
+                if (publication.Id != 0)
+                {
+                    manager.Update<Publication>(publication);
+                }
+                else
+                {
+                    manager.Create(publication);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Не удалось создать/изменить Публикацию", ex);
+            }
+            return publication.Id;
+        }
 
-        /// <summary>
-        /// Создание PA
-        /// </summary>
-        private void CreatePA(long publicationId, IEnumerable<Author> createdAuthors, IEnumerable<Author> selectedAuthors)
+        private void Create_PA(long publicationId, IEnumerable<Author> createdAuthors, IEnumerable<Author> selectedAuthors)
         {
             var mngPA = new PAManager();
 
@@ -93,11 +152,30 @@ namespace ResearchModule.Controllers
                 listAuthors.AddRange(selectedAuthors);
             }
 
-            //добавить запись PA
-            mngPA.Create(listAuthors, publicationId);
+            try
+            {
+                //добавить запись PA
+                mngPA.Create(listAuthors, publicationId);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Не удалось добавить авторов", ex);
+            }
         }
 
-
         #endregion
+
+
+        // TODO: исправить на страницы
+        public ActionResult Publications()
+        {
+            return View(manager.GetAll<Publication>());
+        }
+
+        public ActionResult Edit(long id)
+        {
+            return View(manager.Get<Publication>(id));
+        }
+
     }
 }

@@ -44,4 +44,5 @@ namespace ResearchModule.Managers
             return authors;
         }
     }
+
 }

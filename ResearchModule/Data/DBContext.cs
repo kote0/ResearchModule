@@ -16,7 +16,10 @@ namespace ResearchModule.Data
         public virtual DbSet<PublicationType> TypePublication { get; set; }
         public virtual DbSet<Publication> Publication { get; set; }
         public virtual DbSet<PA> PA { get; set; }
-        
+        public virtual DbSet<PublicationFilter> PublicationFilter { get; set; }
+        public virtual DbSet<PF> PF { get; set; }
+        public virtual DbSet<User> User { get; set; }
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

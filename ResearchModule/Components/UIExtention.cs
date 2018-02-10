@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
-using ResearchModule.Components.Models.Card;
 using ResearchModule.Managers;
 using ResearchModule.Models;
 using System;
@@ -132,14 +131,12 @@ namespace ResearchModule.Components
         #endregion
 
 
-        #region Card
-
-        public static Card Card(this IHtmlHelper html, string id)
+        public static IHtmlContent File(this IHtmlHelper html, string name, string description = null)
         {
-            return new Card(html, id);
+            html.ViewData["filename"] = name;
+            html.ViewData["description"] = description;
+            return html.Partial(Components+"File");
         }
-        
-        #endregion
     }
     
 }

@@ -1,22 +1,13 @@
-﻿@using ResearchModule.Components.Models.Card
-@using ResearchModule.Components
+﻿@using ResearchModule.Components
 @using Microsoft.AspNetCore.Html
 @inject ResearchModule.Service.PublicationService PublicationService
 @model long
-
-@*@Html.Card("Author").Collapse().Header("Список авторов").Row((Card a) =>
-{
-    a.For()
-    .Content(Render(CustomCreate()))
-        .Id("countResult");
-    return a;
-}).Render()*@
 
 <div class="panel panel-default">
    
     <div class="panel-heading">Список авторов</div>
     @*<div class="panel-body">
-        <p>Описание...</p>
+        <p>Нажмите «Добавить» для создания нового автора или «Поиск»</p>
     </div>*@
     <table class="table">
         <thead>

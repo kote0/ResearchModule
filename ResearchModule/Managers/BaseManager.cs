@@ -28,6 +28,7 @@ namespace ResearchModule.Managers
             }
             catch (Exception ex)
             {
+                throw new Exception(ex.Message, ex);
             }
         }
 
@@ -54,6 +55,7 @@ namespace ResearchModule.Managers
             }
             catch (Exception ex)
             {
+                throw new Exception(ex.Message, ex);
             }
         }
 
@@ -76,6 +78,7 @@ namespace ResearchModule.Managers
             }
             catch (Exception ex)
             {
+                throw new Exception(ex.Message, ex);
             }
             
         }

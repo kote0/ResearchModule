@@ -2,6 +2,9 @@
 /.vs
 /ResearchModule/bin/
 /ResearchModule/obj/
+/ResearchModule/Files/
 /ResearchModule/Migrations/
 /ResearchModule/wwwroot/lib/
 /ResearchModule/TODOshki.txt
+/db.PNG
+
