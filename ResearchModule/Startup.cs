@@ -9,6 +9,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using ResearchModule.Data;
 using ResearchModule.Service;
+using ResearchModule.Models;
+using Microsoft.AspNetCore.Identity;
+using ResearchModule.Managers;
 
 namespace ResearchModule
 {
@@ -26,8 +29,23 @@ namespace ResearchModule
         {
             services.AddTransient<PublicationService>();
             services.AddTransient<SelectListService>();
+            services.AddSingleton<BaseManager>();
             services.AddDbContext<DBContext>();
+            services.AddIdentity<User, IdentityRole>(options =>
+            {
+                options.Password.RequiredLength = 8;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequireUppercase = true;
+            }).AddEntityFrameworkStores<DBContext>();
+
             services.AddMvc();
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("AdministratorOnly", policy => policy.RequireRole("Administrator"));
+                options.AddPolicy("DeletePublication", policy => policy.RequireClaim("Delete Publication", "Delete Publication"));
+                options.AddPolicy("AddPublication", policy => policy.RequireClaim("Add Publication", "Add Publication"));
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

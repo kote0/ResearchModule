@@ -89,9 +89,14 @@ namespace ResearchModule.Managers
             return list;
         }
 
-        public List<T> GetAll<T>() where T : class
+        public IQueryable<T> GetAll<T>() where T : class
         {
-            return _db.Set<T>().ToList();
+            return _db.Set<T>();
+        }
+
+        public IQueryable<T> Page<T>(int page, int pageSize) where T : class
+        {
+            return _db.Set<T>().Skip((page - 1) * pageSize).Take(pageSize);
         }
 
         #region IDisposable Support

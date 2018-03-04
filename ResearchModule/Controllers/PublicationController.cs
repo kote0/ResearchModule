@@ -4,6 +4,8 @@ using Microsoft.Net.Http.Headers;
 using ResearchModule.Components.Models;
 using ResearchModule.Managers;
 using ResearchModule.Models;
+using ResearchModule.Service;
+using ResearchModule.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,6 +17,15 @@ namespace ResearchModule.Controllers
     //RedirectToAction("Test", "FullTextSearch", new { area = "EleWise.ELMA.BPM.Web.Common" });
     public class PublicationController : BaseController
     {
+        private readonly FileManager fileManager;
+        private readonly PAManager paManager;
+
+        public PublicationController(FileManager fileManager, PAManager paManager) 
+        {
+            this.fileManager = fileManager;
+            this.paManager = paManager;
+        }
+
         public IActionResult Index()
         {
             return View();
@@ -28,27 +39,31 @@ namespace ResearchModule.Controllers
 
         #region CreatePublication
 
+        //TODO: Заменить на CreatePublicationViewModel
         [HttpPost]
         public ActionResult Create(IEnumerable<Author> Author, [Bind("Id", Prefix = "Search")]IEnumerable<Author> Search,
-            Publication Publication, PublicationType PublicationType, IFormFile FormFile)
+            Publication Publication, PublicationType PublicationType, IFormFile FormFile, CreatePublicationViewModel createPublication)
         {
             var selectedAuthors = Search.Where(s => s.Id != 0);
             var createdAuthors = Author.Where(a => a.IsValid());
-            if (!(!string.IsNullOrEmpty(Publication.PublicationName) && (createdAuthors.Count() > 0 || selectedAuthors.Count() > 0)))
+            if ((createdAuthors.Count() > 0 || selectedAuthors.Count() > 0))
             {
-                ViewBag.Result = "Данные введены не корректно";
-                return View("Publication");
+                ViewBag.Result = "Отсутсутствуют авторы";
+                return View("Publications");
             }
-            
-            var file = (Publication.PublicationFileUid == null)
-                ? Create_FileDetails(FormFile)
-                : null;
+            if (!ModelState.IsValid)
+            {
+                return View("Publications");
+            }
+
+            var file = (Publication.PublicationFileUid == null) ? CreateFile(FormFile) : null;
             if (file != null)
             {
                 Publication.PublicationFileName = file.Name;
                 Publication.PublicationFileUid = file.Uid;
                 // электронное или аудиальное
-                if (Publication.PublicationForm == 2 || Publication.PublicationForm == 4)
+                if (Publication.PublicationForm.Equals(PublicationForm.Forms.electronic_source)|| 
+                    Publication.PublicationForm.Equals(PublicationForm.Forms.audiovisual))
                 {
                     Publication.Volume = file.Size;
                 }
@@ -59,12 +74,13 @@ namespace ResearchModule.Controllers
                 }
             }
 
-            if (!string.IsNullOrEmpty(PublicationType.Name)) {
-                Publication.PublicationType = Create_PublicationType(PublicationType);
+            if (!string.IsNullOrEmpty(PublicationType.Name))
+            {
+                Publication.PublicationType = CreatePublicationType(PublicationType);
             }
 
-            Create_PA(
-                CreateOrUpdate_Publication(Publication), 
+            CreatePA(
+                CreateOrUpdate_Publication(Publication),
                 createdAuthors, selectedAuthors);
 
             var list = new List<Publication>();
@@ -73,37 +89,15 @@ namespace ResearchModule.Controllers
         }
 
 
-        private FileDetails Create_FileDetails(IFormFile file)
+        private FileDetails CreateFile(IFormFile file)
         {
-            if (file == null) return null;
-            FileDetails fileDetails = new FileDetails() {
-                Uid = Guid.NewGuid().ToString("N"), 
-                Size = file.Length,
-                Name = file.FileName,
-                FormFile = file
-            };
-            SaveFile(fileDetails);
-            return fileDetails;
+            var source = fileManager.CreateFileDetails(file);
+            if (source != null)
+                fileManager.SaveFile(source);
+            return source;
         }
 
-        /// <summary>
-        /// Сохранение файла в директории Files
-        /// </summary>
-        private void SaveFile(FileDetails fileDetails)
-        {
-            var path = Path.Combine(Directory.GetCurrentDirectory(), "Files");
-            // Проверка на существование директории Files
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-            }
-            using (var stream = new FileStream(Path.Combine(path, fileDetails.Uid), FileMode.Create))
-            {
-                fileDetails.FormFile.CopyTo(stream);
-            }
-        }
-
-        private long Create_PublicationType(PublicationType publicationType)
+        private long CreatePublicationType(PublicationType publicationType)
         {
             try
             {
@@ -140,10 +134,8 @@ namespace ResearchModule.Controllers
             return publication.Id;
         }
 
-        private void Create_PA(long publicationId, IEnumerable<Author> createdAuthors, IEnumerable<Author> selectedAuthors)
+        private void CreatePA(long publicationId, IEnumerable<Author> createdAuthors, IEnumerable<Author> selectedAuthors)
         {
-            var mngPA = new PAManager();
-
             //собрать найденных и созданных
             var listAuthors = new List<Author>();
 
@@ -166,7 +158,7 @@ namespace ResearchModule.Controllers
             try
             {
                 //добавить запись PA
-                mngPA.Create(listAuthors, publicationId);
+                paManager.Create(listAuthors, publicationId);
             }
             catch (Exception ex)
             {
@@ -178,9 +170,14 @@ namespace ResearchModule.Controllers
 
 
         // TODO: исправить на страницы
-        public ActionResult Publications()
+        public ActionResult Publications(int first, int seconde)
         {
-            return View(manager.GetAll<Publication>());
+            
+            
+            //t.Authors = 
+            var e  = manager.Page<Publication>(first, seconde);
+            var t = new PublicationsViewModel(e);
+            return View();
         }
 
         public ActionResult Edit(long id)

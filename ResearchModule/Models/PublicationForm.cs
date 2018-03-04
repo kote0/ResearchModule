@@ -8,21 +8,35 @@ namespace ResearchModule.Models
 {
     public static class PublicationForm
     {
-        public static readonly Dictionary<long, FormWork> Forms = new Dictionary<long, FormWork>
+        public enum Forms
         {
-            { 1, new FormWork() { Name = "печатная", ShortName = "печ." } },
-            { 2, new FormWork() { Name = "электронный ресурс", ShortName = "электрон. ресурс" } },
-            { 3, new FormWork() { Name = "рукописаная", ShortName = "рукоп." } },
-            { 4, new FormWork() { Name = "аудиовизуальная", ShortName = "аудиовиз." } }
-        };
+            print,
+            handwritten,
+            electronic_source,
+            audiovisual
+        }
 
-       
+        public static readonly Dictionary<string, FormWork> FormDictionary;
+
+        static PublicationForm()
+        {
+            FormDictionary = new Dictionary<string, FormWork>
+            {
+                { Forms.print.ToString(), new FormWork() { Name = "печатная", ShortName = "печ." } },
+                { Forms.handwritten.ToString(), new FormWork() { Name = "рукописаная", ShortName = "рукоп." } },
+                { Forms.electronic_source.ToString(), new FormWork() { Name = "электронный ресурс", ShortName = "электрон. ресурс" } },
+                { Forms.audiovisual.ToString(), new FormWork() { Name = "аудиовизуальная", ShortName = "аудиовиз." } }
+            };
+        }
+
     }
+
+
 
     public class FormWork
     {
         public string Name { get; set; }
         public string ShortName { get; set; }
     }
-    
+
 }

@@ -12,11 +12,6 @@ namespace ResearchModule.Service
         private readonly BaseManager manager = new BaseManager();
         private readonly PAManager mngPA = new PAManager();
 
-        public string eee()
-        {
-            return "yesss!";
-        }
-
         public IEnumerable<Author> GetAuthorsByPublication(long id)
         {
             return mngPA.FindAuthorsByPublication(id);
@@ -24,7 +19,7 @@ namespace ResearchModule.Service
 
         public string GetFormName(long id)
         {
-            return ResearchModule.Models.PublicationForm.Forms.FirstOrDefault(o => o.Key == id).Value.Name;
+            return ResearchModule.Models.PublicationForm.FormDictionary.FirstOrDefault(o => o.Key == id).Value.Name;
         }
 
         public string GetPartitionName(long id)

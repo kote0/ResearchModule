@@ -9,6 +9,16 @@ namespace ResearchModule.Controllers
 {
     public class BaseController : Controller
     {
-        public BaseManager manager = new BaseManager();
+        public BaseManager manager;
+
+        public BaseController()
+        {
+            this.manager = new BaseManager();
+        }
+
+        public IActionResult Index()
+        {
+            return View();
+        }
     }
 }

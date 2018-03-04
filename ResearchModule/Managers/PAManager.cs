@@ -37,6 +37,7 @@ namespace ResearchModule.Managers
                 var author = GetByFunction<Author>(a => a.Id == item.AuthorId).FirstOrDefault();
                 if (author != null)
                 {
+                    author.Weight = item.Weight;
                     author.Selected = true;
                     authors.Add(author);
                 }

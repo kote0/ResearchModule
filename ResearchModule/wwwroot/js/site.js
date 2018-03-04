@@ -1,5 +1,6 @@
 ﻿var site = function () { };
 
+
 site.tableToJson = function (table) {
     var data = [];
     var headers = [];

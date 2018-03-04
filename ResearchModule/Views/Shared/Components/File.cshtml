@@ -4,7 +4,7 @@
             Обзор&hellip; <input type="file" name="@(ViewData["filename"])" style="display: none;" @*multiple*@>
         </span>
     </label>
-    <input type="text" class="form-control" readonly>
+    <input type="text" class="form-control" data-val="True" data-val-required="Заполните обязательное поле" readonly value="@(ViewData["displayname"])">
 </div>
 <span class="help-block">
     @(ViewData["description"])

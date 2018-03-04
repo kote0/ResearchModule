@@ -10,10 +10,9 @@
 
 <tr class="CreateAuthors" id="@name">
     <td class="author_Remove">@Html.Button("", "", Html.Icon("remove"), new { type = "button", onClick = string.Format("Author.remove('" + name + "')", name) })</td>
-    <td>@Html.TextBox(id + "Surname", "", new { @class = "form-control" })      </td>
-    <td>@Html.TextBox(id + "Name", "", new { @class = "form-control" })         </td>
-    <td>@Html.TextBox(id + "Lastname", "", new { @class = "form-control" })     </td>
-    <td>@Html.TextBox(id + "BDay", "", new { @class = "form-control" })         </td>
-    <td>@Html.TextBox(id + "Weight", "", new { @class = "form-control"})        </td>
-    
+    <td><req-input name="@(id + "Surname")"></req-input></td>
+    <td><req-input name="@(id + "Name")"></req-input></td>
+    <td><req-input name="@(id + "Lastname")"></req-input></td>
+    <td><req-input name="@(id + "BDay")"></req-input></td>
+    <td><req-input name="@(id + "Weight")"></req-input></td>
 </tr>

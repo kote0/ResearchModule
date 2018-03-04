@@ -60,13 +60,13 @@ namespace ResearchModule.Service
 
         public SelectList LoadSelectPublicationForm(long id = 0)
         {
-            var list = PublicationForm.Forms
+            var list = PublicationForm.FormDictionary
                 .Select(a =>
                     new ResearchModule.Models.SelectListItem
                     {
-                        Value = a.Key,
+                        Value = long.Parse(a.Key),
                         Text = a.Value.Name,
-                        Selected = (id != 0 && id == a.Key ? true : false)
+                        Selected = (id != 0 && id.Equals(a.Key) ? true : false)
                     })
                 .ToList();
             return selectListCreate(list, "Publication.PublicationForm");

@@ -16,7 +16,6 @@ namespace ResearchModule.Models
         public string Lastname { get; set; }
         public DateTime BDay { get; set; }
 
-        // TODO: Убрать Selected
         [NotMapped]
         public bool Selected { get; set; }
         [NotMapped]
@@ -27,11 +26,6 @@ namespace ResearchModule.Models
             if (!(string.IsNullOrEmpty(Surname) && string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(Lastname)))
                 return true;
             return false;
-        }
-
-        public string ToStringFormat()
-        {
-            return string.Format("{0} {1}.{2}.",Surname, Name.Substring(0,1), Lastname.Substring(0, 1));
         }
     }
 }

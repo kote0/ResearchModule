@@ -13,5 +13,9 @@
         <td>@item.Name</td>
         <td>@item.Lastname</td>
         <td>@item.BDay</td>
+        @if (item.Weight != 0)
+        {
+            <td>@item.Weight</td>
+        }
     </tr>
 }
