@@ -4,12 +4,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ResearchModule.Models;
+using ResearchModule.Managers;
 
 namespace ResearchModule.Controllers
 {
     public class AuthorController : BaseController
     {
-        public PartialViewResult CreateForm(long id)
+        public AuthorController(BaseManager manager) : base(manager)
+        {}
+
+        public PartialViewResult CreateForm(int id)
         {
             return PartialView(id);
         }

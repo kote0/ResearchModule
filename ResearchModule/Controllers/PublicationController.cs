@@ -20,16 +20,12 @@ namespace ResearchModule.Controllers
         private readonly FileManager fileManager;
         private readonly PAManager paManager;
 
-        public PublicationController(FileManager fileManager, PAManager paManager) 
+        public PublicationController(FileManager fileManager, PAManager paManager, BaseManager manager) : base(manager)
         {
             this.fileManager = fileManager;
             this.paManager = paManager;
         }
 
-        public IActionResult Index()
-        {
-            return View();
-        }
 
         [HttpGet]
         public ActionResult Create()
@@ -62,8 +58,8 @@ namespace ResearchModule.Controllers
                 Publication.PublicationFileName = file.Name;
                 Publication.PublicationFileUid = file.Uid;
                 // электронное или аудиальное
-                if (Publication.PublicationForm.Equals(PublicationForm.Forms.electronic_source)|| 
-                    Publication.PublicationForm.Equals(PublicationForm.Forms.audiovisual))
+                if (Publication.PublicationForm.Equals(PublicationElements.FormEnum.electronic_source)|| 
+                    Publication.PublicationForm.Equals(PublicationElements.FormEnum.audiovisual))
                 {
                     Publication.Volume = file.Size;
                 }
@@ -80,7 +76,7 @@ namespace ResearchModule.Controllers
             }
 
             CreatePA(
-                CreateOrUpdate_Publication(Publication),
+                CreateOrUpdatePublication(Publication),
                 createdAuthors, selectedAuthors);
 
             var list = new List<Publication>();
@@ -97,7 +93,7 @@ namespace ResearchModule.Controllers
             return source;
         }
 
-        private long CreatePublicationType(PublicationType publicationType)
+        private PublicationType CreatePublicationType(PublicationType publicationType)
         {
             try
             {
@@ -110,10 +106,10 @@ namespace ResearchModule.Controllers
             {
                 throw new Exception("Не удалось создать Вид публикации", ex);
             }
-            return publicationType.Id;
+            return publicationType;
         }
 
-        private long CreateOrUpdate_Publication(Publication publication)
+        private int CreateOrUpdatePublication(Publication publication)
         {
             try
             {
@@ -134,7 +130,7 @@ namespace ResearchModule.Controllers
             return publication.Id;
         }
 
-        private void CreatePA(long publicationId, IEnumerable<Author> createdAuthors, IEnumerable<Author> selectedAuthors)
+        private void CreatePA(int publicationId, IEnumerable<Author> createdAuthors, IEnumerable<Author> selectedAuthors)
         {
             //собрать найденных и созданных
             var listAuthors = new List<Author>();
@@ -169,18 +165,25 @@ namespace ResearchModule.Controllers
         #endregion
 
 
-        // TODO: исправить на страницы
-        public ActionResult Publications(int first, int seconde)
+        public ActionResult Publications(int first = 1)
         {
-            
-            
-            //t.Authors = 
-            var e  = manager.Page<Publication>(first, seconde);
-            var t = new PublicationsViewModel(e);
-            return View();
+            var pageInfo = new PageInfo();
+            pageInfo.PageNumber = first;
+            var listPublications  = manager.Page<Publication>(first, pageInfo.PageSize);
+            pageInfo.TotalItems = listPublications.Count();
+            PublicationsViewModel model;
+            if (pageInfo.TotalItems != 0)
+            {
+                model = new PublicationsViewModel(listPublications) { PageInfo = pageInfo };
+            }
+            else
+            {
+                model = new PublicationsViewModel();
+            }
+            return View(model);
         }
 
-        public ActionResult Edit(long id)
+        public ActionResult Edit(int id)
         {
             return View(manager.Get<Publication>(id));
         }

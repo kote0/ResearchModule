@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using ResearchModule.Managers;
 using ResearchModule.Models;
 using ResearchModule.ViewModels;
 using System;
@@ -11,16 +12,18 @@ using System.Threading.Tasks;
 namespace ResearchModule.Controllers
 {
     [Authorize]
-    public class AccountController : Controller
+    public class AccountController : BaseController
     {
         private readonly UserManager<User> userManager;
         private readonly SignInManager<User> signInManager;
 
-        public AccountController(UserManager<User> userManager, 
-            SignInManager<User> signInManager)
+
+        public AccountController(UserManager<User> userManager,
+            SignInManager<User> signInManager, BaseManager manager) : base(manager)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
+
         }
 
         [AllowAnonymous]
@@ -39,41 +42,65 @@ namespace ResearchModule.Controllers
             if (!ModelState.IsValid)
                 return View(loginViewModel);
 
-            var user = await userManager.FindByEmailAsync(loginViewModel.UserName);
+            var user = await userManager.FindByNameAsync(loginViewModel.UserName);
 
-            if (user != null)
+            if (await LoginUser(user, loginViewModel.Password))
             {
-                var result = await signInManager.PasswordSignInAsync(user, loginViewModel.Password, false, false);
-                if (result.Succeeded)
-                {
-                    if (string.IsNullOrEmpty(loginViewModel.ReturnUrl))
-                        return RedirectToAction("Publications", "Publication");
-                    return Redirect(loginViewModel.ReturnUrl);
-                }
+                if (string.IsNullOrEmpty(loginViewModel.ReturnUrl))
+                    return RedirectToAction("Publications", "Publication");
+                return Redirect(loginViewModel.ReturnUrl);
             }
+
 
             ModelState.AddModelError("", "Название/пароль не найдены");
             return View(loginViewModel);
         }
 
+        private async Task<bool> LoginUser(User user, string pass)
+        {
+            if (user != null)
+            {
+                var result = await signInManager.PasswordSignInAsync(user, pass, false, false);
+                return result.Succeeded;
+            }
+            return false;
+        }
 
+        [AllowAnonymous]
         public IActionResult Register()
         {
             return View();
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Register(LoginViewModel loginViewModel)
         {
             if (ModelState.IsValid)
             {
-                var user = new User() { UserName = loginViewModel.UserName };
-                var result = await userManager.CreateAsync(user, loginViewModel.Password);
+                var user = await userManager.FindByNameAsync(loginViewModel.UserName);
+                bool res = false;
+                if (user == null)
+                {
+                    var result = await userManager
+                        .CreateAsync(new User() { UserName = loginViewModel.UserName}, loginViewModel.Password);
+                    res = result.Succeeded;
+                }
+                else
+                {
+                    res = await LoginUser(user, loginViewModel.Password);
+                }
+                /*res = (user == null)
+                    ? (await userManager
+                        .CreateAsync(new User() { UserName = loginViewModel.UserName }, loginViewModel.Password))
+                        .Succeeded
+                    : await LoginUser(user, loginViewModel.Password); */
 
-                if (result.Succeeded)
+                if (res)
                 {
                     return RedirectToAction("Publications", "Publication");
                 }
+
             }
             return View(loginViewModel);
         }

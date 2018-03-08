@@ -11,9 +11,9 @@ namespace ResearchModule.Controllers
     {
         public BaseManager manager;
 
-        public BaseController()
+        public BaseController(BaseManager manager) 
         {
-            this.manager = new BaseManager();
+            this.manager = manager;
         }
 
         public IActionResult Index()

@@ -17,6 +17,8 @@ namespace ResearchModule
 {
     public class Startup
     {
+        private string options = "Data Source=w0044;Initial Catalog=Researches;Integrated Security=True;";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -29,15 +31,20 @@ namespace ResearchModule
         {
             services.AddTransient<PublicationService>();
             services.AddTransient<SelectListService>();
-            services.AddSingleton<BaseManager>();
-            services.AddDbContext<DBContext>();
+            services.AddTransient<FileManager>();
+            services.AddTransient<PAManager>();
+            
+            services.AddSingleton(new PublicationElements());
+            
+            services.AddDbContext<DBContext>(optionsBuilder => optionsBuilder.UseSqlServer(options));
             services.AddIdentity<User, IdentityRole>(options =>
             {
-                options.Password.RequiredLength = 8;
-                options.Password.RequireNonAlphanumeric = true;
-                options.Password.RequireUppercase = true;
+                options.Password.RequiredLength = 1;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
             }).AddEntityFrameworkStores<DBContext>();
-
+            
+            services.AddTransient<BaseManager>();
             services.AddMvc();
 
             services.AddAuthorization(options =>
@@ -67,7 +74,7 @@ namespace ResearchModule
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Publication}/{action=Create}/{id?}");
+                    template: "{controller=Base}/{action=Index}/{id?}");
             });
         }
     }

@@ -1,4 +1,8 @@
 ﻿@using ResearchModule.Components
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Identity.EntityFrameworkCore
+@using ResearchModule.Models
+@inject SignInManager<User> SignInManager
 <!DOCTYPE html>
 <html>
 <head>
@@ -6,7 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - ResearchModule</title>
     <!--Нужно (2)-->
-   
+
     <environment include="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
         <link rel="stylesheet" href="~/css/site.css" />
@@ -24,7 +28,7 @@
         <script src="~/js/site.js"></script>
         <!--<script src="~/lib/bootstrap-select-1.12.4/js/bootstrap-select.min.js"></script>
         Latest compiled and minified JavaScript -->
-        
+
     </environment>
 </head>
 <body>
@@ -37,12 +41,20 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a href="@Url.Action("Publications", "Publication")" class="navbar-brand">Публикации</a>
+                <a href="@Url.Action("Index", "Base")" class="navbar-brand">Главная</a>
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    <a href="@Url.Action("Publications", "Publication")" class="navbar-brand">Мои публикации</a>
+                    <ul class="nav navbar-nav">
+                        <li><a asp-action="Create" asp-controller="Publication">@Html.Icon("plus", new { style = "color: white" }) Добавить</a></li>
+                    </ul>
+                }
             </div>
             <div class="navbar-collapse collapse" id="menu">
-                <ul class="nav navbar-nav">
-                    <li><a asp-action="@Url.Action("Create", "Publication")">@Html.Icon("plus", new { style="color: white"}) Добавить</a></li>
-                </ul>
+                <!--<ul class="nav navbar-nav">
+                    <li><a asp-action="Create" asp-controller="Publication">@Html.Icon("plus", new { style="color: white"}) Добавить</a></li>
+                </ul>-->
+                @await Html.PartialAsync("LoginPartial")
             </div>
         </div>
     </nav>
@@ -73,7 +85,7 @@
                 crossorigin="anonymous"
                 integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa">
         </script>
-        
+
         <script src="/js/site.min.js" asp-append-version="true"></script>
     </environment>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>

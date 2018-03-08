@@ -12,53 +12,30 @@ namespace ResearchModule.ViewModels
 {
     public class PublicationsViewModel
     {
-        public IQueryable<Publication> Publications { get; }
+        public IEnumerable<PublicationViewModel> Publications { get; }
+        public PageInfo PageInfo { get; set; }
 
-        public IEnumerable<Author> Authors { get; }
-
-        private BaseManager manager;
+        private readonly BaseManager manager;
         private readonly PublicationService publicationService;
+
+        public PublicationsViewModel() {}
 
         public PublicationsViewModel(BaseManager manager, PublicationService publicationService)
         {
             this.manager = manager;
             this.publicationService = publicationService;
-            /*manager = new BaseManager();
-            Publications = manager.GetAll<Publication>();
-            var t = Publications.Select(a => {
-                var te = a.Id;
-                var ts = PublicationService.GetAuthorsByPublication(te);
-            }
-            new Pair<long, string>
-            {
-               
-            });
-            
-            
-            foreach (var author in PublicationService.GetAuthorsByPublication(item.Id))
-            {
-                author.ToStringFormat();
-            }*/
         }
+
         public PublicationsViewModel(IQueryable<Publication> Publications)
         {
-            Publications.Select(a => new Pair<long, IEnumerable<Author>>
+            if (Publications.Any())
             {
-                First = a.Id,
-                Second = publicationService.GetAuthorsByPublication(a.Id)
-            });
-
+                this.Publications = Publications.Select(a => new PublicationViewModel(a)).ToList();
+            }
         }
+
+        
     }
 }
 
-
-
-/*public static class Pagination
-{
-    public static IEnumerable<T> Page<T>(this IEnumerable<T> source, int page, int pageSize)
-    {
-        return source.Skip((page - 1) * pageSize).Take(pageSize);
-    }
-}*/
 

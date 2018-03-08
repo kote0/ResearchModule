@@ -6,17 +6,14 @@ using System.Threading.Tasks;
 
 namespace ResearchModule.Models
 {
-    public partial class PublicationType
+    public class PublicationElement : IPublicationElement
     {
         public int Id { get; set; }
-        [Required]
         public string Name { get; set; }
+        public string Description { get; set; }
+        public bool Obsolete { get; set; }
+        public string ShortName { get; set; }
+    }          
 
-        public bool IsValid()
-        {
-            if (Name != null)
-                return true;
-            return false;
-        }
-    }
+   
 }

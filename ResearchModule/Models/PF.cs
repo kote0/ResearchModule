@@ -8,14 +8,16 @@ namespace ResearchModule.Models
 {
     public class PF
     {
-        public long Id { get; set; }
+        public int Id { get; set; }
         [Required]
-        public long PublicationId { get; set; }
+        public int PublicationId { get; set; }
+        public virtual Publication Publication { get; set; }
         [Required]
-        public long PublicationFilterId { get; set; }
+        public int PublicationFilterId { get; set; }
+        public virtual PublicationFilter PublicationFilter { get; set; }
 
         public PF() { }
-        public PF(long publicationId, long publicationFilterId)
+        public PF(int publicationId, int publicationFilterId)
         {
             PublicationId = publicationId;
             PublicationFilterId = publicationFilterId;

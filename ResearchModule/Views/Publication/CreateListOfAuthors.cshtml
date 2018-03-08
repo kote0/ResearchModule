@@ -1,7 +1,7 @@
 ﻿@using ResearchModule.Components
 @using Microsoft.AspNetCore.Html
 @inject ResearchModule.Service.PublicationService PublicationService
-@model long
+@model int
 
 <div class="panel panel-default">
    
@@ -27,7 +27,7 @@
         @{
             if (Model != 0)
             {
-                <tbody id="getResult">@Html.Partial("../Author/Search", PublicationService.GetAuthorsByPublication(Model))</tbody>
+                <tbody id="getResult">@Html.Partial("../Author/Search", PublicationService.GetAuthors(Model))</tbody>
             }
         }
     </table>

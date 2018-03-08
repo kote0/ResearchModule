@@ -1,0 +1,24 @@
+﻿@model ResearchModule.ViewModels.LoginViewModel
+
+<h4>Регистрация</h4>
+<hr />
+<form asp-controller="Account" asp-action="Register" method="post" class="form-horizontal" role="form">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="form-group">
+        <label asp-for="UserName" class="col-md-2 control-label"></label>
+        <div class="col-md-5">
+            <input asp-for="UserName" class="form-control" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="Password" class="col-md-2 control-label"></label>
+        <div class="col-md-5">
+            <input asp-for="Password" class="form-control" />
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-5">
+            <input type="submit" class="btn btn-primary" value="Register" />
+        </div>
+    </div>
+</form>

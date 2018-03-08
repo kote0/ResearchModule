@@ -14,7 +14,7 @@ namespace ResearchModule.Managers
         {
             get
             {
-                var path = Path.Combine(Directory.GetCurrentDirectory(), "Files");
+                var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Files");
                 // Проверка на существование директории Files
                 if (!Directory.Exists(path))
                 {

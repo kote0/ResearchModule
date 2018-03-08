@@ -12,19 +12,22 @@ namespace ResearchModule.Managers
     public class BaseManager : IDisposable
     {
         public readonly DBContext _db;
+        public bool Success { get; protected set; }
 
-        public BaseManager()
+        public BaseManager(DBContext _db)
         {
-            _db = new DBContext();
+            this._db = _db;
         }
 
         public void Create<T>(T record) where T : class
         {
+            Success = false;
             try
             {
                 if (record == null) return;
                 _db.Entry(record).State = EntityState.Added;
                 _db.SaveChanges();
+                Success = true;
             }
             catch (Exception ex)
             {
@@ -32,7 +35,7 @@ namespace ResearchModule.Managers
             }
         }
 
-        public void Delete<T>(long id) where T : class
+        public void Delete<T>(int id) where T : class
         {
             var record = _db.Find<T>(id);
 

@@ -9,25 +9,34 @@ namespace ResearchModule.Service
 {
     public class PublicationService
     {
-        private readonly BaseManager manager = new BaseManager();
-        private readonly PAManager mngPA = new PAManager();
+        private readonly BaseManager manager;
+        private readonly PAManager paManager;
+        private readonly PublicationElements publicationElements;
 
-        public IEnumerable<Author> GetAuthorsByPublication(long id)
+        public PublicationService(PAManager paManager, BaseManager manager, PublicationElements publicationElements)
         {
-            return mngPA.FindAuthorsByPublication(id);
+            this.manager = manager;
+            this.paManager = paManager;
+            this.publicationElements = publicationElements;
         }
 
-        public string GetFormName(long id)
+        public IEnumerable<Author> GetAuthors(int id)
         {
-            return ResearchModule.Models.PublicationForm.FormDictionary.FirstOrDefault(o => o.Key == id).Value.Name;
+            return paManager.FindAuthorsByPublication(id);
         }
 
-        public string GetPartitionName(long id)
+        public string GetFormName(int id)
         {
-            return ResearchModule.Models.PublicationPartition.Partition.FirstOrDefault(o => o.Key == id).Value;
+            var formWork = publicationElements.Forms.FirstOrDefault(o => id.Equals(o.Id));
+            return formWork.Name;
         }
 
-        public string GetTypeName(long id)
+        public string GetPartitionName(int id)
+        {
+            return publicationElements.Partitions.FirstOrDefault(o => o.Id == id).Name;
+        }
+
+        public string GetTypeName(int id)
         {
             return manager.Get<PublicationType>(id).Name;
         }

@@ -9,11 +9,18 @@ namespace ResearchModule.Service
 {
     public class SelectListService
     {
-        private readonly BaseManager manager = new BaseManager();
+        private readonly BaseManager manager;
+        private readonly PublicationElements publicationElements;
+
+        public SelectListService(BaseManager manager, PublicationElements publicationElements)
+        {
+            this.publicationElements = publicationElements;
+            this.manager = manager;
+        }
 
         #region select list
-        
-        public SelectList LoadSelectAuthor(long id = 0)
+
+        public SelectList LoadSelectAuthor(int id = 0)
         {
             var list = manager.GetByFunction<Author>(a => a.IsValid()) //сделать асинхронным
                 .Select(a =>
@@ -29,22 +36,22 @@ namespace ResearchModule.Service
         }
 
 
-        public SelectList LoadSelectPublicationPartition(long id = 0)
+        public SelectList LoadSelectPublicationPartition(int id = 0)
         {
-            
-            var list = PublicationPartition.Partition
+
+            var list = publicationElements.Partitions.Where(p => !p.Obsolete)
                 .Select(a =>
                     new ResearchModule.Models.SelectListItem
                     {
-                        Value = a.Key,
-                        Text = a.Value,
-                        Selected = (id != 0 && id == a.Key ? true : false)
+                        Value = a.Id,
+                        Text = a.Name,
+                        Selected = (id != 0 && id == a.Id ? true : false)
                     })
                 .ToList();
             return selectListCreate(list, "Publication.PublicationPartition");
         }
 
-        public SelectList LoadSelectPublicationType(long id = 0)
+        public SelectList LoadSelectPublicationType(int id = 0)
         {
             var list = manager.GetByFunction<PublicationType>(a => a.IsValid())
                 .Select(a =>
@@ -52,22 +59,22 @@ namespace ResearchModule.Service
                     {
                         Value = a.Id,
                         Text = a.Name,
-                        Selected = (id!= 0 && id == a.Id ? true : false)
+                        Selected = (id != 0 && id == a.Id ? true : false)
                     })
                 .ToList();
             return selectListCreate(list, "Publication.PublicationType");
         }
 
-        public SelectList LoadSelectPublicationForm(long id = 0)
+        public SelectList LoadSelectPublicationForm(int id = 0)
         {
-            var list = PublicationForm.FormDictionary
+            var list = publicationElements.Forms.Where(f => !f.Obsolete)
                 .Select(a =>
-                    new ResearchModule.Models.SelectListItem
-                    {
-                        Value = long.Parse(a.Key),
-                        Text = a.Value.Name,
-                        Selected = (id != 0 && id.Equals(a.Key) ? true : false)
-                    })
+                        new ResearchModule.Models.SelectListItem
+                        {
+                            Value = a.Id,
+                            Text = a.Name,
+                            Selected = (id != 0 && id.Equals(a.Id) ? true : false)
+                        })
                 .ToList();
             return selectListCreate(list, "Publication.PublicationForm");
         }

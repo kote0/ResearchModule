@@ -6,30 +6,37 @@ using System.Threading.Tasks;
 
 namespace ResearchModule.Managers
 {
-    public class PFManager : BaseManager
+    public class PFManager 
     {
-        public void Create(IEnumerable<PublicationFilter> filters, long pid)
+        private readonly BaseManager manager;
+
+        public PFManager(BaseManager manager)
+        {
+            this.manager = manager;
+        }
+
+        public void Create(IEnumerable<PublicationFilter> filters, int pid)
         {
             foreach (var filter in filters)
             {
                 PF pf = new PF();
                 pf.PublicationFilterId = filter.Id;
                 pf.PublicationId = pid;
-                Create(pf);
+                manager.Create(pf);
             }
         }
-        public void Create(long fid, long pid)
+        public void Create(int fid, int pid)
         {
             PF pf = new PF(pid, fid);
-            Create(pf);
+            manager.Create(pf);
         }
-        public IEnumerable<PublicationFilter> FindFiltersByPublication(long idPublication)
+        public IEnumerable<PublicationFilter> FindFiltersByPublication(int idPublication)
         {
-            var pfs = GetByFunction<PF>(pf => pf.PublicationId == idPublication);
+            var pfs = manager.GetByFunction<PF>(pf => pf.PublicationId == idPublication);
             List<PublicationFilter> filters = new List<PublicationFilter>();
             foreach (var item in pfs)
             {
-                var filter = GetByFunction<PublicationFilter>(a => a.Id == item.PublicationFilterId).FirstOrDefault();
+                var filter = manager.GetByFunction<PublicationFilter>(a => a.Id == item.PublicationFilterId).FirstOrDefault();
                 if (filter != null)
                 {
                     filters.Add(filter);

@@ -1,46 +1,61 @@
 ﻿@using ResearchModule.Components
 @inject ResearchModule.Service.PublicationService PublicationService
-@model IEnumerable<ResearchModule.Models.Publication>
+@using ResearchModule.Service
+@model ResearchModule.ViewModels.PublicationsViewModel
 
-    <div>
-    <ul class="pagination">
-        <li><a href="#">1</a></li>
-        <li class="active"><a href="#">2</a></li>
-        <li><a href="#">3</a></li>
-        <li><a href="#">4</a></li>
-        <li><a href="#">5</a></li>
-    </ul>
+<div>
+    <button type="button" class="btn btn-default">Добавить</button>
 </div>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Навание</th>
-            <th>Раздел</th>
-            <th>Вид</th>
-            <th>Форма работы</th>
-            <th>Авторы</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>@item.PublicationName</td>
-            <td>@PublicationService.GetPartitionName(item.PublicationPartition)</td>
-            <td>@PublicationService.GetTypeName(item.PublicationType)</td>
-            <td>@PublicationService.GetFormName(item.PublicationForm)</td>
-            <td>
-                @foreach (var author in PublicationService.GetAuthorsByPublication(item.Id))
-                {
-                    <div>@author.ToStringFormat()</div>
-                }
-            </td>
-            <td><a href="@Url.Action("Edit", "Publication",  new { id = item.Id })" data-toggle="tooltip" title="Редактировать">@Html.Icon("pencil")</a></td>
-        </tr>
+
+@if (Model.Publications == null)
+{
+    <div>
+        <p>Публикации отсутствуют...</p>
+    </div>
+    return;
 }
-    </tbody>
-</table>
-<script type="text/javascript">
+@{
+    Func<int, string> pageUrl = x => Url.Action("Publications", new { first = x });
+}
+<div class="btn-group">
+    <paging page-info="Model.PageInfo" page-url="pageUrl"></paging>
+</div>
+@foreach (var item in Model.Publications)
+{
+    var publication = item.Publication;
+    <div class="row">
+        <div class="col-md-9">
+            <h3># @publication.PublicationName</h3>
+            <div class="viewAurhors">@item.Authors.ToStringThroughComma()</div>
+            <div>@publication.OutputData</div>
+        </div>
+        <div class="col-md-2 right">
+            <div class="toolbar">
+                <a href="@Url.Action("Edit", "Publication",  new { id = publication.Id })" data-toggle="tooltip" title="Редактировать">@Html.Icon("pencil")</a>
+                <a href="@Url.Action("Edit", "Publication",  new { id = publication.Id })" data-toggle="tooltip" title="Редактировать">@Html.Icon("remove")</a>
+            </div>
+            <div class="dater">
+                <div>@publication.ModifyDate.Date</div>
+                <div>Дата изменения</div>
+            </div>
+        </div>
+    </div>
+}
 
+<style>
+    .viewAurhors, .dater {
+        font-size: 11px;
+        color: #8e8f8f;
+    }
 
-</script>
+    .right {
+        text-align: right;
+    }
+
+    .dater {
+        vertical-align: bottom;
+        position: absolute;
+        bottom: 0;
+        right: 15px;
+    }
+</style>

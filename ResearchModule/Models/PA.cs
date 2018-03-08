@@ -8,11 +8,15 @@ namespace ResearchModule.Models
 {
     public partial class PA
     {
-        public long Id { get; set; }
+        public int Id { get; set; }
+
         [Required]
-        public long PublicationId { get; set; }
+        public int PublicationId { get; set; }
+        public virtual Publication Publication { get; set; }
+
         [Required]
-        public long AuthorId { get; set; }
+        public int AuthorId { get; set; }
+        public virtual Author Author { get; set; }
 
         /// <summary>
         /// Вес - вклад автора в публикацию
@@ -20,7 +24,7 @@ namespace ResearchModule.Models
         public double Weight { get; set; }
 
         public PA() { }
-        public PA(long publicationId, long authorId)
+        public PA(int publicationId, int authorId)
         {
             PublicationId = publicationId;
             AuthorId = authorId;

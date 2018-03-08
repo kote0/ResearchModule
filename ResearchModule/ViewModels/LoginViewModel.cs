@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ResearchModule.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace ResearchModule.ViewModels
     public class LoginViewModel
     {
         [Required]
-        [Display(Name = "Ваше имя")]
+        [Display(Name = "Логин")]
         public string UserName { get; set; }
 
         [Required]
