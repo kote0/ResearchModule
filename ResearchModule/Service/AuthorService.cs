@@ -10,10 +10,10 @@ namespace ResearchModule.Service
     public static class AuthorService
     {
         /// <summary>
-        /// Сокращенный формат
+        /// Сокращенный формат Фамилия И.О.
         /// </summary>
         /// <param name="author"></param>
-        /// <returns>Фамилия И.О.</returns>
+        /// <returns></returns>
         public static string ToStringFormat(this Author author)
         {
             return string.Format("{0} {1}.{2}.", 

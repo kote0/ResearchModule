@@ -7,8 +7,8 @@ namespace ResearchModule.Models
 {
     public class PublicationElements
     {
-        public IEnumerable<IPublicationElement> Forms;
-        public IEnumerable<IPublicationElement> Partitions;
+        public List<PublicationElement> Forms { get; set; }
+        public List<PublicationElement> Partitions { get; set; }
 
         public enum FormEnum
         {
@@ -27,22 +27,23 @@ namespace ResearchModule.Models
 
         public PublicationElements()
         {
-            Partitions = new List<IPublicationElement>();
-            Partitions.Append(
+            Partitions = new List<PublicationElement>();
+            
+            Partitions.Add(
                 Create((int)PartitionEnum.educational, "учебные издания", ""));
-            Partitions.Append(
+            Partitions.Add(
                 Create((int)PartitionEnum.scientific, "научные труды", ""));
-            Partitions.Append(
+            Partitions.Add(
                 Create((int)PartitionEnum.patents, "патенты, свидетельства и др", ""));
 
-            Forms = new List<IPublicationElement>();
-            Forms.Append(
+            Forms = new List<PublicationElement>();
+            Forms.Add(
                 Create((int)FormEnum.print, "печатная", "печ.", ""));
-            Forms.Append(
+            Forms.Add(
                 Create((int)FormEnum.handwritten, "рукописаная", "рукоп.", ""));
-            Forms.Append(
+            Forms.Add(
                 Create((int)FormEnum.electronic_source, "электронный ресурс", "электрон. ресур", ""));
-            Forms.Append(
+            Forms.Add(
                 Create((int)FormEnum.audiovisual, "аудиовизуальная", "аудиовиз.", ""));
         }
 

@@ -24,6 +24,14 @@ namespace ResearchModule.Models
             }
         }
 
+        public void AddRange(IEnumerable<SelectListItem> list)
+        {
+            if (list != null && list.Count() > 0)
+            {
+                Elements.AddRange(list);
+            }
+        }
+
         public void AddRange(List<SelectListItem> list)
         {
             if (list != null && list.Count > 0)

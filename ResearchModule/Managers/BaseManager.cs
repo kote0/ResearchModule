@@ -88,8 +88,7 @@ namespace ResearchModule.Managers
 
         public IEnumerable<T> GetByFunction<T>(Func<T, bool> func) where T : class
         {
-            var list = _db.Set<T>().Where(func);
-            return list;
+            return _db.Set<T>().Where(func);
         }
 
         public IQueryable<T> GetAll<T>() where T : class
