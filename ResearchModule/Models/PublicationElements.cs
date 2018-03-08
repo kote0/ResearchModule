@@ -7,8 +7,29 @@ namespace ResearchModule.Models
 {
     public class PublicationElements
     {
-        public List<PublicationElement> Forms { get; set; }
-        public List<PublicationElement> Partitions { get; set; }
+        public List<PublicationElement> Forms
+        {
+            get
+            {
+                return Forms.Where(p => !p.Obsolete).ToList();
+            }
+            private set
+            {
+                Forms = value;
+            }
+        }
+
+        public List<PublicationElement> Partitions
+        {
+            get
+            {
+                return Partitions.Where(p => !p.Obsolete).ToList();
+            }
+            private set
+            {
+                Partitions = value;
+            }
+        }
 
         public enum FormEnum
         {
@@ -28,7 +49,7 @@ namespace ResearchModule.Models
         public PublicationElements()
         {
             Partitions = new List<PublicationElement>();
-            
+
             Partitions.Add(
                 Create((int)PartitionEnum.educational, "учебные издания", ""));
             Partitions.Add(

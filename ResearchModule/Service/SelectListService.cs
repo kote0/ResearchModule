@@ -30,8 +30,7 @@ namespace ResearchModule.Service
 
         public SelectList LoadSelectPublicationPartition(int id = 0)
         {
-            var list = publicationElements.Partitions.Where(p => !p.Obsolete)
-                .Select(a => newSelectListItem(a.Name, a.Id, id));
+            var list = publicationElements.Partitions.Select(a => newSelectListItem(a.Name, a.Id, id));
             return selectListCreate(list, "Publication.PublicationPartition");
         }
        
@@ -45,8 +44,7 @@ namespace ResearchModule.Service
 
         public SelectList LoadSelectPublicationForm(int id = 0)
         {
-            var list = publicationElements.Forms.Where(f => !f.Obsolete)
-                .Select(a => newSelectListItem(a.Name, a.Id, id));
+            var list = publicationElements.Forms.Select(a => newSelectListItem(a.Name, a.Id, id));
             return selectListCreate(list, "Publication.PublicationForm");
         }
 
