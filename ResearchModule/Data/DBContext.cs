@@ -10,10 +10,20 @@ using System.Threading.Tasks;
 namespace ResearchModule.Data
 {
     public partial class DBContext : IdentityDbContext<User> //: DbContext
-    {      
+    {
         // Add-Migration InitialCreate
         // Update-Database
         // Remove-Migration
+        private string option = "Data Source=w0044;Initial Catalog=Researches;Integrated Security=True;";
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlServer(option);
+        }
+
+        public DBContext()
+        {
+        }
 
         public DBContext(DbContextOptions<DBContext> options) : base(options)
         {

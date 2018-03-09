@@ -1,5 +1,6 @@
 ﻿using ResearchModule.Models;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ namespace ResearchModule.Managers
     /// Таблица, хранящая в себе авторов и их публикации
     /// Связь М:М
     /// </summary>
-    public class PAManager 
+    public class PAManager
     {
         private readonly BaseManager manager;
 
@@ -35,13 +36,14 @@ namespace ResearchModule.Managers
             PA pa = new PA(pid, aid);
             manager.Create(pa);
         }
-        public IEnumerable<Author> FindAuthorsByPublication(int idPublication)
+        public async Task<IEnumerable<Author>> FindAuthorsByPublication(int idPublication)
         {
-            var pas = manager.GetByFunction<PA>(pa => pa.PublicationId == idPublication);
+            var pas = await manager.Get<PA>(pa => pa.PublicationId == idPublication);
             List<Author> authors = new List<Author>();
-            foreach(var item in pas)
+            foreach (var item in pas)
             {
-                var author = manager.GetByFunction<Author>(a => a.Id == item.AuthorId).FirstOrDefault();
+                var list = await manager.Get<Author>(a => a.Id == item.AuthorId);
+                var author = list.FirstOrDefault();
                 if (author != null)
                 {
                     author.Weight = item.Weight;
@@ -49,6 +51,8 @@ namespace ResearchModule.Managers
                     authors.Add(author);
                 }
             }
+
+
             return authors;
         }
     }

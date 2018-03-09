@@ -20,9 +20,9 @@ namespace ResearchModule.Service
             this.publicationElements = publicationElements;
         }
 
-        public IEnumerable<Author> GetAuthors(int id)
+        public async Task<IEnumerable<Author>> GetAuthors(int id)
         {
-            return paManager.FindAuthorsByPublication(id);
+            return await paManager.FindAuthorsByPublication(id);
         }
 
         public string GetFormName(int id)

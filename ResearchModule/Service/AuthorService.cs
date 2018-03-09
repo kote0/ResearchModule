@@ -28,6 +28,7 @@ namespace ResearchModule.Service
         /// <returns></returns>
         public static string ToStringThroughComma(this IEnumerable<Author> authors)
         {
+            if (authors == null) return "";
             var countAuthors = authors.Count();
             StringBuilder str = new StringBuilder();
             for (var i = 0; i < countAuthors; i++)

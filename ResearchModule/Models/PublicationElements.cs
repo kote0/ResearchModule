@@ -7,27 +7,23 @@ namespace ResearchModule.Models
 {
     public class PublicationElements
     {
-        public List<PublicationElement> Forms
+        private List<PublicationElement> partitions { get; set; }
+
+        private List<PublicationElement> forms { get; set; }
+
+        public IEnumerable<PublicationElement> Forms
         {
             get
             {
-                return Forms.Where(p => !p.Obsolete).ToList();
-            }
-            private set
-            {
-                Forms = value;
+                return forms.Where(p => !p.Obsolete).ToList();
             }
         }
 
-        public List<PublicationElement> Partitions
+        public IEnumerable<PublicationElement> Partitions
         {
             get
             {
-                return Partitions.Where(p => !p.Obsolete).ToList();
-            }
-            private set
-            {
-                Partitions = value;
+                return partitions.Where(p => !p.Obsolete);
             }
         }
 
@@ -48,23 +44,22 @@ namespace ResearchModule.Models
 
         public PublicationElements()
         {
-            Partitions = new List<PublicationElement>();
-
-            Partitions.Add(
+            partitions = new List<PublicationElement>();
+            partitions.Add(
                 Create((int)PartitionEnum.educational, "учебные издания", ""));
-            Partitions.Add(
+            partitions.Add(
                 Create((int)PartitionEnum.scientific, "научные труды", ""));
-            Partitions.Add(
+            partitions.Add(
                 Create((int)PartitionEnum.patents, "патенты, свидетельства и др", ""));
 
-            Forms = new List<PublicationElement>();
-            Forms.Add(
+            forms = new List<PublicationElement>();
+            forms.Add(
                 Create((int)FormEnum.print, "печатная", "печ.", ""));
-            Forms.Add(
+            forms.Add(
                 Create((int)FormEnum.handwritten, "рукописаная", "рукоп.", ""));
-            Forms.Add(
+            forms.Add(
                 Create((int)FormEnum.electronic_source, "электронный ресурс", "электрон. ресур", ""));
-            Forms.Add(
+            forms.Add(
                 Create((int)FormEnum.audiovisual, "аудиовизуальная", "аудиовиз.", ""));
         }
 

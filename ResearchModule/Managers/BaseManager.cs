@@ -14,9 +14,9 @@ namespace ResearchModule.Managers
         public readonly DBContext _db;
         public bool Success { get; protected set; }
 
-        public BaseManager(DBContext _db)
+        public BaseManager()
         {
-            this._db = _db;
+            _db = new DBContext();
         }
 
         public void Create<T>(T record) where T : class
@@ -89,6 +89,17 @@ namespace ResearchModule.Managers
         public IEnumerable<T> GetByFunction<T>(Func<T, bool> func) where T : class
         {
             return _db.Set<T>().Where(func);
+        }
+
+        public async Task<IEnumerable<T>> Get<T>(Func<T, bool> func) where T : class
+        {
+            return await _db.Set<T>().Where(func).ToAsyncEnumerable().ToList();
+        }
+
+
+        public DbSet<T> DbSet<T>() where T : class
+        {
+            return _db.Set<T>();
         }
 
         public IQueryable<T> GetAll<T>() where T : class

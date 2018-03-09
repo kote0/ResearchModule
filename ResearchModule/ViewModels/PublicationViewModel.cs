@@ -11,11 +11,11 @@ namespace ResearchModule.ViewModels
 {
     public class PublicationViewModel
     {
-        public Publication Publication { get; }
-        public IEnumerable<Author> Authors { get; }
+        public Publication Publication { get; private set; }
+        public IEnumerable<Author> Authors { get; private set; }
 
         private BaseManager manager;
-        private readonly PublicationService publicationService;
+        private PublicationService publicationService;
 
         public PublicationViewModel() { }
 
@@ -25,10 +25,10 @@ namespace ResearchModule.ViewModels
             this.publicationService = publicationService;
         }
 
-        public PublicationViewModel(Publication publication)
+        public async void Create(Publication publication)
         {
             this.Publication = publication;
-            this.Authors = publicationService.GetAuthors(Publication.Id);
+            this.Authors = await publicationService.GetAuthors(publication.Id);
         }
     }
 }

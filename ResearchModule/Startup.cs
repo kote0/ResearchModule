@@ -17,7 +17,6 @@ namespace ResearchModule
 {
     public class Startup
     {
-        private string options = "Data Source=w0044;Initial Catalog=Researches;Integrated Security=True;";
 
         public Startup(IConfiguration configuration)
         {
@@ -36,7 +35,7 @@ namespace ResearchModule
             
             services.AddSingleton(new PublicationElements());
             
-            services.AddDbContext<DBContext>(optionsBuilder => optionsBuilder.UseSqlServer(options));
+            services.AddDbContext<DBContext>();
             services.AddIdentity<User, IdentityRole>(options =>
             {
                 options.Password.RequiredLength = 1;

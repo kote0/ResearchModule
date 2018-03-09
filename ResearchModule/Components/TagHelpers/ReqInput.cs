@@ -78,7 +78,10 @@ namespace ResearchModule.Components.TagHelpers
             output.TagName = "select";
             output.Attributes.SetAttribute("name", name);
             output.Attributes.SetAttribute("id", name.Replace(".", "_"));
-            //output.Attributes.SetAttribute("title", Title ?? "Ничего не выбрано");
+            if (Items.Elements== null || Items.Elements.Count == 0)
+            {
+                output.Attributes.SetAttribute("title", Title ?? "Ничего не выбрано");
+            }
             output.Attributes.SetAttribute("class", "form-control selectpicker selectpicker_" + name);
             foreach (var elem in Items.Elements)
             {

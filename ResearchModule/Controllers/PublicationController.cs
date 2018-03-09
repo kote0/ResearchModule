@@ -19,11 +19,14 @@ namespace ResearchModule.Controllers
     {
         private readonly FileManager fileManager;
         private readonly PAManager paManager;
+        private readonly PublicationService publicationService;
 
-        public PublicationController(FileManager fileManager, PAManager paManager, BaseManager manager) : base(manager)
+        public PublicationController(FileManager fileManager, PAManager paManager,
+            BaseManager manager, PublicationService publicationService) : base(manager)
         {
             this.fileManager = fileManager;
             this.paManager = paManager;
+            this.publicationService = publicationService;
         }
 
 
@@ -38,18 +41,14 @@ namespace ResearchModule.Controllers
         //TODO: Заменить на CreatePublicationViewModel
         [HttpPost]
         public ActionResult Create(IEnumerable<Author> Author, [Bind("Id", Prefix = "Search")]IEnumerable<Author> Search,
-            Publication Publication, PublicationType PublicationType, IFormFile FormFile, CreatePublicationViewModel createPublication)
+            Publication Publication, PublicationType PublicationType, IFormFile FormFile)
         {
             var selectedAuthors = Search.Where(s => s.Id != 0);
             var createdAuthors = Author.Where(a => a.IsValid());
-            if ((createdAuthors.Count() > 0 || selectedAuthors.Count() > 0))
+            if ((createdAuthors.Count() == 0 && selectedAuthors.Count() == 0))
             {
-                ViewBag.Result = "Отсутсутствуют авторы";
-                return View("Publications");
-            }
-            if (!ModelState.IsValid)
-            {
-                return View("Publications");
+                Notify.SetInfo("Отсутсутствуют авторы");
+                return View();
             }
 
             var file = (Publication.PublicationFileUid == null) ? CreateFile(FormFile) : null;
@@ -58,15 +57,10 @@ namespace ResearchModule.Controllers
                 Publication.PublicationFileName = file.Name;
                 Publication.PublicationFileUid = file.Uid;
                 // электронное или аудиальное
-                if (Publication.PublicationForm.Equals(PublicationElements.FormEnum.electronic_source)|| 
-                    Publication.PublicationForm.Equals(PublicationElements.FormEnum.audiovisual))
+                if (Publication.PublicationForm.Equals((int)PublicationElements.FormEnum.electronic_source)|| 
+                    Publication.PublicationForm.Equals((int)PublicationElements.FormEnum.audiovisual))
                 {
                     Publication.Volume = file.Size;
-                }
-                else
-                {
-                    // TODO: Исправить
-                    Publication.Volume = 0;
                 }
             }
 
@@ -78,10 +72,8 @@ namespace ResearchModule.Controllers
             CreatePA(
                 CreateOrUpdatePublication(Publication),
                 createdAuthors, selectedAuthors);
-
-            var list = new List<Publication>();
-            list.Add(Publication);
-            return View("Publications", list);
+            
+            return RedirectToAction("Publications");
         }
 
 
@@ -101,33 +93,36 @@ namespace ResearchModule.Controllers
                 {
                     manager.Create(publicationType);
                 }
+                return publicationType;
             }
             catch (Exception ex)
             {
-                throw new Exception("Не удалось создать Вид публикации", ex);
+                Notify.SetError("Не удалось создать Вид публикации", ex.Message);
+                throw;
             }
-            return publicationType;
         }
 
         private int CreateOrUpdatePublication(Publication publication)
         {
             try
             {
-                publication.CreateDate = DateTime.Now;
                 if (publication.Id != 0)
                 {
+                    publication.ModifyDate = DateTime.Now;
                     manager.Update<Publication>(publication);
                 }
                 else
                 {
+                    publication.CreateDate = DateTime.Now;
                     manager.Create(publication);
                 }
+                return publication.Id;
             }
             catch (Exception ex)
             {
-                throw new Exception("Не удалось создать/изменить Публикацию", ex);
+                Notify.SetError("Не удалось создать/изменить Публикацию", ex.Message);
+                throw;
             }
-            return publication.Id;
         }
 
         private void CreatePA(int publicationId, IEnumerable<Author> createdAuthors, IEnumerable<Author> selectedAuthors)
@@ -158,7 +153,8 @@ namespace ResearchModule.Controllers
             }
             catch (Exception ex)
             {
-                throw new Exception("Не удалось добавить авторов", ex);
+                Notify.SetError("Не удалось добавить авторов", ex.Message);
+                throw;
             }
         }
 
@@ -171,14 +167,11 @@ namespace ResearchModule.Controllers
             pageInfo.PageNumber = first;
             var listPublications  = manager.Page<Publication>(first, pageInfo.PageSize);
             pageInfo.TotalItems = listPublications.Count();
-            PublicationsViewModel model;
+            PublicationsViewModel model = new PublicationsViewModel(manager, publicationService);
             if (pageInfo.TotalItems != 0)
             {
-                model = new PublicationsViewModel(listPublications) { PageInfo = pageInfo };
-            }
-            else
-            {
-                model = new PublicationsViewModel();
+                model.Create(listPublications);
+                model.PageInfo = pageInfo;
             }
             return View(model);
         }

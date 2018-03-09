@@ -42,6 +42,6 @@ tr:hover {
 .main-content {
     margin-top: 60px;
 }
-.after-row {
+.after-row, .toolbar {
     margin-top: 10px;
 }

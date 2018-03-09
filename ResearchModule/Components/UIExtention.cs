@@ -120,12 +120,12 @@ namespace ResearchModule.Components
         {
             var tagBuilder = new TagBuilder("select");
             tagBuilder.AddCssClass("form-control selectpicker selectpicker_" + selectList.GetName());
-
+            var countElem = selectList.Elements.Count == 0;
             foreach (var elem in selectList.Elements)
             {
                 tagBuilder.InnerHtml.AppendHtml(html.Option(elem.Value, elem.Selected, elem.Text));
             }
-            tagBuilder.MergeAttributes(new RouteValueDictionary(new { /*title = title ?? "Ничего не выбрано",*/ name=selectList.GetName() }), true);
+            tagBuilder.MergeAttributes(new RouteValueDictionary(new { title = countElem? "Ничего не выбрано" : "", name=selectList.GetName() }), true);
             tagBuilder.RenderSelfClosingTag();
 
             return tagBuilder;

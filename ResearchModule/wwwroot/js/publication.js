@@ -33,7 +33,7 @@ function formSubmit(formId) {
         get_Info("Отстутствуют авторы");
         return;
     }
-    //$("#" + formId).submit();
+    $("#" + formId).submit();
 }
 
 function get_Info(text) {
@@ -47,7 +47,6 @@ function isValid() {
     var reqInput = $("[data-val='True']");
     for (var input of reqInput) {
         let parent = $(input).parent();
-        console.log(parent);
         if (input.value === "") {
             parent.addClass("has-error")
             res = false;
@@ -63,7 +62,7 @@ function isValid() {
 
 
 function clickIsTarslate(e) {
-    $("#Publication_TranslateText").attr("data-val", e.checked ? "True" : "False");
+    Requied("#Publication_TranslateText", e.checked);
     $("#translate_Publication").css("display", e.checked ? "" : "none");
 }
 
@@ -172,12 +171,13 @@ Author = function () {
 function showWeight(show) {
     let allWeigth = "[id$='Weight']";
     let title = "#WeightTitle";
+    Requied(allWeigth, show);
     if (show) {
-        $(allWeigth).show().data("data-val", true);
+        $(allWeigth).show();
         $(title).show();
         return;
     }
-    $(allWeigth).hide().data("data-val", false);
+    $(allWeigth).hide();
     $(title).hide();
 }
 
@@ -188,20 +188,20 @@ function showVolume(show) {
     if (show) {
         // показать
         $(div).show();
-        $(name).data("data-val", true);
+        Requied(name, true);
         showWeight(true);
         return;
     }
     // скрыть
     $(div).hide()
-    $(name).data("data-val", false);
+    Requied(name, false);
     showWeight(false);
 }
 
 changePublicationForm = function (elem) {
     // формы публикации
-    const electronicForm = "3";
-    const audioForm = "4";
+    const electronicForm = "2";
+    const audioForm = "3";
 
     var select = $(elem.target).find(":selected");
     if (select.length === 0) {
@@ -209,5 +209,12 @@ changePublicationForm = function (elem) {
     }
     var id = select.attr("value");
     showVolume(id === electronicForm || id === audioForm ? false: true );
+}
+
+Requied = function (elem, required) {
+    $(elem).attr("data-val", required ? "True" : "False");
+}
+HasRequered = function (elem){
+    return $(elem).attr("data-val");
 }
 

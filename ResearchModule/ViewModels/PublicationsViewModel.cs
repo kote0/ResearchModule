@@ -12,13 +12,11 @@ namespace ResearchModule.ViewModels
 {
     public class PublicationsViewModel
     {
-        public IEnumerable<PublicationViewModel> Publications { get; }
+        public IEnumerable<PublicationViewModel> Publications { get; private set; }
         public PageInfo PageInfo { get; set; }
 
         private readonly BaseManager manager;
         private readonly PublicationService publicationService;
-
-        public PublicationsViewModel() {}
 
         public PublicationsViewModel(BaseManager manager, PublicationService publicationService)
         {
@@ -26,14 +24,21 @@ namespace ResearchModule.ViewModels
             this.publicationService = publicationService;
         }
 
-        public PublicationsViewModel(IQueryable<Publication> Publications)
+
+        public void Create(IQueryable<Publication> Publications)
         {
             if (Publications.Any())
             {
-                this.Publications = Publications.Select(a => new PublicationViewModel(a)).ToList();
+                this.Publications = Publications.Select(a => CreatePublication(a)).ToList();
             }
         }
 
+        private PublicationViewModel CreatePublication(Publication publication)
+        {
+            var newPublication = new PublicationViewModel(manager, publicationService);
+            newPublication.Create(publication);
+            return newPublication;
+        }
         
     }
 }
