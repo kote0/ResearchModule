@@ -81,7 +81,7 @@ namespace ResearchModule.Data
         public DbSet<PublicationType> TypePublication { get; set; }
         public DbSet<Publication> Publication { get; set; }
         public DbSet<PA> PA { get; set; }
-        public DbSet<PublicationFilter> PublicationFilter { get; set; }
+        public DbSet<PublicationFilters> PublicationFilter { get; set; }
         public DbSet<PF> PF { get; set; }
         //public virtual DbSet<User> User { get; set; }
     }

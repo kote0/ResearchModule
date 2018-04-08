@@ -47,9 +47,6 @@
                 @if (SignInManager.IsSignedIn(User))
                 {
                     <a href="@Url.Action("Publications", "Publication")" class="navbar-brand">Мои публикации</a>
-                    <ul class="nav navbar-nav">
-                        <li><a asp-action="Create" asp-controller="Publication">@Html.Icon("plus", new { style = "color: white" }) Добавить</a></li>
-                    </ul>
                 }
             </div>
             <div class="navbar-collapse collapse" id="menu">
@@ -73,7 +70,7 @@
         <script src="~/js/ResearchModule.js"></script>
         <script src="/lib/jquery/dist/jquery.js"></script>
         <script src="/lib/bootstrap/dist/js/bootstrap.js"></script>
-        <script src="/js/site.js" asp-append-version="true"></script>
+        
     </environment>
     <environment exclude="Development">
         <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js"

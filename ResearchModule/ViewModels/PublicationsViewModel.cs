@@ -1,5 +1,6 @@
 ﻿using ResearchModule.Components.Models;
 using ResearchModule.Managers;
+using ResearchModule.Managers.Interfaces;
 using ResearchModule.Models;
 using ResearchModule.Service;
 using System;
@@ -14,30 +15,18 @@ namespace ResearchModule.ViewModels
     {
         public IEnumerable<PublicationViewModel> Publications { get; private set; }
         public PageInfo PageInfo { get; set; }
+        
 
-        private readonly BaseManager manager;
-        private readonly PublicationService publicationService;
-
-        public PublicationsViewModel(BaseManager manager, PublicationService publicationService)
+        public PublicationsViewModel(PublicationService publicationService, 
+            IEnumerable<Publication> publications, PageInfo pageInfo)
         {
-            this.manager = manager;
-            this.publicationService = publicationService;
-        }
-
-
-        public void Create(IQueryable<Publication> Publications)
-        {
-            if (Publications.Any())
+            if (publications.Any())
             {
-                this.Publications = Publications.Select(a => CreatePublication(a)).ToList();
+                this.Publications = publications
+                    .Select(a => new PublicationViewModel(publicationService, a))
+                    .ToList();
+                this.PageInfo = pageInfo;
             }
-        }
-
-        private PublicationViewModel CreatePublication(Publication publication)
-        {
-            var newPublication = new PublicationViewModel(manager, publicationService);
-            newPublication.Create(publication);
-            return newPublication;
         }
         
     }

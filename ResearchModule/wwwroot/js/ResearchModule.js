@@ -27,7 +27,7 @@ RM.AppendTo = function (url, setTo, isteadOff) {
         //Поставить данные вместо него из ссылки
         $(setTo).html(data);
     });
-}
+};
 
 //Добавление выбранных елементов
 RM.DropdownGroupItemClick = function (classDropdownGroupItem) {
@@ -58,4 +58,4 @@ RM.Submit = function (form) {
         }
     });
 
-}
+};

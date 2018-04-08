@@ -35,7 +35,7 @@ $(function () {
 
     // We can attach the `fileselect` event to all file inputs on the page
     $(document).on('change', ':file', function () {
-        debugger;
+        //debugger;
         var input = $(this),
             numFiles = input.get(0).files ? input.get(0).files.length : 1,
             label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
@@ -44,7 +44,7 @@ $(function () {
 
     // We can watch for our custom `fileselect` event like this
     $(document).ready(function () {
-        debugger;
+        //debugger;
         $(':file').on('fileselect', function (event, numFiles, label) {
 
             var input = $(this).parents('.input-group').find(':text'),
@@ -60,3 +60,38 @@ $(function () {
     });
 
 });
+
+
+class Search {
+    constructor(url, resultFunc) {
+        this.timers = this.timers || [];
+        this.timers[0] = 0;
+        this.url = url;
+        if (typeof(resultFunc) === 'function')
+            this.setResult = resultFunc;
+        else {
+            throw `Неверный входной параметр. ${resultFunc} is not a function`;
+        }
+    }
+    onKeyUp(elem) {
+        if (this.input == null) 
+            this.input = elem;
+        if (this.input.value === "") return;
+        clearTimeout(this.timers[0]);
+        this.start();
+    }
+
+    onChange() {
+        let res = this.setResult;
+        $.ajax({
+            type: 'POST',
+            url: this.url + '?character=' + this.input.value,
+            success: function (data) {
+                res(data);
+            }
+        });
+    }
+    start() {
+        this.timers[0] = setTimeout(this.onChange(), 500);
+    }
+}

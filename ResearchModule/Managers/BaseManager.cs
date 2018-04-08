@@ -6,13 +6,19 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Linq.Expressions;
+using ResearchModule.Managers.Interfaces;
 
 namespace ResearchModule.Managers
 {
-    public class BaseManager : IDisposable
+    public class BaseManager : IBaseManager, IDisposable
     {
         public readonly DBContext _db;
         public bool Success { get; protected set; }
+
+        public static IBaseManager Manager
+        {
+            get { return Locator.GetService<IBaseManager>(); }
+        }
 
         public BaseManager()
         {
@@ -37,23 +43,20 @@ namespace ResearchModule.Managers
 
         public void Delete<T>(int id) where T : class
         {
-            var record = _db.Find<T>(id);
-
-            if (record != null)
-            {
-                _db.Remove(record);
-                _db.SaveChanges();
-            }
+            var record = Get<T>(id);
+            Delete(record);
         }
 
         public void Delete<T>(T record) where T : class
         {
+            Success = false;
             try
             {
                 if (record != null)
                 {
                     _db.Remove(record);
                     _db.SaveChanges();
+                    Success = true;
                 }
             }
             catch (Exception ex)
@@ -83,7 +86,7 @@ namespace ResearchModule.Managers
             {
                 throw new Exception(ex.Message, ex);
             }
-            
+
         }
 
         public IEnumerable<T> GetByFunction<T>(Func<T, bool> func) where T : class
@@ -107,7 +110,7 @@ namespace ResearchModule.Managers
             return _db.Set<T>();
         }
 
-        public IQueryable<T> Page<T>(int page, int pageSize) where T : class
+        public IQueryable<T> Page<T>(int page, int pageSize = 10) where T : class
         {
             return _db.Set<T>().Skip((page - 1) * pageSize).Take(pageSize);
         }

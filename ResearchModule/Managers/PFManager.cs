@@ -15,7 +15,7 @@ namespace ResearchModule.Managers
             this.manager = manager;
         }
 
-        public void Create(IEnumerable<PublicationFilter> filters, int pid)
+        public void Create(IEnumerable<PublicationFilters> filters, int pid)
         {
             foreach (var filter in filters)
             {
@@ -30,13 +30,13 @@ namespace ResearchModule.Managers
             PF pf = new PF(pid, fid);
             manager.Create(pf);
         }
-        public IEnumerable<PublicationFilter> FindFiltersByPublication(int idPublication)
+        public IEnumerable<PublicationFilters> FindFiltersByPublication(int idPublication)
         {
             var pfs = manager.GetByFunction<PF>(pf => pf.PublicationId == idPublication);
-            List<PublicationFilter> filters = new List<PublicationFilter>();
+            List<PublicationFilters> filters = new List<PublicationFilters>();
             foreach (var item in pfs)
             {
-                var filter = manager.GetByFunction<PublicationFilter>(a => a.Id == item.PublicationFilterId).FirstOrDefault();
+                var filter = manager.GetByFunction<PublicationFilters>(a => a.Id == item.PublicationFilterId).FirstOrDefault();
                 if (filter != null)
                 {
                     filters.Add(filter);

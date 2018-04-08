@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 using ResearchModule.Components.Models;
 using ResearchModule.Managers;
+using ResearchModule.Managers.Interfaces;
 using ResearchModule.Models;
+using ResearchModule.Models.Filter;
 using ResearchModule.Service;
 using ResearchModule.ViewModels;
 using System;
@@ -21,12 +23,14 @@ namespace ResearchModule.Controllers
         private readonly PAManager paManager;
         private readonly PublicationService publicationService;
 
+
         public PublicationController(FileManager fileManager, PAManager paManager,
-            BaseManager manager, PublicationService publicationService) : base(manager)
+            PublicationService publicationService, IBaseManager manager) : base(manager)
         {
             this.fileManager = fileManager;
             this.paManager = paManager;
             this.publicationService = publicationService;
+            //this.Manager = manager;
         }
 
 
@@ -41,17 +45,21 @@ namespace ResearchModule.Controllers
         //TODO: Заменить на CreatePublicationViewModel
         [HttpPost]
         public ActionResult Create(IEnumerable<Author> Author, [Bind("Id", Prefix = "Search")]IEnumerable<Author> Search,
-            Publication Publication, PublicationType PublicationType, IFormFile FormFile)
+            Publication Publication, PublicationType PublicationType, IFormFile FormFile, CreatePublicationViewModel view = null)
         {
             var selectedAuthors = Search.Where(s => s.Id != 0);
             var createdAuthors = Author.Where(a => a.IsValid());
+            // проверка на наличие авторов
             if ((createdAuthors.Count() == 0 && selectedAuthors.Count() == 0))
             {
                 Notify.SetInfo("Отсутсутствуют авторы");
                 return View();
             }
 
-            var file = (Publication.PublicationFileUid == null) ? CreateFile(FormFile) : null;
+            var file = (Publication.PublicationFileUid == null) 
+                ? fileManager.CreateFileDetails(FormFile) 
+                : null;
+
             if (file != null)
             {
                 Publication.PublicationFileName = file.Name;
@@ -75,15 +83,7 @@ namespace ResearchModule.Controllers
             
             return RedirectToAction("Publications");
         }
-
-
-        private FileDetails CreateFile(IFormFile file)
-        {
-            var source = fileManager.CreateFileDetails(file);
-            if (source != null)
-                fileManager.SaveFile(source);
-            return source;
-        }
+        
 
         private PublicationType CreatePublicationType(PublicationType publicationType)
         {
@@ -91,7 +91,7 @@ namespace ResearchModule.Controllers
             {
                 if (publicationType.IsValid())
                 {
-                    manager.Create(publicationType);
+                    Manager.Create(publicationType);
                 }
                 return publicationType;
             }
@@ -109,12 +109,12 @@ namespace ResearchModule.Controllers
                 if (publication.Id != 0)
                 {
                     publication.ModifyDate = DateTime.Now;
-                    manager.Update<Publication>(publication);
+                    Manager.Update<Publication>(publication);
                 }
                 else
                 {
                     publication.CreateDate = DateTime.Now;
-                    manager.Create(publication);
+                    Manager.Create(publication);
                 }
                 return publication.Id;
             }
@@ -135,7 +135,7 @@ namespace ResearchModule.Controllers
             {
                 foreach (var item in createdAuthors)
                 {
-                    manager.Create(item);
+                    Manager.Create(item);
                 }
                 listAuthors.AddRange(createdAuthors);
             }
@@ -163,23 +163,39 @@ namespace ResearchModule.Controllers
 
         public ActionResult Publications(int first = 1)
         {
-            var pageInfo = new PageInfo();
-            pageInfo.PageNumber = first;
-            var listPublications  = manager.Page<Publication>(first, pageInfo.PageSize);
-            pageInfo.TotalItems = listPublications.Count();
-            PublicationsViewModel model = new PublicationsViewModel(manager, publicationService);
-            if (pageInfo.TotalItems != 0)
-            {
-                model.Create(listPublications);
-                model.PageInfo = pageInfo;
-            }
+            var publications = Manager.Page<Publication>(first);
+            return RedirectToAction("Publications", new { list = publications, first = first });
+        }
+
+        public ActionResult Publications(IEnumerable<Publication> list, int first = 1)
+        {
+            var pageInfo = new PageInfo(first, list.Count());
+            PublicationsViewModel model = new PublicationsViewModel
+                (publicationService, list, pageInfo);
             return View(model);
         }
 
         public ActionResult Edit(int id)
         {
-            return View(manager.Get<Publication>(id));
+            var item = Manager.Get<Publication>(id);
+            return View(item);
         }
 
+
+        public ActionResult Search(string character)
+        {
+            if (character == null) return null;
+            var text = character.ToLower();
+
+            var publications = Manager.GetByFunction<Publication>(a => {
+                if (!string.IsNullOrEmpty(a.PublicationName))
+                {
+                    return a.PublicationName.ToLower().Contains(text);
+                }
+                else return false;
+            });
+            //return RedirectToAction("Publications", new { list = publications });
+            return PartialView(publications.ToList());
+        }
     }
 }

@@ -23,7 +23,7 @@ namespace ResearchModule.Models
         [DisplayName("Вид публикации")]
         public int PublicationTypeId { get; set; }
 
-        
+        [DisplayName("Вид публикации")]
         public virtual PublicationType PublicationType { get; set; }
 
         [Required]
@@ -78,6 +78,9 @@ namespace ResearchModule.Models
         public ICollection<PA> PAs { get; set; }
 
         public ICollection<PF> PFs { get; set; }
+
+        /*[DisplayName("Автор публикации")]
+        public User Author { get; set; }*/
 
     }
 

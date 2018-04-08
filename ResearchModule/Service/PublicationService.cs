@@ -1,4 +1,5 @@
 ﻿using ResearchModule.Managers;
+using ResearchModule.Managers.Interfaces;
 using ResearchModule.Models;
 using System;
 using System.Collections.Generic;
@@ -9,20 +10,20 @@ namespace ResearchModule.Service
 {
     public class PublicationService
     {
-        private readonly BaseManager manager;
+        private readonly IBaseManager Manager;
         private readonly PAManager paManager;
         private readonly PublicationElements publicationElements;
 
-        public PublicationService(PAManager paManager, BaseManager manager, PublicationElements publicationElements)
+        public PublicationService(PAManager paManager, IBaseManager manager, PublicationElements publicationElements)
         {
-            this.manager = manager;
+            this.Manager = manager;
             this.paManager = paManager;
             this.publicationElements = publicationElements;
         }
 
         public async Task<IEnumerable<Author>> GetAuthors(int id)
         {
-            return await paManager.FindAuthorsByPublication(id);
+            return await paManager.FindAuthors(id);
         }
 
         public string GetFormName(int id)
@@ -38,7 +39,9 @@ namespace ResearchModule.Service
 
         public string GetTypeName(int id)
         {
-            return manager.Get<PublicationType>(id).Name;
+            var item = Manager.Get<PublicationType>(id);
+
+            return item.Name ?? String.Empty;
         }
     }
 }

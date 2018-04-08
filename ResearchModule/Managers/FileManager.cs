@@ -10,7 +10,7 @@ namespace ResearchModule.Managers
 {
     public class FileManager
     {
-        private string filesDirectory
+        private static string filesDirectory
         {
             get
             {
@@ -40,18 +40,24 @@ namespace ResearchModule.Managers
                 Name = file.FileName,
                 FormFile = file
             };
+            SaveFile(fileDetails);
             return fileDetails;
         }
+
+        #region private
 
         /// <summary>
         /// Сохранение файла в директории Files
         /// </summary>
-        public void SaveFile(FileDetails fileDetails)
+        private void SaveFile(FileDetails fileDetails)
         {
             using (var stream = new FileStream(Path.Combine(filesDirectory, fileDetails.Uid), FileMode.Create))
             {
                 fileDetails.FormFile.CopyTo(stream);
             }
         }
+
+        #endregion
+
     }
 }

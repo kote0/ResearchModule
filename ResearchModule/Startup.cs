@@ -12,6 +12,7 @@ using ResearchModule.Service;
 using ResearchModule.Models;
 using Microsoft.AspNetCore.Identity;
 using ResearchModule.Managers;
+using ResearchModule.Managers.Interfaces;
 
 namespace ResearchModule
 {
@@ -24,17 +25,18 @@ namespace ResearchModule
         }
 
         public IConfiguration Configuration { get; }
+        public static IServiceCollection Services { get; private set; }
+        public static ServiceProvider ServiceProvider { get; private set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<PublicationService>();
-            services.AddTransient<SelectListService>();
-            services.AddTransient<FileManager>();
-            services.AddTransient<PAManager>();
-            
+            #region default
+
+            services.AddMvc();
+
             services.AddSingleton(new PublicationElements());
-            
+
             services.AddDbContext<DBContext>();
             services.AddIdentity<User, IdentityRole>(options =>
             {
@@ -42,16 +44,22 @@ namespace ResearchModule
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = false;
             }).AddEntityFrameworkStores<DBContext>();
-            
-            services.AddTransient<BaseManager>();
-            services.AddMvc();
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("AdministratorOnly", policy => policy.RequireRole("Administrator"));
-                options.AddPolicy("DeletePublication", policy => policy.RequireClaim("Delete Publication", "Delete Publication"));
-                options.AddPolicy("AddPublication", policy => policy.RequireClaim("Add Publication", "Add Publication"));
+                options.AddPolicy("admin", policy => policy.RequireRole("admin"));
             });
+
+            #endregion
+
+            services.AddScoped<IBaseManager, BaseManager>();
+            services.AddTransient<PublicationService>();
+            services.AddTransient<SelectListService>();
+            services.AddTransient<FileManager>();
+            services.AddTransient<PAManager>();
+
+            Services = services;
+            ServiceProvider = services.BuildServiceProvider();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -68,6 +76,7 @@ namespace ResearchModule
             }
 
             app.UseStaticFiles();
+            app.UseAuthentication();
 
             app.UseMvc(routes =>
             {

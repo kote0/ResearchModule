@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ResearchModule.Managers;
+using ResearchModule.Managers.Interfaces;
 using ResearchModule.Models;
 using ResearchModule.ViewModels;
 using System;
@@ -16,10 +17,10 @@ namespace ResearchModule.Controllers
     {
         private readonly UserManager<User> userManager;
         private readonly SignInManager<User> signInManager;
-
+        
 
         public AccountController(UserManager<User> userManager,
-            SignInManager<User> signInManager, BaseManager manager) : base(manager)
+            SignInManager<User> signInManager, IBaseManager Manager) : base(Manager)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;

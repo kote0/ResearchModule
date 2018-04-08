@@ -21,7 +21,6 @@ function convertName(list) {
 
 // обработка перед submit
 function formSubmit(formId) {
-    debugger;
     if (!isValid()) {
         get_Info("Заполните обязательные поля");
         return;
@@ -48,11 +47,11 @@ function isValid() {
     for (var input of reqInput) {
         let parent = $(input).parent();
         if (input.value === "") {
-            parent.addClass("has-error")
+            parent.addClass("has-error");
             res = false;
         }
         else {
-            parent.removeClass("has-error")
+            parent.removeClass("has-error");
         }
     }
     return res;
@@ -125,7 +124,7 @@ Author = function () {
                     Author.search(elem).start();
                 },
                 start: function () {
-                    timers[0] = setTimeout(function () { Author.search(elem).onChange() }, 500);
+                    timers[0] = setTimeout(function () { Author.search(elem).onChange(); }, 500);
                 },
                 onChange: function () {
                     $.ajax({
@@ -136,7 +135,7 @@ Author = function () {
                         }
                     });
                 }
-            }
+            };
         },
         searchResult: function () {
             return {
@@ -148,7 +147,7 @@ Author = function () {
                     }
                     else {
                         $(`[name='${elem.name}']`).attr("checked", false);
-                        $(`#${select+searchRes} ${selector}`).detach();
+                        $(`#${select + searchRes} ${selector}`).detach();
                         // данные полученные при поиске
                         $(`#searchResult ${selector}`).detach();
                         // исходные данные при наличии модели
@@ -161,7 +160,7 @@ Author = function () {
                     searchResult.find("tr:has(td)").append(`<td>${weight}</td>`);
                     showWeight(Publication.volumeShow);
                 }
-            }
+            };
         }
     };
 }();
@@ -193,7 +192,7 @@ function showVolume(show) {
         return;
     }
     // скрыть
-    $(div).hide()
+    $(div).hide();
     Requied(name, false);
     showWeight(false);
 }
@@ -208,13 +207,14 @@ changePublicationForm = function (elem) {
         return; // ничего не выбрано
     }
     var id = select.attr("value");
-    showVolume(id === electronicForm || id === audioForm ? false: true );
-}
+    showVolume(id === electronicForm || id === audioForm ? false : true);
+};
 
 Requied = function (elem, required) {
     $(elem).attr("data-val", required ? "True" : "False");
-}
-HasRequered = function (elem){
+};
+
+HasRequered = function (elem) {
     return $(elem).attr("data-val");
-}
+};
 

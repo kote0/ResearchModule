@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ResearchModule.Models
 {
-    public class PublicationFilter
+    public class PublicationFilters
     {
         public int Id { get; set; }
 

@@ -14,7 +14,7 @@ namespace ResearchModule.Models
         public virtual Publication Publication { get; set; }
         [Required]
         public int PublicationFilterId { get; set; }
-        public virtual PublicationFilter PublicationFilter { get; set; }
+        public virtual PublicationFilters PublicationFilter { get; set; }
 
         public PF() { }
         public PF(int publicationId, int publicationFilterId)

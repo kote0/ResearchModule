@@ -5,10 +5,13 @@ using System.Threading.Tasks;
 
 namespace ResearchModule.Components.Models
 {
+    /// <summary>
+    /// Пагинация
+    /// </summary>
     public class PageInfo
     {
         /// <summary>
-        /// номер текущей страницы
+        /// Номер текущей страницы
         /// </summary>
         public int PageNumber { get; set; }
 
@@ -18,12 +21,12 @@ namespace ResearchModule.Components.Models
         public int PageSize { get; set; }
 
         /// <summary>
-        /// всего объектов
+        /// Всего объектов
         /// </summary>
         public int TotalItems { get; set; }
 
         /// <summary>
-        /// // всего страниц
+        /// Всего страниц
         /// </summary>
         public int TotalPages 
         {
@@ -33,6 +36,18 @@ namespace ResearchModule.Components.Models
         public PageInfo()
         {
             PageSize = 10;
+        }
+
+        /// <summary>
+        /// Пагинация
+        /// </summary>
+        /// <param name="number">Номер текущей страницы</param>
+        /// <param name="items">Всего объектов</param>
+        public PageInfo(int number, int items) : base()
+        {
+            PageNumber = number;
+            TotalItems = items;
+            
         }
     }
 }

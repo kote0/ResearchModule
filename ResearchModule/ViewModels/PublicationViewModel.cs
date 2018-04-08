@@ -1,5 +1,6 @@
 ﻿using ResearchModule.Components.Models;
 using ResearchModule.Managers;
+using ResearchModule.Managers.Interfaces;
 using ResearchModule.Models;
 using ResearchModule.Service;
 using System;
@@ -13,19 +14,16 @@ namespace ResearchModule.ViewModels
     {
         public Publication Publication { get; private set; }
         public IEnumerable<Author> Authors { get; private set; }
-
-        private BaseManager manager;
+    
         private PublicationService publicationService;
 
-        public PublicationViewModel() { }
-
-        public PublicationViewModel(BaseManager manager, PublicationService publicationService)
+        public PublicationViewModel(PublicationService publicationService, Publication publication)
         {
-            this.manager = manager;
             this.publicationService = publicationService;
+            Create(publication);
         }
 
-        public async void Create(Publication publication)
+        private async void Create(Publication publication)
         {
             this.Publication = publication;
             this.Authors = await publicationService.GetAuthors(publication.Id);

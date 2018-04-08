@@ -1,4 +1,5 @@
-﻿using ResearchModule.Models;
+﻿using ResearchModule.Managers.Interfaces;
+using ResearchModule.Models;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -13,36 +14,36 @@ namespace ResearchModule.Managers
     /// </summary>
     public class PAManager
     {
-        private readonly BaseManager manager;
+        private readonly BaseManager Manager;
 
         public PAManager(BaseManager manager)
         {
-            this.manager = manager;
+            this.Manager = manager;
         }
 
         public void Create(IEnumerable<Author> authors, int pid)
         {
             foreach (var author in authors)
             {
-                PA pa = new PA();
-                pa.AuthorId = author.Id;
-                pa.Weight = author.Weight;
-                pa.PublicationId = pid;
-                manager.Create(pa);
+                Create(author.Id, pid, author.Weight);
             }
         }
-        public void Create(int aid, int pid)
+        public void Create(int aid, int pid, double weight)
         {
-            PA pa = new PA(pid, aid);
-            manager.Create(pa);
+            PA pa = new PA();
+            pa.AuthorId = aid;
+            pa.Weight = weight;
+            pa.PublicationId = pid;
+            Manager.Create(pa);
         }
-        public async Task<IEnumerable<Author>> FindAuthorsByPublication(int idPublication)
+
+        public async Task<IEnumerable<Author>> FindAuthors(int idPublication)
         {
-            var pas = await manager.Get<PA>(pa => pa.PublicationId == idPublication);
+            var pas = await Manager.Get<PA>(pa => pa.PublicationId == idPublication);
             List<Author> authors = new List<Author>();
             foreach (var item in pas)
             {
-                var list = await manager.Get<Author>(a => a.Id == item.AuthorId);
+                var list = await Manager.Get<Author>(a => a.Id == item.AuthorId);
                 var author = list.FirstOrDefault();
                 if (author != null)
                 {

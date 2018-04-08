@@ -5,4 +5,28 @@
 
 <h2>Главная</h2>
 
-<div>Здесь когда-нибудь должен появиться поиск</div>
+
+<input id="searchPublication" class="form-control" placeholder="Введите название.."/>
+<div id="searchResultPublication"></div>
+
+<script type="text/javascript">
+    
+    $(function () {
+        var search;
+        if (search == null)
+            search = new Search('@Url.Action("Search", "Publication")',
+                function (data) {
+                    $("#searchResultPublication").html(data);
+                }
+            );
+        $("#searchPublication").keyup(function () {
+            if (search != null)
+                search.onKeyUp(this);
+        });
+    });
+    
+</script>
+
+
+
+
