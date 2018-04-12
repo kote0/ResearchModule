@@ -1,18 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using ResearchModule.Models;
-using ResearchModule.Managers;
-using ResearchModule.Managers.Interfaces;
+using ResearchModule.Service;
+using ResearchModule.Repository.Interfaces;
+using ResearchModule.Extensions;
 
 namespace ResearchModule.Controllers
 {
     public class AuthorController : BaseController
     {
-        public AuthorController(IBaseManager Manager) : base(Manager)
-        {}
+        private readonly IBaseRepository repository;
+        public AuthorController(IBaseRepository repository)
+        {
+            this.repository = repository;
+        }
 
         public PartialViewResult CreateForm(int id)
         {
@@ -22,14 +23,8 @@ namespace ResearchModule.Controllers
         public PartialViewResult Search(string character)
         {
             if (character == null) return null;
-            var text = character.ToLower();
-            var authors = Manager.GetByFunction<Author>(a => {
-                if (a.IsValid())
-                {
-                    return a.Lastname.ToLower().Contains(text) || a.Surname.ToLower().Contains(text) || a.Name.ToLower().Contains(text);
-                }
-                else return false;
-            });
+            var authors = repository.Get<Author>(a => a.Contains(character));
+
             return PartialView(authors.ToList());
         }
     }

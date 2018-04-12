@@ -1,13 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using ResearchModule.Managers;
-using ResearchModule.Managers.Interfaces;
 using ResearchModule.Models;
+using ResearchModule.Repository.Interfaces;
 using ResearchModule.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace ResearchModule.Controllers
@@ -17,13 +13,14 @@ namespace ResearchModule.Controllers
     {
         private readonly UserManager<User> userManager;
         private readonly SignInManager<User> signInManager;
-        
+        private readonly IBaseRepository manager;
 
         public AccountController(UserManager<User> userManager,
-            SignInManager<User> signInManager, IBaseManager Manager) : base(Manager)
-        {
+            SignInManager<User> signInManager, IBaseRepository manager)
+        { 
             this.userManager = userManager;
             this.signInManager = signInManager;
+            this.manager = manager;
 
         }
 

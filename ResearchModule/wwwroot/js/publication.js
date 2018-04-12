@@ -27,7 +27,8 @@ function formSubmit(formId) {
     }
     var searchResult = $("#searchResult").find("[type=hidden], input:checked");
     var createResult = $("#createResult").find("input");
-    let c = convertName(searchResult) + convertName(createResult);
+    var getResult = $("#getResult").find("[type=hidden], input:checked");
+    let c = convertName(searchResult) + convertName(createResult) + convertName(getResult);
     if (c === -2) {
         get_Info("Отстутствуют авторы");
         return;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ResearchModule.Models.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -6,21 +7,27 @@ using System.Threading.Tasks;
 
 namespace ResearchModule.Models
 {
-    public class PF
+    /// <summary>
+    /// Публикации : Фильтры
+    /// </summary>
+    public class PF : IPublicationMultiple<PublicationFilters>
     {
-        public int Id { get; set; }
+        public Publication Publication { get; set; }
+
         [Required]
         public int PublicationId { get; set; }
-        public virtual Publication Publication { get; set; }
+
+        public PublicationFilters Multiple { get; set; }
+
         [Required]
-        public int PublicationFilterId { get; set; }
-        public virtual PublicationFilters PublicationFilter { get; set; }
+        public int MultipleId { get; set; }
 
         public PF() { }
-        public PF(int publicationId, int publicationFilterId)
+
+        public PF(int publicationId, int multilpeId)
         {
             PublicationId = publicationId;
-            PublicationFilterId = publicationFilterId;
+            MultipleId = multilpeId;
         }
     }
 }

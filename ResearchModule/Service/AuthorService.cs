@@ -1,4 +1,6 @@
-﻿using ResearchModule.Models;
+﻿using ResearchModule.Extensions;
+using ResearchModule.Models;
+using ResearchModule.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,35 +9,18 @@ using System.Threading.Tasks;
 
 namespace ResearchModule.Service
 {
-    public static class AuthorService
+    public class AuthorService
     {
-        /// <summary>
-        /// Сокращенный формат Фамилия И.О.
-        /// </summary>
-        /// <param name="author"></param>
-        /// <returns></returns>
-        public static string ToStringFormat(this Author author)
+        private readonly PARepository paRepository;
+
+        public AuthorService(PARepository paRepository)
         {
-            return string.Format("{0} {1}.{2}.", 
-                author.Surname, author.Name.Substring(0, 1), 
-                author.Lastname.Substring(0, 1));
+            this.paRepository = paRepository;
         }
 
-        /// <summary>
-        /// Перечесление авторов через запятую
-        /// </summary>
-        /// <param name="authors"></param>
-        /// <returns></returns>
-        public static string ToStringThroughComma(this IEnumerable<Author> authors)
+        public IEnumerable<Author> GetAuthors(int id)
         {
-            if (authors == null) return "";
-            var countAuthors = authors.Count();
-            StringBuilder str = new StringBuilder();
-            for (var i = 0; i < countAuthors; i++)
-            {
-                str.AppendFormat("{0}{1}", i != 0 && i != countAuthors ? "," : "", authors.ElementAt(i).ToStringFormat());
-            }
-            return str.ToString();
+            return paRepository.Find(id);
         }
     }
 }

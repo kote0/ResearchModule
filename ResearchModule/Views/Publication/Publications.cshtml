@@ -1,13 +1,13 @@
 ﻿@using ResearchModule.Components
 @inject ResearchModule.Service.PublicationService PublicationService
-@using ResearchModule.Service
+@using ResearchModule.Extensions
 @model ResearchModule.ViewModels.PublicationsViewModel
 
 <div class="toolbar">
     <a href="@Url.Action("Create", "Publication")" class="btn btn-default">Добавить</a>
 </div>
 
-@if (Model.Publications == null)
+@if (Model == null || Model.Publications == null)
 {
     <div>
         <p>Публикации отсутствуют...</p>

@@ -1,18 +1,28 @@
 ﻿@using ResearchModule.Components
 @using Microsoft.AspNetCore.Html
+@using ResearchModule.Components.Models.Interfaces
 @inject ResearchModule.Service.SelectListService SelectListService
 @model ResearchModule.Models.Publication
 
 @{
     var formId = "createPublication";
     var name = "Publication.";
+    var result = (IResult)ViewData["result"];
 }
 
+@if (result != null && result.Failed)
+{
+    foreach (var item in result.Error)
+    {
+        <div class="alert alert-danger" role="alert">@item</div>
+    }
+
+}
 @using (Html.BeginForm("Create", "Publication", FormMethod.Post, new { id = formId, enctype = "multipart/form-data" }))
 {
     <div>
         <div class="row">
-            <div class="col-md-4">@Html.DisplayNameFor(m=>m.PublicationName)</div>
+            <div class="col-md-4">@Html.DisplayNameFor(m => m.PublicationName)</div>
             <div class="col-md-8">
                <req-input name="@(name + "PublicationName")"></req-input>
             </div>
@@ -25,7 +35,7 @@
         <div class="row" id="translate_Publication" style="display: none;">
             <div class="col-md-4">@Html.DisplayNameFor(m => m.TranslateText)</div>
             <div class="col-md-8">
-                <req-input required="false" name="@(name+ "TranslateText")"></req-input>
+                <req-input required="false" name="@(name + "TranslateText")"></req-input>
             </div>
             <div class="col-md-4 after-row" >Научная работа на</div>
             <div class="col-md-8 after-row" id="languages"></div>
@@ -37,7 +47,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-4">@Html.DisplayNameFor(m=>m.PublicationType)</div>
+            <div class="col-md-4">@Html.DisplayNameFor(m => m.PublicationType)</div>
             <div class="col-md-8">
                 <input-group-btn 
                                  input ="@Html.SelectList(SelectListService.LoadSelectPublicationType())"
@@ -57,7 +67,7 @@
             <div class="col-md-4">@Html.DisplayNameFor(m => m.OutputData)</div>
             <div class="col-md-8">
                 @Html.TextArea(name + "OutputData",
-                    new Dictionary<string, object> {
+         new Dictionary<string, object> {
                         { "class", "form-control" },
                         { "rows", 5 },
                         { "style", "max-width: 100%;" },
@@ -83,7 +93,7 @@
             <div class="col-md-8">
                 @Html.Button("CreateAuthors", " Создать", Html.Icon("plus"), new { onClick = string.Format("Author.append('{0}')", Url.Action("CreateForm", "Author")), type = "button" })
                 @Html.Button("SearchAuthors", " Найти", Html.Icon("search"),
-                          new Dictionary<string, object> { { "type", "button" }, { "data-toggle", "modal" }, { "data-target", "#SearchAuthorsModal" } })
+               new Dictionary<string, object> { { "type", "button" }, { "data-toggle", "modal" }, { "data-target", "#SearchAuthorsModal" } })
             </div>
         </div>
         <div class="SelectedAuthors">
@@ -94,7 +104,7 @@
         </div>
         <div class="row">
             <div class="col-md-4">
-                @Html.Button("Create", "Сохранить", null, new { type = "button", @class = "btn btn-success", onClick = string.Format("formSubmit('{0}')",formId) })
+                @Html.Button("Create", "Сохранить", null, new { type = "button", @class = "btn btn-success", onClick = string.Format("formSubmit('{0}')", formId) })
             </div>
             <div class="col-md-8 info "></div>
         </div>
@@ -104,7 +114,7 @@
 @Html.Partial("SearchAuthorModal")
 
 
-<!--<script type="text/javascript" src="~/js/publication.js"></script>-->
+
 <script type="text/javascript" src="~/lib/languages/language.js"></script>
 <script type="text/javascript" >
     Publication = {
@@ -137,8 +147,9 @@
         }
         var searchResult = $("#searchResult").find("[type=hidden], input:checked");
         var createResult = $("#createResult").find("input");
-        let c = convertName(searchResult) + convertName(createResult);
-        if (c === -2) {
+        var getResult = $("#getResult").find("[type=hidden], input:checked");
+        let c = convertName(searchResult) + convertName(createResult) + convertName(getResult);
+        if (c === -3) {
             get_Info("Отстутствуют авторы");
             return;
         }
@@ -330,8 +341,9 @@
 
 
     $(function () {
+
         $("select#Publication_PublicationForm").on('change', { elem: this }, changePublicationForm);
-        
+
         let selectListLanguage = new language("Publication.text");
         $("#languages").html(selectListLanguage.items);
     });

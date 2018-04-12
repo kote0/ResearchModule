@@ -1,18 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
 using ResearchModule.Data;
 using ResearchModule.Service;
 using ResearchModule.Models;
 using Microsoft.AspNetCore.Identity;
+using ResearchModule.Repository;
+using ResearchModule.Repository.Interfaces;
 using ResearchModule.Managers;
 using ResearchModule.Managers.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace ResearchModule
 {
@@ -52,11 +50,13 @@ namespace ResearchModule
 
             #endregion
 
-            services.AddScoped<IBaseManager, BaseManager>();
+            services.AddScoped<IBaseRepository, BaseRepository>();
+            services.AddTransient<AuthorService>();
             services.AddTransient<PublicationService>();
             services.AddTransient<SelectListService>();
-            services.AddTransient<FileManager>();
-            services.AddTransient<PAManager>();
+            services.AddScoped<IFileManager, FileManager>();
+            //services.AddScoped<ILogger>();
+            services.AddTransient<PARepository>();
 
             Services = services;
             ServiceProvider = services.BuildServiceProvider();

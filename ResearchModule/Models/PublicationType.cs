@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ResearchModule.Models.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ResearchModule.Models
 {
-    public partial class PublicationType
+    public partial class PublicationType : IName
     {
         public int Id { get; set; }
         [Required]
@@ -14,7 +15,7 @@ namespace ResearchModule.Models
 
         public bool IsValid()
         {
-            if (Name != null)
+            if (!string.IsNullOrEmpty(Name))
                 return true;
             return false;
         }

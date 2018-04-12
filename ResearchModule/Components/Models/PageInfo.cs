@@ -16,7 +16,7 @@ namespace ResearchModule.Components.Models
         public int PageNumber { get; set; }
 
         /// <summary>
-        /// кол-во объектов на странице
+        /// Кол-во объектов на странице
         /// </summary>
         public int PageSize { get; set; }
 
@@ -47,7 +47,8 @@ namespace ResearchModule.Components.Models
         {
             PageNumber = number;
             TotalItems = items;
-            
+            PageSize = 10;
+
         }
     }
 }

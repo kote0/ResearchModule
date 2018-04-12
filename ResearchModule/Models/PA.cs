@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ResearchModule.Models.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -6,28 +7,32 @@ using System.Threading.Tasks;
 
 namespace ResearchModule.Models
 {
-    public partial class PA
+    /// <summary>
+    /// Публикации : Авторы
+    /// </summary>
+    public class PA : IPublicationMultiple<Author>
     {
-        public int Id { get; set; }
-
-        [Required]
-        public int PublicationId { get; set; }
         public virtual Publication Publication { get; set; }
 
-        [Required]
-        public int AuthorId { get; set; }
-        public virtual Author Author { get; set; }
+        public virtual Author Multiple { get; set; }
 
         /// <summary>
         /// Вес - вклад автора в публикацию
         /// </summary>
         public double Weight { get; set; }
 
+        [Required]
+        public int PublicationId { get; set; }
+
+        [Required]
+        public int MultipleId { get; set; }
+
         public PA() { }
-        public PA(int publicationId, int authorId)
+
+        public PA(int publicationId, int multilpeId)
         {
             PublicationId = publicationId;
-            AuthorId = authorId;
+            MultipleId = multilpeId;
         }
     }
 }

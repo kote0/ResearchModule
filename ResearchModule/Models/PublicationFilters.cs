@@ -1,11 +1,12 @@
-﻿using System;
+﻿using ResearchModule.Models.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace ResearchModule.Models
 {
-    public class PublicationFilters
+    public class PublicationFilters : IName
     {
         public int Id { get; set; }
 

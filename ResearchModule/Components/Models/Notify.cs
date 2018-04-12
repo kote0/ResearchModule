@@ -60,4 +60,16 @@ namespace ResearchModule.Components.Models
         #endregion
 
     }
+
+    /*public class Result : IResult
+    {
+        public bool     Succeeded { get; set; }
+        public string   Error { get; set; }
+    }
+
+    public interface IResult
+    {
+        bool Succeeded { get; set; }
+        string Error { get; set; }
+    }*/
 }

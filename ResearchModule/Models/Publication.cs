@@ -1,13 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using ResearchModule.Components.Models;
-using ResearchModule.Managers;
+﻿using ResearchModule.Components.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ResearchModule.Models
 {
@@ -26,10 +21,16 @@ namespace ResearchModule.Models
         [DisplayName("Вид публикации")]
         public virtual PublicationType PublicationType { get; set; }
 
+        /// <summary>
+        /// Раздел
+        /// </summary>
         [Required]
         [DisplayName("Раздел")]
         public int PublicationPartition { get; set; }
 
+        /// <summary>
+        /// Форма работы
+        /// </summary>
         [Required]
         [DisplayName("Форма работы")]
         public int PublicationForm { get; set; }
@@ -45,26 +46,31 @@ namespace ResearchModule.Models
         [DisplayName("Объем")]
         public long Volume { get; set; }
 
+        /// <summary>
+        /// Дата создания
+        /// </summary>
         [Required]
         [DisplayName("Дата создания")]
         public DateTime CreateDate { get; set; }
 
+        /// <summary>
+        /// Дата изменения
+        /// </summary>
         [Required]
         [DisplayName("Дата изменения")]
         public DateTime ModifyDate { get; set; }
 
         /// <summary>
-        /// Uid Файл 
+        /// Файл
         /// </summary>
-        [Required]
-        public string PublicationFileUid { get; set; }
+        public FileDetail PublicationFile { get; set; }
 
         /// <summary>
-        /// Название файла
+        /// Файл
         /// </summary>
         [Required]
-        [DisplayName("Название файла")]
-        public string PublicationFileName { get; set; }
+        [DisplayName("Файл")]
+        public int PublicationFileId { get; set; }
 
         /// <summary>
         /// Перевод(может отсутствовать)
@@ -77,10 +83,23 @@ namespace ResearchModule.Models
 
         public ICollection<PA> PAs { get; set; }
 
-        public ICollection<PF> PFs { get; set; }
+        public virtual ICollection<PF> PFs { get; set; }
 
         /*[DisplayName("Автор публикации")]
         public User Author { get; set; }*/
+
+        ///// <summary>
+        ///// Uid Файл 
+        ///// </summary>
+        //[Required]
+        //public string PublicationFileUid { get; set; }
+
+        ///// <summary>
+        ///// Название файла
+        ///// </summary>
+        //[Required]
+        //[DisplayName("Название файла")]
+        //public string PublicationFileName { get; set; }
 
     }
 

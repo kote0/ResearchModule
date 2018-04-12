@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ResearchModule.Models.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ResearchModule.Models
 {
-    public partial class Author
+    public partial class Author : IID
     {
         public int Id { get; set; }
 
@@ -37,12 +38,5 @@ namespace ResearchModule.Models
         public string UserId { get; set; }
 
         public virtual User User { get; set; }
-
-        public bool IsValid()
-        {
-            if (!(string.IsNullOrEmpty(Surname) && string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(Lastname)))
-                return true;
-            return false;
-        }
     }
 }

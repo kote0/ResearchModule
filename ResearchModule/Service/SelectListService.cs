@@ -1,54 +1,53 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using ResearchModule.Models;
-using System.Threading.Tasks;
-using ResearchModule.Managers;
+using ResearchModule.Extensions;
+using ResearchModule.Repository.Interfaces;
 
 namespace ResearchModule.Service
 {
     public class SelectListService
     {
-        private readonly BaseManager manager;
+        private readonly IBaseRepository manager;
         private readonly PublicationElements publicationElements;
 
-        public SelectListService(BaseManager manager, PublicationElements publicationElements)
+        public SelectListService(IBaseRepository manager, PublicationElements publicationElements)
         {
             this.publicationElements = publicationElements;
             this.manager = manager;
         }
 
-        #region select list
-
         public SelectList LoadSelectAuthor(int id = 0)
         {
-            var list = manager.GetByFunction<Author>(a => a.IsValid()) //сделать асинхронным
-                .Select(a => newSelectListItem(a.ToStringFormat(),a.Id, id));
+            var list =  manager.Get<Author>(a => a.IsValid()) //сделать асинхронным
+                .Select(a => CreateItem(a.ToStringFormat(),a.Id, id));
             return selectListCreate(list, "Author");
         }
 
+        public SelectList LoadSelectPublicationType(int id = 1)
+        {
+            var list = manager.Get<PublicationType>(a => a.IsValid())
+                .Select(a => CreateItem(a.Name, a.Id, id));
+            return selectListCreate(list, "Publication.PublicationTypeId");
+        }
 
         public SelectList LoadSelectPublicationPartition(int id = 0)
         {
-            var list = publicationElements.Partitions.Select(a => newSelectListItem(a.Name, a.Id, id));
+            var list = publicationElements.Partitions
+                .Select(a => CreateItem(a.Name, a.Id, id));
             return selectListCreate(list, "Publication.PublicationPartition");
-        }
-       
-
-        public SelectList LoadSelectPublicationType(int id = 1)
-        {
-            var list = manager.GetByFunction<PublicationType>(a => a.IsValid())
-                .Select(a => newSelectListItem(a.Name, a.Id, id));
-            return selectListCreate(list, "Publication.PublicationType");
         }
 
         public SelectList LoadSelectPublicationForm(int id = 0)
         {
-            var list = publicationElements.Forms.Select(a => newSelectListItem(a.Name, a.Id, id));
+            var list = publicationElements.Forms
+                .Select(a => CreateItem(a.Name, a.Id, id));
             return selectListCreate(list, "Publication.PublicationForm");
         }
 
-        private SelectListItem newSelectListItem(string str, int id, int selectId)
+        #region private
+
+        private SelectListItem CreateItem(string str, int id, int selectId)
         {
             return new SelectListItem
             {

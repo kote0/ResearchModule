@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using ResearchModule.Components.Models;
 using ResearchModule.Models;
 using System;
 using System.Collections.Generic;
@@ -47,22 +48,22 @@ namespace ResearchModule.Data
             });
 
             modelBuilder.Entity<PA>()
-                .HasKey(t => new { t.AuthorId, t.PublicationId });
+                .HasKey(t => new { t.MultipleId, t.PublicationId });
 
             modelBuilder.Entity<PF>()
-                .HasKey(t => new { t.PublicationFilterId, t.PublicationId });
+                .HasKey(t => new { t.MultipleId, t.PublicationId });
 
             modelBuilder.Entity<PA>()
                .HasOne(p => p.Publication)
                .WithMany(i => i.PAs)
-               .HasForeignKey(pt=>pt.PublicationId)
-               .OnDelete(DeleteBehavior.Cascade); 
+               .HasForeignKey(pt => pt.PublicationId)
+               .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<PA>()
-              .HasOne(p => p.Author)
+              .HasOne(p => p.Multiple)
               .WithMany(i => i.PAs)
-              .HasForeignKey(pt => pt.AuthorId)
-              .OnDelete(DeleteBehavior.Cascade); 
+              .HasForeignKey(pt => pt.MultipleId)
+              .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<PF>()
                .HasOne(p => p.Publication)
@@ -70,9 +71,14 @@ namespace ResearchModule.Data
                .HasForeignKey(pt => pt.PublicationId);
 
             modelBuilder.Entity<PF>()
-              .HasOne(p => p.PublicationFilter)
+              .HasOne(p => p.Multiple)
               .WithMany(i => i.PFs)
-              .HasForeignKey(pt => pt.PublicationFilterId);
+              .HasForeignKey(pt => pt.MultipleId);
+
+            modelBuilder.Entity<FileDetail>()
+                .HasOne(p => p.Publication)
+                .WithOne(o => o.PublicationFile)
+                .HasForeignKey<Publication>(b=>b.PublicationFileId);
 
             base.OnModelCreating(modelBuilder);
         }
@@ -83,6 +89,6 @@ namespace ResearchModule.Data
         public DbSet<PA> PA { get; set; }
         public DbSet<PublicationFilters> PublicationFilter { get; set; }
         public DbSet<PF> PF { get; set; }
-        //public virtual DbSet<User> User { get; set; }
+        public DbSet<FileDetail> FileDetail { get; set; }
     }
 }
