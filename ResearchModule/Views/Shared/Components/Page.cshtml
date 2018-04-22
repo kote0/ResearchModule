@@ -1,0 +1,57 @@
+﻿@using ResearchModule.Components.Models
+@model PageInfo
+
+@if (Model == null)
+{
+    return;
+}
+
+@{
+    
+    var totalPages = Model.TotalPages < 5 ? Model.TotalPages : 5;
+    var havePrevious = Model.PageNumber != 1;
+    var haveNext = Model.TotalPages != totalPages;
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                <li class="@(havePrevious ? "" : "disabled")">
+                    <a onclick="loadPageInfoResult(@(havePrevious ? Model.PageNumber - 1 : -1))" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                @for (var i = Model.PageNumber; i <= totalPages; i++)
+                {
+                    <li class="@(i == Model.PageNumber ? "active": "")">
+                        <a onclick="loadPageInfoResult(@(i))">@i</a>
+                    </li>
+                }
+                <li class="@(haveNext ? "" : "disabled")">
+                    <a onclick="loadPageInfoResult(@(haveNext ? Model.PageNumber + 1 : -1))" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function loadPageInfoResult(numberPage) {
+
+        if (numberPage == -1) {
+            return;
+        }
+
+        $.ajax({
+            url: '@(Model.GetUrl())' + numberPage,
+            success: function (data) {
+                $("#pageInfoResult").html(data);
+            }
+        });
+
+    }
+
+</script>

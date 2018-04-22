@@ -14,6 +14,8 @@ namespace ResearchModule.Repository.Interfaces
     {
         DBContext _db { get; }
 
+        void Save();
+
         IResult AddRange(IEnumerable<object> records);
         IResult AddRange(params object[] records);
 

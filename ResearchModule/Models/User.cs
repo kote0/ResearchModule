@@ -11,6 +11,6 @@ namespace ResearchModule.Models
     {        
         public bool IsDeleted { get; set; }
 
-        public virtual Author Author { get; set; }
+        public Author Author { get; set; }
     }
 }

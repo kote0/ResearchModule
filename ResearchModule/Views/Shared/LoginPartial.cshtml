@@ -9,7 +9,7 @@
         <form asp-area="" asp-controller="Account" asp-action="Logout" id="logoutForm"
               method="post" class="navbar-right">
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="#">@User.Identity.Name</a></li>
+                <li><a href="@Url.Action("Profile", "Account", new { name = User.Identity.Name})">@User.Identity.Name</a></li>
                 <li><a href="javascript:document.getElementById('logoutForm').submit()">Выйти</a></li>
             </ul>
         </form>

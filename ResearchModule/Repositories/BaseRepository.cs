@@ -33,13 +33,19 @@ namespace ResearchModule.Repository
             this.logger = logger;
         }
 
+        public void Save()
+        {
+            _db.SaveChanges();
+        }
+
         public IResult Create<T>(T record) where T : class
         {
             var result = new Result();
             try
             {
                 if (record == null) return result.Set("{0} is null", record);
-                _db.Entry(record).State = EntityState.Added;
+                _db.Add(record);
+                //_db.Entry(record).State = EntityState.Added;
                 _db.SaveChanges();
             }
             catch (Exception ex)
@@ -85,7 +91,9 @@ namespace ResearchModule.Repository
             try
             {
                 if (record == null) return result.Set("{0} is null", record);
-                _db.Attach(record).State = EntityState.Modified;
+                _db.Entry(record).State = EntityState.Modified;
+                //_db.Update(record);
+                //_db.Attach(record).State = EntityState.Modified;
                 _db.SaveChanges();
             }
             catch (Exception ex)
@@ -127,6 +135,7 @@ namespace ResearchModule.Repository
             catch (Exception ex)
             {
                 logger.LogError(ex, string.Format("Ошибка при изменении записей {0}", records));
+                throw;
             }
             return result;
         }

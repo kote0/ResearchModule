@@ -4,9 +4,11 @@ using ResearchModule.Models;
 using ResearchModule.Service;
 using ResearchModule.Repository.Interfaces;
 using ResearchModule.Extensions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ResearchModule.Controllers
 {
+    [Authorize]
     public class AuthorController : BaseController
     {
         private readonly IBaseRepository repository;

@@ -1,0 +1,58 @@
+﻿@using static ResearchModule.Extensions.ValueExtension
+@model ResearchModule.Models.User
+@{
+    ViewData["Title"] = "Профиль";
+}
+
+@if (Model == null)
+{
+    <div>Пользователь не найден</div>
+    return;
+}
+@{
+    var haveAuthor = Model.Author != null;
+}
+<div class="row">
+    <div class="col-md-12">
+        <h2>
+            Профиль<a href="@Url.Action("ChangeUser", "Account", new { name = Model.UserName, returnUrl = Url.ActionContext.HttpContext.Request.Path } )" 
+                      class="btn btn-default">Редактировать</a>
+        </h2>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <img src="~/images/nophoto.jpg" style="width:250px; height:250px;" />
+    </div>
+    <div class="col-md-7 propertyDisplay">
+        <div class="row">
+            <h4>@(haveAuthor ? Model.Author.ToStringFormat() : Model.UserName)</h4>
+        </div>
+        <div class="row">
+            <div class="propertyName">Почта:</div>
+            <div>@(Model.Email ?? "")</div>
+        </div>
+        <div class="row">
+            <div class="propertyName">День рожденья:</div>
+            <div>@(haveAuthor ? Model.Author.BDay.ToShortDateString() : "Не указано")</div>
+        </div>
+        <div class="row">
+            <div class="propertyName">Права доступа:</div>
+            <div>Не указано</div>
+        </div>
+        <div class="row">
+            <a href="@Url.Action("Index", "Admin")" class="btn btn-primary">Администрирование</a>
+        </div>
+    </div>
+</div>
+
+
+<style>
+    .propertyName {
+        width: 150px;
+    }
+
+    .propertyDisplay > * {
+        display: flex;
+    }
+</style>

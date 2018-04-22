@@ -42,6 +42,11 @@ namespace ResearchModule.Data
                 entity.Property(e => e.Surname).HasColumnType("nchar(100)");
             });
 
+            modelBuilder.Entity<User>()
+                .HasOne(a => a.Author)
+                .WithOne(u => u.User)
+                .HasPrincipalKey<User>(u=>u.UserName);
+
             modelBuilder.Entity<PublicationType>(entity =>
             {
                 entity.Property(e => e.Name).HasColumnType("nchar(100)");

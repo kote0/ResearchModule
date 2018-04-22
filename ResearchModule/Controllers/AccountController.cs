@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using ResearchModule.Components.Models;
+using ResearchModule.Components.Models.Interfaces;
 using ResearchModule.Models;
 using ResearchModule.Repository.Interfaces;
 using ResearchModule.ViewModels;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace ResearchModule.Controllers
@@ -17,11 +20,52 @@ namespace ResearchModule.Controllers
 
         public AccountController(UserManager<User> userManager,
             SignInManager<User> signInManager, IBaseRepository manager)
-        { 
+        {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.manager = manager;
 
+        }
+
+        public async Task<IActionResult> SaveUser(User user, Author author, string returnUrl)
+        {
+            var result = new Result();
+            author.UserId = user.UserName;
+
+            result.Set(author.Id == 0
+                ? manager.Create(author).Error
+                : manager.Update(author).Error);
+            
+            await userManager.UpdateAsync(user);
+
+            if (result.Succeeded)
+                return Redirect(returnUrl);
+
+            return RedirectToAction("ChangeUser", user.UserName, returnUrl);
+        }
+
+        public IActionResult ChangeUser(string name, string returnUrl)
+        {
+            var currUser = User.Identity.Name;
+            if (currUser == name || currUser == "admin0")
+            {
+                var user = manager.Include<User, Author>(u => u.Author)
+                       .Where(u => u.UserName == name)
+                       .FirstOrDefault();
+                ViewData["returnUrl"] = returnUrl;
+                return View(user);
+            }
+            ViewData["permissionError"] = string.Concat("Нет прав на редактирование пользователя ", name);
+            return Redirect(returnUrl);
+        }
+
+        public IActionResult Profile(string name)
+        {
+            var user = manager.Include<User, Author>(u => u.Author)
+                .Where(u => u.UserName == name)
+                .FirstOrDefault();
+
+            return View(user);
         }
 
         [AllowAnonymous]
@@ -81,7 +125,7 @@ namespace ResearchModule.Controllers
                 if (user == null)
                 {
                     var result = await userManager
-                        .CreateAsync(new User() { UserName = loginViewModel.UserName}, loginViewModel.Password);
+                        .CreateAsync(new User() { UserName = loginViewModel.UserName }, loginViewModel.Password);
                     res = result.Succeeded;
                 }
                 else

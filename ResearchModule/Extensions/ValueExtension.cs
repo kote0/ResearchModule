@@ -60,8 +60,9 @@ namespace ResearchModule.Extensions
         public static string ToStringFormat(this Author author)
         {
             return string.Format("{0} {1}.{2}.",
-                author.Surname, author.Name.Substring(0, 1),
-                author.Lastname.Substring(0, 1));
+                author.Surname,
+                string.IsNullOrEmpty(author.Name) ? "" : author.Name.Substring(0, 1),
+                string.IsNullOrEmpty(author.Lastname) ? "" : author.Lastname.Substring(0, 1));
         }
 
         /// <summary>
