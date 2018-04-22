@@ -47,6 +47,11 @@ namespace ResearchModule.Components.Models
         private string url { get; set; }
 
         /// <summary>
+        /// Id Формы
+        /// </summary>
+        public string DataId { get; set; }
+
+        /// <summary>
         /// Пагинация
         /// </summary>
         /// <param name="number">Номер текущей страницы</param>

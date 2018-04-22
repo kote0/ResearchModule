@@ -22,11 +22,13 @@ namespace ResearchModule.Controllers
         {
             this.publicationService = publicationService;
         }
-        
-        public IActionResult Filter(PublicationFilterViewModel viewModel)
-        {
-            var publications = publicationService.Filter(viewModel);
 
+        [HttpPost]
+        public IActionResult Filter(PublicationFilterViewModel viewModel, int first = 1)
+        {
+            var publications = publicationService.Filter(viewModel, first);
+            publications.PageInfo.SetUrl("Filter", "Publication");
+            publications.PageInfo.DataId = "PublicationFilterFormId";
             return View("Publications", publications);
         }
 
@@ -39,7 +41,9 @@ namespace ResearchModule.Controllers
         [HttpGet]
         public ActionResult Publications(int first = 1)
         {
-            return View(publicationService.Page(first));
+            var view = publicationService.Page(first);
+            view.PageInfo.SetUrl("Publications", "Publication");
+            return View(view);
         }
 
         public ActionResult Edit(int id)
@@ -59,9 +63,11 @@ namespace ResearchModule.Controllers
         
         [HttpPost]
         public ActionResult Create(IEnumerable<Author> Author, [Bind("Id", Prefix = "Search")]IEnumerable<Author> Search,
-            Publication Publication, PublicationType PublicationType, IFormFile FormFile)
+            Publication Publication, PublicationType PublicationType, IFormFile FormFile, int PublicationTypeId)
         {
             IResult result = null;
+            if (PublicationTypeId != 0) Publication.PublicationTypeId = PublicationTypeId;
+            
             if (Publication.Id == 0)
             {
                 result = publicationService.Create(Publication, PublicationType, FormFile, Author, Search);

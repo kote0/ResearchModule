@@ -4,7 +4,7 @@
 @model PublicationFilterViewModel
 
 <div class="row">
-    @using (Html.BeginForm("Filter", "Publication"))
+    @using (Html.BeginForm("Filter", "Publication", null, FormMethod.Post,false, new { id ="PublicationFilterFormId" }))
     {
         <div class="row">
             @Html.LabelFor(m => m.Publication.PublicationName)
@@ -12,7 +12,7 @@
         </div>
         <div class="row">
             <label>Вид публикации</label>
-            @Html.SelectList(SelectListService.LoadSelectPublicationType(), true)
+            @Html.SelectList(SelectListService.LoadSelectPublicationType(-1), true)
         </div>
         <div class="row">
             @Html.LabelFor(m => m.Publication.OutputData)

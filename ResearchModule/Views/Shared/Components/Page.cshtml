@@ -44,9 +44,9 @@
         if (numberPage == -1) {
             return;
         }
-
         $.ajax({
             url: '@(Model.GetUrl())' + numberPage,
+            @(string.IsNullOrEmpty(Model.DataId) ? null : Html.Raw(string.Concat("type: 'POST', data:  $('#", Model.DataId, "').find('input, select'),")))
             success: function (data) {
                 $("#pageInfoResult").html(data);
             }

@@ -38,12 +38,22 @@ namespace ResearchModule.Service
             this.result = new Result();
         }
 
-        public PublicationsViewModel Filter(PublicationFilterViewModel filter)
+        public PublicationsViewModel Filter(PublicationFilterViewModel filter, int first = 1)
         {
-            var query = repository.GetQuery<Publication>(p => Contains(p, ref filter));
-            var list = repository.Page(query, 1).ToList();
-            var viewModel = Page(list);
-            viewModel.PublicationFilterViewModel = filter;
+            PublicationsViewModel viewModel;
+            if (filter.PublicationType == null 
+                && string.IsNullOrEmpty(filter.Publication.PublicationName)
+                && string.IsNullOrEmpty(filter.Publication.OutputData))
+            {
+                viewModel = Page(first);
+            }
+            else
+            {
+                var query = repository.GetQuery<Publication>(p => Contains(p, ref filter));
+                var list = repository.Page(query, first).ToList();
+                viewModel = Page(list, first);
+                viewModel.PublicationFilterViewModel = filter;
+            }
             return viewModel;
         }
 
@@ -59,7 +69,7 @@ namespace ResearchModule.Service
                     && model.OutputData.ToLower().Contains(filter.Publication.OutputData))
                     return true;
             }
-            if (filter.PublicationType.Count > 0)
+            if (filter.PublicationType != null)
             {
                 var type = filter.PublicationType.Where(t => t.Id == model.PublicationTypeId).FirstOrDefault();
                 if (type != null)
@@ -205,16 +215,17 @@ namespace ResearchModule.Service
         /// <param name="result"></param>
         private void CreatePublicationType(PublicationType publicationType, ref Publication publication)
         {
-            if (publicationType.IsValid())
+            if (!publicationType.IsValid())
+                return;
+
+            if (publication.PublicationTypeId != 0)
             {
-                result.Set(repository.Create(publicationType)
-                    .Error);
+                publicationType.Id = publication.PublicationTypeId;
+                result.Set(repository.Update(publicationType).Error);
+                return;
             }
-            else if (publicationType.Id != 0)
-            {
-                result.Set(repository.Update(publicationType)
-                    .Error);
-            }
+            
+            result.Set(repository.Create(publicationType).Error);
             publication.PublicationTypeId = publicationType.Id;
         }
 
@@ -311,18 +322,19 @@ namespace ResearchModule.Service
         private void UpdatePA(int publicationId, IEnumerable<Author> createdAuthors, IEnumerable<Author> selectedAuthors)
         {
             result.Set(paRepository.Create(createdAuthors, publicationId).Error);
-            // найти существующих авторов
-            // если существуют вернуть их Id
-            // для создании записи
+
             if (selectedAuthors.Count() != 0)
             {
                 var pas = repository.GetQuery<PA>(o => o.PublicationId == publicationId).ToList();
+                
                 foreach (var item in pas)
                 {
                     var author = selectedAuthors.FirstOrDefault(s => s.Id == item.MultipleId);
-                    if (author != null)
+                    if (author != null && author.Weight != 0)
                     {
-                        result.Set(paRepository.Update(author, publicationId).Error);
+                        item.Weight = author.Weight;
+                        result.Set(repository.Update(item).Error);
+                        //result.Set(paRepository.Update(author, publicationId).Error);
                     }
                     else
                     {

@@ -26,9 +26,9 @@ namespace ResearchModule.Service
 
         public SelectList LoadSelectPublicationType(int id = 1)
         {
-            var list = manager.Get<PublicationType>(a => a.IsValid())
+            var list = manager.GetQuery<PublicationType>(a => a.IsValid())
                 .Select(a => CreateItem(a.Name, a.Id, id));
-            return selectListCreate(list, "Publication.PublicationTypeId");
+            return selectListCreate(list.ToList(), "Publication.PublicationTypeId");
         }
 
         public SelectList LoadSelectPublicationPartition(int id = 0)

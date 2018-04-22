@@ -91,8 +91,10 @@ namespace ResearchModule.Repository
             try
             {
                 if (record == null) return result.Set("{0} is null", record);
-                _db.Entry(record).State = EntityState.Modified;
-                //_db.Update(record);
+
+                //_db.Entry(record).State = EntityState.Modified;
+                _db.Update(record);
+                var state = _db.Entry(record).State;
                 //_db.Attach(record).State = EntityState.Modified;
                 _db.SaveChanges();
             }
