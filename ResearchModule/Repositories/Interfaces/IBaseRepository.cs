@@ -43,5 +43,6 @@ namespace ResearchModule.Repository.Interfaces
             where T : class;
 
         IQueryable<T> Page<T>(int page, int pageSize = 10) where T : class;
+        IQueryable<T> Page<T>(IQueryable<T> list, int page, int pageSize = 10) where T : class;
     }
 }

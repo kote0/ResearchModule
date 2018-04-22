@@ -207,6 +207,11 @@ namespace ResearchModule.Repository
             return _db.Set<T>().Skip((page - 1) * pageSize).Take(pageSize);
         }
 
+        public IQueryable<T> Page<T>(IQueryable<T> list, int page, int pageSize = 10) where T : class
+        {
+            return list.Skip((page - 1) * pageSize).Take(pageSize);
+        }
+
         public IIncludableQueryable<T, TProperty> Include<T, TProperty>(Expression<Func<T, TProperty>> func, DbSet<T> type = null) where T : class
         {
             if (type == null) type = Set<T>();

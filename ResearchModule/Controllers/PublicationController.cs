@@ -1,22 +1,17 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ResearchModule.Components.Models;
 using ResearchModule.Components.Models.Interfaces;
-using ResearchModule.Extensions;
-using ResearchModule.Managers;
-using ResearchModule.Managers.Interfaces;
 using ResearchModule.Models;
-using ResearchModule.Repository;
-using ResearchModule.Repository.Interfaces;
 using ResearchModule.Service;
 using ResearchModule.ViewModels;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace ResearchModule.Controllers
 {
     //RedirectToAction("Test", "FullTextSearch", new { area = "EleWise.ELMA.BPM.Web.Common" });
+    [Authorize]
     public class PublicationController : BaseController
     {
         
@@ -28,6 +23,13 @@ namespace ResearchModule.Controllers
             this.publicationService = publicationService;
         }
         
+        public IActionResult Filter(PublicationFilterViewModel viewModel)
+        {
+            var publications = publicationService.Filter(viewModel);
+
+            return View("Publications", publications);
+        }
+
         [HttpGet]
         public ActionResult Create()
         {
@@ -54,10 +56,10 @@ namespace ResearchModule.Controllers
             return PartialView("Publications", model);
         }
 
-        //TODO: Заменить на CreatePublicationViewModel
+        
         [HttpPost]
         public ActionResult Create(IEnumerable<Author> Author, [Bind("Id", Prefix = "Search")]IEnumerable<Author> Search,
-            Publication Publication, PublicationType PublicationType, IFormFile FormFile, CreatePublicationViewModel view = null)
+            Publication Publication, PublicationType PublicationType, IFormFile FormFile)
         {
             IResult result = null;
             if (Publication.Id == 0)
@@ -66,9 +68,7 @@ namespace ResearchModule.Controllers
             }
             else
             {
-                result = new Result();
                 result = publicationService.Update(Publication, PublicationType, FormFile, Author, Search);
-                // TODO:
             }
 
             if (result.Failed)

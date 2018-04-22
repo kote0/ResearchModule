@@ -13,6 +13,8 @@ namespace ResearchModule.Models
         [Required]
         public string Name { get; set; }
 
+        public virtual List<Publication> Publications { get; set; }
+
         public bool IsValid()
         {
             if (!string.IsNullOrEmpty(Name))

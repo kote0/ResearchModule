@@ -12,7 +12,7 @@ namespace ResearchModule.ViewModels
     {
         public IEnumerable<PublicationViewModel> Publications { get; private set; }
         public PageInfo PageInfo { get; set; }
-        
+        public PublicationFilterViewModel PublicationFilterViewModel { get; set; }
 
         public PublicationsViewModel(PublicationService publicationService, AuthorService authorService, 
             IEnumerable<Publication> publications, PageInfo pageInfo)

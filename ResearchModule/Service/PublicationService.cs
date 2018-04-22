@@ -38,7 +38,35 @@ namespace ResearchModule.Service
             this.result = new Result();
         }
 
+        public PublicationsViewModel Filter(PublicationFilterViewModel filter)
+        {
+            var query = repository.GetQuery<Publication>(p => Contains(p, ref filter));
+            var list = repository.Page(query, 1).ToList();
+            var viewModel = Page(list);
+            viewModel.PublicationFilterViewModel = filter;
+            return viewModel;
+        }
 
+        private bool Contains(Publication model, ref PublicationFilterViewModel filter)
+        {
+            if (filter.Publication != null)
+            {
+                var name = filter.Publication.PublicationName;
+                if (!string.IsNullOrEmpty(name) && model.PublicationName.ToLower().Contains(name.ToLower()))
+                    return true;
+
+                if (!string.IsNullOrEmpty(filter.Publication.OutputData)
+                    && model.OutputData.ToLower().Contains(filter.Publication.OutputData))
+                    return true;
+            }
+            if (filter.PublicationType.Count > 0)
+            {
+                var type = filter.PublicationType.Where(t => t.Id == model.PublicationTypeId).FirstOrDefault();
+                if (type != null)
+                    return true;
+            }
+            return false;
+        }
 
         public string GetFormName(int id)
         {
@@ -56,6 +84,11 @@ namespace ResearchModule.Service
         public PublicationsViewModel Page(int first = 1)
         {
             var publications = repository.Page<Publication>(first);
+            return Page(publications, first);
+        }
+
+        public PublicationsViewModel Page(IEnumerable<Publication> publications,  int first = 1)
+        {
             return CreateView(publications, first);
         }
 
@@ -174,10 +207,15 @@ namespace ResearchModule.Service
         {
             if (publicationType.IsValid())
             {
-                result.Set(repository
-                    .Create(publicationType)
+                result.Set(repository.Create(publicationType)
                     .Error);
             }
+            else if (publicationType.Id != 0)
+            {
+                result.Set(repository.Update(publicationType)
+                    .Error);
+            }
+            publication.PublicationTypeId = publicationType.Id;
         }
 
         /// <summary>

@@ -52,6 +52,11 @@ namespace ResearchModule.Data
                 entity.Property(e => e.Name).HasColumnType("nchar(100)");
             });
 
+            modelBuilder.Entity<PublicationType>()
+                .HasMany(p => p.Publications)
+                .WithOne(t => t.PublicationType)
+                .HasForeignKey(p=>p.PublicationTypeId);
+
             modelBuilder.Entity<PA>()
                 .HasKey(t => new { t.MultipleId, t.PublicationId });
 

@@ -109,7 +109,7 @@ namespace ResearchModule.Components
             return tagBuilder;
         }
 
-        public static IHtmlContent SelectList(this IHtmlHelper html, ResearchModule.Models.SelectList selectList, string title = null)
+        public static IHtmlContent SelectList(this IHtmlHelper html, ResearchModule.Models.SelectList selectList, bool multiple = false)
         {
             var tagBuilder = new TagBuilder("select");
             tagBuilder.AddCssClass("form-control selectpicker selectpicker_" + selectList.GetName());
@@ -118,7 +118,12 @@ namespace ResearchModule.Components
             {
                 tagBuilder.InnerHtml.AppendHtml(html.Option(elem.Value, elem.Selected, elem.Text));
             }
-            tagBuilder.MergeAttributes(new RouteValueDictionary(new { title = countElem? "Ничего не выбрано" : "", name=selectList.GetName() }), true);
+            var dictionary = new RouteValueDictionary(new { title = "Ничего не выбрано", name = selectList.GetName()});
+            if (multiple)
+            {
+                dictionary.Add("multiple", "");
+            }
+            tagBuilder.MergeAttributes(dictionary, true);
             tagBuilder.RenderSelfClosingTag();
 
             return tagBuilder;

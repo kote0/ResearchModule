@@ -53,15 +53,11 @@
                 }
             </div>
             <div class="navbar-collapse collapse" id="menu">
-                <!--<ul class="nav navbar-nav">
-                    <li><a asp-action="Create" asp-controller="Publication">@Html.Icon("plus", new { style="color: white"}) Добавить</a></li>
-                </ul>-->
                 @await Html.PartialAsync("LoginPartial")
             </div>
         </div>
     </nav>
     <div class="container body-content main-content">
-        @await Html.PartialAsync("Notify")
         @RenderBody()
         <hr />
         <footer>

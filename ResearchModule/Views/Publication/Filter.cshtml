@@ -1,0 +1,28 @@
+﻿@using ResearchModule.Components
+@using  ResearchModule.ViewModels
+@inject ResearchModule.Service.SelectListService SelectListService
+@model PublicationFilterViewModel
+
+<div class="row">
+    @using (Html.BeginForm("Filter", "Publication"))
+    {
+        <div class="row">
+            @Html.LabelFor(m => m.Publication.PublicationName)
+            @Html.TextBoxFor(m => m.Publication.PublicationName, new { @class = "form-control" })
+        </div>
+        <div class="row">
+            <label>Вид публикации</label>
+            @Html.SelectList(SelectListService.LoadSelectPublicationType(), true)
+        </div>
+        <div class="row">
+            @Html.LabelFor(m => m.Publication.OutputData)
+            @Html.TextBoxFor(m => m.Publication.OutputData, new { @class = "form-control" })
+        </div>
+        <div class="row">
+            <button  type="submit" class="btn btn-primary">Найти</button>
+        </div>
+
+        <div class="row"></div>
+
+    }
+</div>
