@@ -13,7 +13,7 @@ namespace ResearchModule.Managers
 {
     public class FileManager : IFileManager
     {
-        private static string filesDirectory
+        private static string directory
         {
             get
             {
@@ -34,7 +34,7 @@ namespace ResearchModule.Managers
             this.repository = repository;
         }
 
-        public FileDetail Create(IFormFile file)
+        public FileDetail CreateInfo(IFormFile file)
         {
             if (file == null) return null;
 
@@ -53,7 +53,7 @@ namespace ResearchModule.Managers
 
         public IResult Create(FileDetail fileDetails)
         {
-            return repository.Create(fileDetails);
+            return repository.Add(fileDetails);
         }
 
         public IResult Update(FileDetail fileDetail)
@@ -62,25 +62,43 @@ namespace ResearchModule.Managers
 
         }
 
-        public FileDetail CreateAndSave(IFormFile file)
+        /*public FileDetail CreateAndSave(IFormFile file)
         {
-            var fileDetails = Create(file);
-            SaveFIle(fileDetails);
+            var fileDetails = CreateInfo(file);
+
+            SaveFileInServer(fileDetails);
             return fileDetails;
+        }*/
+
+        public void Delete(string uid)
+        {
+            var file = string.Concat(directory, uid);
+            if (File.Exists(file))
+                File.Delete(file);
         }
 
-        public void Delete()
+        public void SaveFileInServer(FileDetail fileDetails)
         {
-            //TODO: Реализовать
-            throw new NotImplementedException();
-        }
-
-        public void SaveFIle(FileDetail fileDetails)
-        {
-            using (var stream = new FileStream(Path.Combine(filesDirectory, fileDetails.Uid), FileMode.Create))
+            using (var stream = new FileStream(Path.Combine(directory, fileDetails.Uid), FileMode.Create))
             {
                 fileDetails.FormFile.CopyTo(stream);
             }
+        }
+
+        public FileDetail UpdateFile(IFormFile file, int publicationFileId)
+        {
+            if (file != null)
+            {
+                var fileDetails = CreateInfo(file);
+                var id = publicationFileId;
+                var fileInfo = repository.Get<FileDetail>(id);
+                Delete(fileInfo.Uid);
+                fileDetails.Id = id;
+                var res = Update(fileDetails);
+                if (res.Succeeded)
+                    return fileDetails;
+            }
+            return null;
         }
     }
 }

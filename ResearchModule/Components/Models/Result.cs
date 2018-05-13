@@ -32,6 +32,11 @@ namespace ResearchModule.Components.Models
 
         #region methods
 
+        public IResult Set(IResult result)
+        {
+            return Set(result.Error);
+        }
+
         public IResult Set(string str, params object[] obj)
         {
             return Set(string.Format(str, obj));

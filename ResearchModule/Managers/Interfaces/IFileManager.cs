@@ -15,7 +15,7 @@ namespace ResearchModule.Managers.Interfaces
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
-        FileDetail Create(IFormFile file);
+        FileDetail CreateInfo(IFormFile file);
 
         /// <summary>
         /// Создание записи о файле
@@ -31,21 +31,29 @@ namespace ResearchModule.Managers.Interfaces
         /// <returns></returns>
         IResult Update(FileDetail fileDetail);
 
-        /// <summary>
+        /*/// <summary>
         /// Создание и сохранение файла
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
-        FileDetail CreateAndSave(IFormFile file);
+        FileDetail CreateAndSave(IFormFile file);*/
 
         /// <summary>
         /// Сохранение файла в директории Files
         /// </summary>
-        void SaveFIle(FileDetail fileDetails);
+        void SaveFileInServer(FileDetail fileDetails);
 
         /// <summary>
         /// Удаление файла из сервера
         /// </summary>
-        void Delete();
+        void Delete(string uid);
+
+        /// <summary>
+        /// Измение информации о файле
+        /// </summary>
+        /// <param name="file"></param>
+        /// <param name="publicationFileId"></param>
+        /// <returns></returns>
+        FileDetail UpdateFile(IFormFile file, int publicationFileId);
     }
 }

@@ -19,5 +19,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Attributes\" />
+    <Folder Include="Repositories\Abstarcts\" />
+    <Folder Include="Filters\" />
   </ItemGroup>
 </Project>

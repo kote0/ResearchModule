@@ -16,6 +16,11 @@ namespace ResearchModule.Components.Models
         public int PageNumber { get; set; }
 
         /// <summary>
+        /// Модель
+        /// </summary>
+        public object Model { get; set; }
+
+        /// <summary>
         /// Кол-во объектов на странице
         /// </summary>
         public int PageSize { get; set; }
@@ -23,7 +28,7 @@ namespace ResearchModule.Components.Models
         /// <summary>
         /// Всего объектов
         /// </summary>
-        public int TotalItems { get; set; }
+        public long TotalItems { get; set; }
 
         /// <summary>
         /// Всего страниц
@@ -56,7 +61,7 @@ namespace ResearchModule.Components.Models
         /// </summary>
         /// <param name="number">Номер текущей страницы</param>
         /// <param name="items">Всего объектов</param>
-        public PageInfo(int number, int items) : base()
+        public PageInfo(int number, long items) : base()
         {
             PageNumber = number;
             TotalItems = items;

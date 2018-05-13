@@ -33,24 +33,34 @@ namespace ResearchModule.Repository
             this.logger = logger;
         }
 
+        public long LongCount<T>(Expression<Func<T, bool>> func) where T : class
+        {
+            return _db.Set<T>().LongCount(func);
+        }
+
+        public long LongCount<T>() where T : class
+        {
+            return _db.Set<T>().LongCount();
+        }
+
         public void Save()
         {
             _db.SaveChanges();
         }
 
-        public IResult Create<T>(T record) where T : class
+        public IResult Add<T>(T record) where T : class
         {
             var result = new Result();
             try
             {
                 if (record == null) return result.Set("{0} is null", record);
                 _db.Add(record);
-                //_db.Entry(record).State = EntityState.Added;
                 _db.SaveChanges();
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, string.Format("Ошибка при создании записи {0}", record));
+                result.Set(string.Format("Error: {1} Ошибка при создании записи {0}.", record, ex));
                 throw;
             }
             return result;
@@ -78,6 +88,23 @@ namespace ResearchModule.Repository
             return result;
         }
 
+        public IResult DeleteRange<T>(IEnumerable<T> records) where T : class
+        {
+            var result = new Result();
+            try
+            {
+                if (records == null && records.Count() != 0) return result.Set("{0} is null", records);
+                _db.RemoveRange(records);
+                _db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, string.Format("Ошибка при удалении записи {0}", records));
+                throw;
+            }
+            return result;
+        }
+
         public T Get<T>(params object[] keyValues) where T : class
         {
             if (keyValues != null)
@@ -91,15 +118,12 @@ namespace ResearchModule.Repository
             try
             {
                 if (record == null) return result.Set("{0} is null", record);
-
-                //_db.Entry(record).State = EntityState.Modified;
                 _db.Update(record);
-                var state = _db.Entry(record).State;
-                //_db.Attach(record).State = EntityState.Modified;
                 _db.SaveChanges();
             }
             catch (Exception ex)
             {
+                result.Set(string.Format("Error: {1} Ошибка при изменении записи {0}.", record, ex));
                 logger.LogError(ex, string.Format("Ошибка при изменении записи {0}", record));
                 throw;
             }
@@ -193,6 +217,16 @@ namespace ResearchModule.Repository
             return _db.Set<T>().Where(func).ToAsyncEnumerable();
         }
 
+        public T First<T>(Func<T, bool> func) where T : class
+        {
+            return _db.Set<T>().FirstOrDefault(func);
+        }
+
+        public T Single<T>(Expression<Func<T, bool>> func) where T : class
+        {
+            return _db.Set<T>().SingleOrDefault(func);
+        }
+
 
         public DbSet<T> Set<T>() where T : class
         {
@@ -253,42 +287,3 @@ namespace ResearchModule.Repository
     }
 }
 
-//public void CreateOrUpdate<T>(T record) where T : class
-//{
-//    _db.ChangeTracker.TrackGraph(record, node =>r(node));
-
-//    var entry = _db.Entry(record);
-//    switch (entry.State)
-//    {
-//        case EntityState.Detached:
-//            _db.Add(record);
-//            break;
-//        case EntityState.Modified:
-//            _db.Update(record);
-//            break;
-//        case EntityState.Added:
-//            _db.Add(record);
-//            break;
-//        case EntityState.Unchanged:
-//            //item already in db no need to do anything  
-//            break;
-
-//        default:
-//            throw new ArgumentOutOfRangeException();
-//    }
-//}
-
-//private void r(EntityEntryGraphNode node)
-//{
-//    var entry = node.Entry;
-
-//    if ((int)entry.Property("Id").CurrentValue < 0)
-//    {
-//        entry.State = EntityState.Added;
-//        entry.Property("Id").IsTemporary = true;
-//    }
-//    else
-//    {
-//        entry.State = EntityState.Modified;
-//    }
-//}

@@ -11,9 +11,9 @@ namespace ResearchModule.Service
 {
     public class AuthorService
     {
-        private readonly PARepository paRepository;
+        private readonly PAuthorRepository paRepository;
 
-        public AuthorService(PARepository paRepository)
+        public AuthorService(PAuthorRepository paRepository)
         {
             this.paRepository = paRepository;
         }

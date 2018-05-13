@@ -6,7 +6,7 @@
     var pageInfo = (PageInfo)ViewData["pageInfo"];
     var i = 1;
 }
-
+<hr />
 @Html.Partial("Components/Page", pageInfo)
 
 <div class="row">
@@ -15,8 +15,7 @@
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>Наименование роли</th>
-                    <th></th>
+                    <th>Наименование роли</th>  
                 </tr>
             </thead>
             <tbody>
@@ -25,9 +24,6 @@
                     <tr>
                         <td>@i</td>
                         <td>@item.Name</td>
-                        <th>
-                            <a href="@Url.Action("ChangeRole", "Admin")" class="btn btn-default" aria-label="Left Align">Редактировать</a>
-                        </th>
                     </tr>
 
                     i++;

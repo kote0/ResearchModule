@@ -1,5 +1,4 @@
 ﻿using ResearchModule.Models;
-using ResearchModule.Repository.Abstarcts;
 using ResearchModule.Repository.Interfaces;
 
 namespace ResearchModule.Repository
@@ -8,9 +7,9 @@ namespace ResearchModule.Repository
     /// Таблица, хранящая в себе авторов и их публикации
     /// Связь М:М
     /// </summary>
-    public class PARepository : PMAbstract<PA, Author>
+    public class PAuthorRepository : PMultipleRepository<PA, Author>
     {
-        public PARepository(IBaseRepository manager) : base(manager)
+        public PAuthorRepository(IBaseRepository manager) : base(manager)
         {
         }
 

@@ -3,7 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ResearchModule.Components.Models;
 using ResearchModule.Components.Models.Interfaces;
+using ResearchModule.Components.Page;
 using ResearchModule.Extensions;
+using ResearchModule.Managers;
 using ResearchModule.Managers.Interfaces;
 using ResearchModule.Models;
 using ResearchModule.Repository;
@@ -18,65 +20,25 @@ namespace ResearchModule.Service
 {
     public class PublicationService : IPublicationService
     {
-        private readonly IBaseRepository repository;
-        private readonly PARepository paRepository;
         private readonly PublicationElements publicationElements;
         private readonly IFileManager fileManager;
-        private readonly ILogger logger;
         private readonly AuthorService authorService;
-        private Result result;
+        private readonly PublicationManager manager;
+        private PublicationPage publicationPage;
 
-        public PublicationService(PARepository paRepository, IBaseRepository repository,
-            PublicationElements publicationElements, IFileManager fileManager, ILogger<PublicationService> logger, AuthorService authorService)
+        public PublicationService(
+            PublicationElements publicationElements, IFileManager fileManager,
+            AuthorService authorService,
+            PublicationManager manager)
         {
-            this.repository = repository;
-            this.paRepository = paRepository;
             this.publicationElements = publicationElements;
-            this.logger = logger;
             this.fileManager = fileManager;
             this.authorService = authorService;
-            this.result = new Result();
+            this.manager = manager;
+            this.publicationPage = new PublicationPage(manager, authorService, this);
         }
 
-        public PublicationsViewModel Filter(PublicationFilterViewModel filter, int first = 1)
-        {
-            PublicationsViewModel viewModel;
-            if (filter.PublicationType == null 
-                && string.IsNullOrEmpty(filter.Publication.PublicationName)
-                && string.IsNullOrEmpty(filter.Publication.OutputData))
-            {
-                viewModel = Page(first);
-            }
-            else
-            {
-                var query = repository.GetQuery<Publication>(p => Contains(p, ref filter));
-                var list = repository.Page(query, first).ToList();
-                viewModel = Page(list, first);
-                viewModel.PublicationFilterViewModel = filter;
-            }
-            return viewModel;
-        }
-
-        private bool Contains(Publication model, ref PublicationFilterViewModel filter)
-        {
-            if (filter.Publication != null)
-            {
-                var name = filter.Publication.PublicationName;
-                if (!string.IsNullOrEmpty(name) && model.PublicationName.ToLower().Contains(name.ToLower()))
-                    return true;
-
-                if (!string.IsNullOrEmpty(filter.Publication.OutputData)
-                    && model.OutputData.ToLower().Contains(filter.Publication.OutputData))
-                    return true;
-            }
-            if (filter.PublicationType != null)
-            {
-                var type = filter.PublicationType.Where(t => t.Id == model.PublicationTypeId).FirstOrDefault();
-                if (type != null)
-                    return true;
-            }
-            return false;
-        }
+        
 
         public string GetFormName(int id)
         {
@@ -91,98 +53,89 @@ namespace ResearchModule.Service
 
         #region PublicationsViewModel
 
-        public PublicationsViewModel Page(int first = 1)
+        public PublicationsViewModel Page(int first, string action, string controller, string dataId = null)
         {
-            var publications = repository.Page<Publication>(first);
-            return Page(publications, first);
+            return publicationPage.CreatePagination(first, action, controller, dataId) as PublicationsViewModel;
         }
 
-        public PublicationsViewModel Page(IEnumerable<Publication> publications,  int first = 1)
+        public PublicationsViewModel Filter(PublicationFilterViewModel filter, int first, string action, string controller, string dataId = null)
         {
-            return CreateView(publications, first);
-        }
-
-        public PublicationsViewModel Search(string character)
-        {
-            var publications = repository.Get<Publication>(a => a.Contains(character));
-            var modelView = CreateView(publications);
-            return modelView;
-        }
-
-
-        public PublicationsViewModel CreateView(IEnumerable<Publication> list, int first = 1)
-        {
-            var pageInfo = new PageInfo(first, list.Count());
-            return new PublicationsViewModel(this, authorService, list, pageInfo);
+            return publicationPage.CreatePagination(filter, first, action, controller, dataId) as PublicationsViewModel;
         }
 
         #endregion
 
-        public Publication LoadWithFile(int id)
+        public object Load(int id)
         {
-            var publication = repository
-                .Include<Publication, FileDetail>(f => f.PublicationFile)
-                .Where(i => i.Id == id).FirstOrDefault();
-
-            return publication;
+            return manager.Get(id);
         }
-
-        public Publication Load(int id)
+        
+        public IResult Create(Publication publication, PublicationType type, IFormFile file, 
+            IEnumerable<Author> createdAuthors, IEnumerable<Author> selectedAuthors)
         {
-            var publication = repository
-                .Include<Publication, FileDetail>(f => f.PublicationFile)
-                .Include(r => r.PublicationType)
-                .Include(r => r.PAs)
-                    .ThenInclude(w => w.Multiple)
-                .Include(r => r.PFs)
-                    .ThenInclude(w => w.Multiple)
-                .Where(i => i.Id == id).FirstOrDefault();
+            IResult result = new Result();
 
-            return publication;
-        }
-
-        #region create
-
-
-        /// <summary>
-        /// Создание публикации
-        /// </summary>
-        /// <param name="publication">Публикация</param>
-        /// <param name="type">ВИд публикации</param>
-        /// <param name="file">Вложение</param>
-        /// <param name="createdAuthors">Авторы для создания</param>
-        /// <param name="selectedAuthors">Найденные авторы</param>
-        /// <returns></returns>
-        public IResult Create(Publication publication, PublicationType type, IFormFile file, IEnumerable<Author> createdAuthors, IEnumerable<Author> selectedAuthors)
-        {
             selectedAuthors = selectedAuthors.Where(s => s.Id != 0);
             createdAuthors = createdAuthors.Where(a => a.IsValid());
 
             // проверка на наличие авторов
             if (createdAuthors.Count() == 0 && selectedAuthors.Count() == 0)
-                result.Set("Отсутсутствуют авторы");
+                return result.Set("Отсутсутствуют авторы");
 
-            if (result.Failed) return result;
+            var fileDetails = fileManager.CreateInfo(file);
 
-            var fileDetails = fileManager.Create(file);
-            result.Set(fileManager.Create(fileDetails).Error);
+            if (fileManager.Create(fileDetails).Failed) return result.Set("Не удалось создать Файл");
+            
+            if (fileDetails != null)
+                AppendFileInfo(fileDetails, ref publication);
 
-            if (fileDetails == null || result.Failed) return result.Set("Не удалось создать Файл");
+            publication.PublicationFileId = fileDetails.Id;
 
-            FileInformation(fileDetails, ref publication);
-            CreatePublicationType(type, ref publication);
+            var typeId = manager.CreateOrUpdatePublicationType(type, publication.PublicationTypeId);
+            if (typeId > 0)
+                publication.PublicationTypeId = typeId;
 
-            if (result.Failed) return result.Set("Не удалось создать Вид публикации");
+            manager.CreateOrUpdatePublication(publication);
 
-            CreateOrUpdatePublication(ref publication);
-
-            if (result.Failed) return result.Set("Не удалось создать/изменить Публикацию");
-
-            CreatePA(publication.Id, createdAuthors, selectedAuthors);
+            manager.CreatePA(publication.Id, createdAuthors, selectedAuthors);
 
             if (result.Failed) return result.Set("Не удалось добавить авторов");
 
-            fileManager.SaveFIle(fileDetails);
+            fileManager.SaveFileInServer(fileDetails);
+
+            return result;
+        }
+
+        public IResult Update(Publication publication, PublicationType type, IFormFile file, 
+            IEnumerable<Author> createdAuthors, IEnumerable<Author> selectedAuthors)
+        {
+            IResult result = new Result();
+
+            selectedAuthors = selectedAuthors.Where(s => s.Id != 0);
+            createdAuthors = createdAuthors.Where(a => a.IsValid());
+
+            // проверка на наличие авторов
+            if (createdAuthors.Count() == 0 && selectedAuthors.Count() == 0)
+                return result.Set("Отсутсутствуют авторы");
+
+            // изменение файла
+            var fileDetails = fileManager.UpdateFile(file, publication.PublicationFileId);
+            if (fileDetails != null)
+                AppendFileInfo(fileDetails, ref publication);
+
+            // измение вида публикации
+            var typeId = manager.CreateOrUpdatePublicationType(type, publication.PublicationTypeId);
+            if (typeId > 0)
+                publication.PublicationTypeId = typeId;
+
+            // измение публикации
+            manager.CreateOrUpdatePublication(publication);
+
+            manager.UpdatePA(publication.Id, createdAuthors, selectedAuthors);
+
+            if (result.Failed) return result.Set("Не удалось добавить авторов");
+
+            if (fileDetails != null) fileManager.SaveFileInServer(fileDetails);
 
             return result;
         }
@@ -193,7 +146,7 @@ namespace ResearchModule.Service
         /// <param name="file">Файл</param>
         /// <param name="result">Результат</param>
         /// <returns></returns>
-        private void FileInformation(FileDetail fileDetails, ref Publication publication)
+        private void AppendFileInfo(FileDetail fileDetails, ref Publication publication)
         {
             var electronicSource = (int)PublicationElements.FormEnum.electronic_source;
             var audioVisual = (int)PublicationElements.FormEnum.audiovisual;
@@ -206,146 +159,6 @@ namespace ResearchModule.Service
             }
 
         }
-
-        /// <summary>
-        /// Сохранение изменений в PublicationType
-        /// </summary>
-        /// <param name="publicationType"></param>
-        /// <param name="publication"></param>
-        /// <param name="result"></param>
-        private void CreatePublicationType(PublicationType publicationType, ref Publication publication)
-        {
-            if (!publicationType.IsValid())
-                return;
-
-            if (publication.PublicationTypeId != 0)
-            {
-                publicationType.Id = publication.PublicationTypeId;
-                result.Set(repository.Update(publicationType).Error);
-                return;
-            }
-            
-            result.Set(repository.Create(publicationType).Error);
-            publication.PublicationTypeId = publicationType.Id;
-        }
-
-        /// <summary>
-        /// Изменение публикации
-        /// </summary>
-        /// <param name="publication"></param>
-        /// <param name="result"></param>
-        private void CreateOrUpdatePublication(ref Publication publication)
-        {
-            publication.ModifyDate = DateTime.Now;
-            if (publication.Id != 0)
-            {
-                result.Set(repository.Update(publication).Error);
-            }
-            else
-            {
-                publication.CreateDate = DateTime.Now;
-                result.Set(repository.Create(publication).Error);
-            }
-        }
-
-        /// <summary>
-        /// Создание записи в РА
-        /// </summary>
-        /// <param name="publicationId"></param>
-        /// <param name="createdAuthors"></param>
-        /// <param name="selectedAuthors"></param>
-        /// <param name="result"></param>
-        private void CreatePA(int publicationId, IEnumerable<Author> createdAuthors, IEnumerable<Author> selectedAuthors)
-        {
-            var listAuthors = new List<Author>();
-            listAuthors.AddRange(createdAuthors);
-            // найти существующих авторов
-            // если существуют вернуть их Id
-            // для создании записи
-            listAuthors.AddRange(selectedAuthors);
-            result.Set(paRepository.Create(listAuthors, publicationId).Error);
-        }
-
-        #endregion
-
-        #region update
-
-        public IResult Update(Publication publication, PublicationType type, IFormFile file, IEnumerable<Author> createdAuthors, IEnumerable<Author> selectedAuthors)
-        {
-            selectedAuthors = selectedAuthors.Where(s => s.Id != 0);
-            createdAuthors = createdAuthors.Where(a => a.IsValid());
-
-            // проверка на наличие авторов
-            if (createdAuthors.Count() == 0 && selectedAuthors.Count() == 0)
-                return result.Set("Отсутсутствуют авторы");
-            
-            var fileDetails = UpdateFile(file, ref publication);
-            CreatePublicationType(type, ref publication);
-            CreateOrUpdatePublication(ref publication);
-
-            if (result.Failed) return result.Set("Не удалось создать/изменить Публикацию");
-
-            UpdatePA(publication.Id, createdAuthors, selectedAuthors);
-
-            if (result.Failed) return result.Set("Не удалось добавить авторов");
-
-            if (fileDetails != null) fileManager.SaveFIle(fileDetails);
-
-            return result;
-        }
-
-        private FileDetail UpdateFile(IFormFile file, ref Publication publication)
-        {
-            if (file != null)
-            {
-                var fileDetails = fileManager.Create(file);
-                var id = publication.PublicationFileId;
-                var fileInfo = repository.Get<FileDetail>(id);
-                // удалить файл из сервера по fileInfo.Uid
-                //fileManager.Delete();
-                fileDetails.Id = id;
-                result.Set(fileManager.Update(fileDetails).Error);
-                FileInformation(fileDetails, ref publication);
-
-                return fileDetails;
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// Изменение записи в РА
-        /// </summary>
-        /// <param name="publicationId"></param>
-        /// <param name="createdAuthors"></param>
-        /// <param name="selectedAuthors"></param>
-        /// <param name="result"></param>
-        private void UpdatePA(int publicationId, IEnumerable<Author> createdAuthors, IEnumerable<Author> selectedAuthors)
-        {
-            result.Set(paRepository.Create(createdAuthors, publicationId).Error);
-
-            if (selectedAuthors.Count() != 0)
-            {
-                var pas = repository.GetQuery<PA>(o => o.PublicationId == publicationId).ToList();
-                
-                foreach (var item in pas)
-                {
-                    var author = selectedAuthors.FirstOrDefault(s => s.Id == item.MultipleId);
-                    if (author != null && author.Weight != 0)
-                    {
-                        item.Weight = author.Weight;
-                        result.Set(repository.Update(item).Error);
-                        //result.Set(paRepository.Update(author, publicationId).Error);
-                    }
-                    else
-                    {
-                        result.Set(paRepository.Delete(item).Error);
-                    }
-                }
-            }
-            
-        }
-
-        #endregion
 
 
     }

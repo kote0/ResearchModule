@@ -5,7 +5,10 @@ using ResearchModule.Components.Models;
 using ResearchModule.Components.Models.Interfaces;
 using ResearchModule.Models;
 using ResearchModule.Repository.Interfaces;
+using ResearchModule.Service;
 using ResearchModule.ViewModels;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -27,13 +30,48 @@ namespace ResearchModule.Controllers
 
         }
 
+        public IActionResult Chart()
+        {
+            var months = new string[] { "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"};
+            var list = new Chart();
+            var labels = new System.Text.StringBuilder();
+            var data = new System.Text.StringBuilder();
+            for (var i = 1; i<=12; i++)
+            {
+                var chart = GetChart(i, months);
+                labels.AppendFormat("'{0}'", chart.Label);
+                data.AppendFormat("'{0}'", chart.Data);
+                if (i != 11)
+                {
+                    labels.Append(" ,");
+                    data.Append(" ,");
+                }
+            }
+            list.Data = data.ToString();
+            list.Label = labels.ToString();
+            
+            return View(list);
+        }
+
+        [HttpPost]
+        public IActionResult Chart(int id)
+        {
+
+            return RedirectToAction("Index");
+        }
+
+        private Chart GetChart(int i, string[] months)
+        {
+            return new Chart(months[i-1], manager.LongCount<Publication>(p => p.CreateDate.Month == i).ToString());
+        }
+
         public async Task<IActionResult> SaveUser(User user, Author author, string returnUrl)
         {
             var result = new Result();
             author.UserId = user.UserName;
 
             result.Set(author.Id == 0
-                ? manager.Create(author).Error
+                ? manager.Add(author).Error
                 : manager.Update(author).Error);
             
             await userManager.UpdateAsync(user);

@@ -20,6 +20,8 @@
                         <th>Имя</th>
                         <th>Отчество</th>
                         <th>Дата рождения</th>
+                        <th data-toggle="tooltip" title="Вес представлет собой вклад каждого из авторов при создании публикации. Если форма работы аудиовизуальная или электронная, то вес не указывается.">
+                        Вес *</th>
                     </tr>
                 </thead>
                 <tbody id="@(local)_SearchResult_@(name)"></tbody>
@@ -29,7 +31,7 @@
 }
 
 <div class="modal fade" id="@(name)" role="dialog">
-    <div class="modal-dialog" style="width: 900px">
+    <div class="modal-dialog" style="width: 1270px">
 
         <!-- Search Authors-->
         <div class="modal-content">
@@ -41,7 +43,7 @@
                 <div id="@(name)">
                     <div class="row">
                         <div class="col-md-12">
-                            @Html.TextBox("SerchAuthor", "", new { @class = "form-control", placeholder = "Иванов", onkeyUp = "Author.search(this).onKeyUp()" })
+                            @Html.TextBox("SearchAuthor", "", new { @class = "form-control", placeholder = "Иванов", onkeyUp = "Author.search(this).onKeyUp()" })
                         </div>
                     </div>
                     <div class="row">

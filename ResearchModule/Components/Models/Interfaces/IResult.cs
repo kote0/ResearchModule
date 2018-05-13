@@ -46,5 +46,10 @@ namespace ResearchModule.Components.Models.Interfaces
         /// <param name="list"></param>
         /// <returns></returns>
         IResult Set(IEnumerable<string> list);
+
+        /// <summary>
+        /// Установка ошибок
+        /// </summary>
+        IResult Set(IResult result);
     }
 }

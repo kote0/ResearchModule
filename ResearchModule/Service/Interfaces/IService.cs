@@ -7,5 +7,6 @@ namespace ResearchModule.Service.Interfaces
 {
     public interface IService
     {
+        object Load(int id);
     }
 }

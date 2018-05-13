@@ -9,8 +9,9 @@
 </div>
 
 <div class="row">
-    @Html.Partial("PublicationView", Model)
-
+    <div id="pageInfoResult">
+        @Html.Partial("PublicationView", Model)
+    </div>
     <div class="publications_filters col-md-offset-1 col-md-4">
         @Html.Partial("Filter", Model.PublicationFilterViewModel != null
             ? Model.PublicationFilterViewModel

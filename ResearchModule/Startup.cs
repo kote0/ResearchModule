@@ -11,6 +11,7 @@ using ResearchModule.Repository.Interfaces;
 using ResearchModule.Managers;
 using ResearchModule.Managers.Interfaces;
 using Microsoft.Extensions.Logging;
+using ResearchModule.Components.Page;
 
 namespace ResearchModule
 {
@@ -49,14 +50,16 @@ namespace ResearchModule
             });
 
             #endregion
-
+            
             services.AddScoped<IBaseRepository, BaseRepository>();
             services.AddTransient<AuthorService>();
             services.AddTransient<PublicationService>();
             services.AddTransient<SelectListService>();
             services.AddScoped<IFileManager, FileManager>();
             //services.AddScoped<ILogger>();
-            services.AddTransient<PARepository>();
+            services.AddTransient<PAuthorRepository>();
+            services.AddScoped<PublicationManager>();
+            //services.AddScoped<IPageCreator ,PublicationPage>();
 
             Services = services;
             ServiceProvider = services.BuildServiceProvider();
@@ -82,7 +85,7 @@ namespace ResearchModule
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Base}/{action=Index}/{id?}");
+                    template: "{controller=Account}/{action=Chart}/{id?}");
             });
         }
     }

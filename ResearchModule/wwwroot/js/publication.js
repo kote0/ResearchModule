@@ -4,16 +4,18 @@
 
 //конвертирование листа на корректные номера
 function convertName(list) {
+    let oldName = '';
     let countItem = -1;
     let id;
     for (var item of list) {
+
         let name = item.name.match(/\d/g)[0];
-        if (id !== name) {
+        if (oldName != item.name && id !== name) {
             id = name;
             countItem++;
         }
         $("[name='" + item.name + "']").attr("name", item.name.replace(/\d/g, countItem));
-
+        oldName = item.name;
     }
     return countItem;
 }
@@ -21,38 +23,39 @@ function convertName(list) {
 
 // обработка перед submit
 function formSubmit(formId) {
-    if (!isValid()) {
-        get_Info("Заполните обязательные поля");
+    debugger;
+    if (!isValid(formId)) {
+        setInfo("Заполните обязательные поля");
         return;
     }
-    var searchResult = $("#searchResult").find("[type=hidden], input:checked");
+    var searchResult = $("#searchResult").find("input, [type=hidden]");
     var createResult = $("#createResult").find("input");
-    var getResult = $("#getResult").find("[type=hidden], input:checked");
+    var getResult = $("#getResult").find("input, [type=hidden]");
     let c = convertName(searchResult) + convertName(createResult) + convertName(getResult);
-    if (c === -2) {
-        get_Info("Отстутствуют авторы");
+    if (c === -3) {
+        setInfo("Отстутствуют авторы");
         return;
     }
     $("#" + formId).submit();
 }
 
-function get_Info(text) {
+function setInfo(text) {
     //$(".info").html(`<h3 style='margin-top:0;'><span class='label label-danger'>${text}</span></h3>`);
     $(".info").html(`<div class="alert alert-danger" role="alert">${text}</div>`);
 }
 
 
-function isValid() {
+function isValid(formId) {
     let res = true;
-    var reqInput = $("[data-val='True']");
+    var reqInput = $(`#${formId} [data-val='True']`);
     for (var input of reqInput) {
         let parent = $(input).parent();
         if (input.value === "") {
-            parent.addClass("has-error");
+            parent.addClass("has-error")
             res = false;
         }
         else {
-            parent.removeClass("has-error");
+            parent.removeClass("has-error")
         }
     }
     return res;
@@ -98,9 +101,6 @@ Author = function () {
     var resultauthorJson = [];
     var countAuthor = 0;
     let c = 0;
-    let searchRes = "_SearchResult_SearchAuthorsModal";
-    let select = "Selected";
-    let add = "Additional";
     return {
         append: function (url) {
             $.ajax({
@@ -125,30 +125,33 @@ Author = function () {
                     Author.search(elem).start();
                 },
                 start: function () {
-                    timers[0] = setTimeout(function () { Author.search(elem).onChange(); }, 500);
+                    timers[0] = setTimeout(function () { Author.search(elem).onChange() }, 500);
                 },
                 onChange: function () {
+                    let addResId = "#Additional_SearchResult_SearchAuthorsModal";
                     $.ajax({
                         type: 'POST',
                         url: '/Author/Search?character=' + elem.value,
                         success: function (data) {
-                            $("#" + add + searchRes).html(data);
+                            $(addResId).html(data);
                         }
                     });
                 }
-            };
+            }
         },
         searchResult: function () {
+            let searchResId = "#Selected_SearchResult_SearchAuthorsModal";
             return {
                 append: function (elem, id) {
+                    debugger;
                     let selector = "#AuthorItem_" + id;
                     if (elem.checked) {
                         let tr = $(selector).clone();
-                        $("#" + select + searchRes).append(tr);
+                        $(searchResId).append(tr);
                     }
                     else {
                         $(`[name='${elem.name}']`).attr("checked", false);
-                        $(`#${select + searchRes} ${selector}`).detach();
+                        $(`${searchResId} ${selector}`).detach();
                         // данные полученные при поиске
                         $(`#searchResult ${selector}`).detach();
                         // исходные данные при наличии модели
@@ -156,12 +159,11 @@ Author = function () {
                     }
                 },
                 serialize: function () {
-                    var searchResult = $("#searchResult").html($(`#${select + searchRes} tr`).clone());
-                    let weight = "<input class='form-control' id='Author_00__Weight' data-val='True' name='Author[00].Weight' placeHolder='Вес' type='text' value='' />";
-                    searchResult.find("tr:has(td)").append(`<td>${weight}</td>`);
+                    debugger;
+                    var searchResult = $("#searchResult").html($(`${searchResId} tr`).clone());
                     showWeight(Publication.volumeShow);
                 }
-            };
+            }
         }
     };
 }();
@@ -193,7 +195,7 @@ function showVolume(show) {
         return;
     }
     // скрыть
-    $(div).hide();
+    $(div).hide()
     Requied(name, false);
     showWeight(false);
 }
@@ -209,13 +211,21 @@ changePublicationForm = function (elem) {
     }
     var id = select.attr("value");
     showVolume(id === electronicForm || id === audioForm ? false : true);
-};
+}
 
 Requied = function (elem, required) {
     $(elem).attr("data-val", required ? "True" : "False");
-};
-
+}
 HasRequered = function (elem) {
     return $(elem).attr("data-val");
-};
+}
 
+
+
+$(function () {
+
+    $("select#Publication_PublicationForm").on('change', { elem: this }, changePublicationForm);
+
+    let selectListLanguage = new language("Publication.text");
+    $("#languages").html(selectListLanguage.items);
+});
