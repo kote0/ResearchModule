@@ -1,0 +1,58 @@
+﻿@using ResearchModule.Components
+@inject ResearchModule.Service.SelectListService SelectListService
+@model ResearchModule.ViewModels.PublicationFilterViewModel
+@{
+    ViewData["Title"] = "Выберите параметры";
+}
+<div class="">
+    <h2>Выберите параметры для учета частоты публикаций</h2>
+</div>
+@using (Html.BeginForm("Create", "Analyst"))
+{
+    <div class="row propertyName">
+        <div class="col-md-5">
+            <label>Выберите дату создания публикации</label>
+            <div class="input-group date">
+                <input class="form-control" data-val="true" data-val-required="The День рождения field is required."
+                       id="Publication_CreateDate" name="Publication.CreateDate" type="text" value="">
+                <span class="input-group-addon">
+                    <i class="glyphicon glyphicon-th"></i>
+                </span>
+            </div>
+
+        </div>
+    </div>
+    <div class="row propertyName">
+        <div class="col-md-5">
+            <label style="font-style: normal">Укажите виды</label>
+            @Html.SelectList(SelectListService.LoadSelectPublicationType("PublicationTypes", -1), true)
+        </div>
+    </div>
+    <div class="row propertyName">
+        <div class="col-md-5">
+            <label style="font-style: normal">Выберите пользователей</label>
+            @Html.Button("SearchUsers", "", Html.Icon("search"),
+                                        new { type = "button", onClick = "SearchUserModal.open('Authors', '#loadUsers')" })
+            <div id="loadUsers"></div>
+        </div>
+    </div>
+    <div class="row propertyName">
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-info">Показать</button>
+        </div>
+    </div>
+}
+<style>
+    .propertyName {
+        margin-top: 20px;
+    }
+</style>
+
+<script type="text/javascript">
+    $('.input-group.date').datepicker({
+        format: "dd-mm-yyyy",
+        maxViewMode: 1,
+        language: "ru",
+        keyboardNavigation: false
+    });
+</script>

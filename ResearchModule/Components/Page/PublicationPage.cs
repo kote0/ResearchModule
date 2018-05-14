@@ -39,7 +39,7 @@ namespace ResearchModule.Components.Page
         {
             if (list is PublicationFilterViewModel filter)
             {
-                if (filter.PublicationType == null && string.IsNullOrEmpty(filter.Publication.PublicationName)
+                if (filter.PublicationTypes == null && string.IsNullOrEmpty(filter.Publication.PublicationName)
                     && string.IsNullOrEmpty(filter.Publication.OutputData))
                 {
                     return CreatePagination(first, action, controller, dataId) as PublicationsViewModel;

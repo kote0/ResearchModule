@@ -1,0 +1,38 @@
+﻿@using ResearchModule.Components.Models
+@model Chart
+@{ 
+    var name = string.Format("chart{0}", Model.Id ?? "");
+}
+
+<canvas id="@(name)" style="height: 500px;" ></canvas>
+<script type="text/javascript">
+    var ctx@(name) = document.getElementById('@(name)').getContext('2d');
+    
+    var @(name) = new Chart(ctx@(name), {
+        type: @Html.Raw(Model.Type.ToString()),
+        // The data for our dataset
+        data: {
+            labels: [@Html.Raw(Model.Label.ToString())],
+            datasets: [{
+                label: @Html.Raw(Model.DisplayName.ToString()),
+                backgroundColor: 'rgb(255, 99, 132)',
+                borderColor: 'rgb(255, 99, 132)',
+                fill: false,
+                data: [@Html.Raw(Model.Data.ToString())],
+            }]
+        },
+        options: {
+            responsive: true,
+            layout: {
+                padding: {
+                    left: 0,
+                    right: 0,
+                    top: 0,
+                    bottom: 0
+                }
+            }
+
+        }
+    });
+</script>
+

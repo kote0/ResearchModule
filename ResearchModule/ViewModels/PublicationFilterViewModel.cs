@@ -10,7 +10,9 @@ namespace ResearchModule.ViewModels
     {
         public Publication Publication { get; set; }
 
-        public List<PublicationType> PublicationType { get; set; }
+        public List<PublicationType> PublicationTypes { get; set; }
+
+        public List<Author> Authors { get; set; }
 
     }
 }

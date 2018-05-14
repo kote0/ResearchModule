@@ -29,5 +29,14 @@ namespace ResearchModule.Controllers
 
             return PartialView(authors.ToList());
         }
+
+        
+        public PartialViewResult SearchAuthors(string character)
+        {
+            if (character == null) return null;
+            var authors = repository.Get<Author>(a => a.Contains(character));
+            ViewData["AuthorName"] = "Author";
+            return PartialView(authors.ToList());
+        }
     }
 }

@@ -59,7 +59,7 @@ namespace ResearchModule
             //services.AddScoped<ILogger>();
             services.AddTransient<PAuthorRepository>();
             services.AddScoped<PublicationManager>();
-            //services.AddScoped<IPageCreator ,PublicationPage>();
+            services.AddScoped<ChartService>();
 
             Services = services;
             ServiceProvider = services.BuildServiceProvider();
@@ -85,7 +85,7 @@ namespace ResearchModule
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Account}/{action=Chart}/{id?}");
+                    template: "{controller=Base}/{action=SearchUsers}/{id?}");
             });
         }
     }

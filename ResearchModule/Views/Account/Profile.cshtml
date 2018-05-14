@@ -26,7 +26,7 @@
     </div>
     <div class="col-md-7 propertyDisplay">
         <div class="row">
-            <h4>@(haveAuthor ? Model.Author.ToStringFormat() : Model.UserName)</h4>
+            <h4>@(haveAuthor ? Model.Author.ToStringFormat() : Model.UserName.TrimEnd(' '))</h4>
         </div>
         <div class="row">
             <div class="propertyName">Почта:</div>

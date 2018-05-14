@@ -10,6 +10,7 @@ using ResearchModule.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace ResearchModule.Managers
@@ -26,6 +27,11 @@ namespace ResearchModule.Managers
             this.repository = repository;
             this.fileManager = fileManager;
             this.paRepository = paRepository;
+        }
+
+        public long Count(Expression<Func<Publication, bool>> func)
+        {
+            return repository.LongCount(func);
         }
 
         public long Count()
@@ -81,9 +87,9 @@ namespace ResearchModule.Managers
                     && model.OutputData.ToLower().Contains(filter.Publication.OutputData))
                     return true;
             }
-            if (filter.PublicationType != null)
+            if (filter.PublicationTypes != null)
             {
-                var type = filter.PublicationType.Where(t => t.Id == model.PublicationTypeId).FirstOrDefault();
+                var type = filter.PublicationTypes.Where(t => t.Id == model.PublicationTypeId).FirstOrDefault();
                 if (type != null)
                     return true;
             }

@@ -11,5 +11,10 @@ namespace ResearchModule.Controllers
         {
             return View();
         }
+
+        public IActionResult SearchUsers()
+        {
+            return View();
+        }
     }
 }

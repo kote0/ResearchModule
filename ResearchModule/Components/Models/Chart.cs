@@ -8,16 +8,23 @@ namespace ResearchModule.Components.Models
     public class Chart
     {
         public string Label { get; set; }
+
         public string Data { get; set; }
+
+        public string Type { get; set; }
+
+        public string DisplayName { get; set; }
+
+        public string Id { get; set; }
 
         public Chart()
         {
-        }
-
-        public Chart(string label, string data)
-        {
-            Label = label;
-            Data = data;
+            if (string.IsNullOrEmpty(Type))
+                Type = "'line'";
+            if (string.IsNullOrEmpty(DisplayName))
+                DisplayName = "'none'";
+            if (string.IsNullOrEmpty(Id))
+                Id = Guid.NewGuid().ToString().Replace('-', '_');
         }
     }
 }

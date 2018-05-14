@@ -29,16 +29,16 @@
     var ctx = document.getElementById('myChart').getContext('2d');
     var chart = new Chart(ctx, {
         // The type of chart we want to create
-        type: 'line',
+        type: @Html.Raw(Model.Type),
 
         // The data for our dataset
         data: {
-            labels: [@Html.Raw(Model.Label.ToString())],
+            labels: [@Html.Raw(Model.Label)],
             datasets: [{
                 label: "Количество публикаций",
                 backgroundColor: 'rgb(255, 99, 132)',
                 borderColor: 'rgb(255, 99, 132)',
-                data: [@Html.Raw(Model.Data.ToString())],
+                data: [@Html.Raw(Model.Data)],
             }]
         },
 

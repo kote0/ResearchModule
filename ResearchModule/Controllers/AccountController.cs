@@ -10,6 +10,7 @@ using ResearchModule.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace ResearchModule.Controllers
@@ -33,23 +34,16 @@ namespace ResearchModule.Controllers
         public IActionResult Chart()
         {
             var months = new string[] { "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"};
+            var data = new List<string>();
             var list = new Chart();
-            var labels = new System.Text.StringBuilder();
-            var data = new System.Text.StringBuilder();
-            for (var i = 1; i<=12; i++)
+            for (var i = 1; i<= 12; i++)
             {
-                var chart = GetChart(i, months);
-                labels.AppendFormat("'{0}'", chart.Label);
-                data.AppendFormat("'{0}'", chart.Data);
-                if (i != 11)
-                {
-                    labels.Append(" ,");
-                    data.Append(" ,");
-                }
+                var count = manager.LongCount<Publication>(p => p.CreateDate.Month == i);
+                data.Add(count.ToString());
             }
-            list.Data = data.ToString();
-            list.Label = labels.ToString();
-            
+            list.Data = string.Join(",", data.Select(a => string.Format("'{0}'", a)));
+            list.Label = string.Join(",", months.Select(a => string.Format("'{0}'", a)));
+
             return View(list);
         }
 
@@ -58,11 +52,6 @@ namespace ResearchModule.Controllers
         {
 
             return RedirectToAction("Index");
-        }
-
-        private Chart GetChart(int i, string[] months)
-        {
-            return new Chart(months[i-1], manager.LongCount<Publication>(p => p.CreateDate.Month == i).ToString());
         }
 
         public async Task<IActionResult> SaveUser(User user, Author author, string returnUrl)

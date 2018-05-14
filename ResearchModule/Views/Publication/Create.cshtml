@@ -18,6 +18,7 @@
     }
 
 }
+<script type="text/javascript" src="~/js/publication.js"></script>
 @using (Html.BeginForm("Create", "Publication", FormMethod.Post, new { id = formId, enctype = "multipart/form-data" }))
 {
     <div>
@@ -91,7 +92,7 @@
         <div class="row">
             <div class="col-md-4">Автор</div>
             <div class="col-md-8">
-                @Html.Button("CreateAuthors", " Создать", Html.Icon("plus"), new { onClick = string.Format("Author.append('{0}')", Url.Action("CreateForm", "Author")), type = "button" })
+                @Html.Button("CreateAuthors", " Создать", Html.Icon("plus"), new { onClick = Html.Raw(string.Format("Author.append(\'{0}\')", Url.Action("CreateForm", "Author"))), type = "button" })
                 @Html.Button("SearchAuthors", " Найти", Html.Icon("search"),
                new Dictionary<string, object> { { "type", "button" }, { "data-toggle", "modal" }, { "data-target", "#SearchAuthorsModal" } })
             </div>
@@ -116,7 +117,7 @@
 
 
 <script type="text/javascript" src="~/lib/languages/language.js"></script>
-<!--<script type="text/javascript" src="~/js/publication.js"></script>-->
+
 <script type="text/javascript" >
     
 </script>
