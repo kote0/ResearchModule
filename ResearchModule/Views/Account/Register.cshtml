@@ -1,6 +1,6 @@
 ﻿@model ResearchModule.ViewModels.LoginViewModel
 
-<h4>Регистрация</h4>
+<h2>Регистрация пользователя</h2>
 <hr />
 <form asp-controller="Account" asp-action="Register" method="post" class="form-horizontal" role="form">
     <div asp-validation-summary="All" class="text-danger"></div>
@@ -17,8 +17,14 @@
         </div>
     </div>
     <div class="form-group">
+        <label  class="col-md-2 control-label">Повторите пароль</label>
+        <div class="col-md-5">
+            <input class="form-control" />
+        </div>
+    </div>
+    <div class="form-group">
         <div class="col-md-offset-2 col-md-5">
-            <input type="submit" class="btn btn-primary" value="Register" />
+            <input type="submit" class="btn btn-primary" value="Регистрация" />
         </div>
     </div>
 </form>

@@ -34,7 +34,9 @@
             <label>День рождения</label>
             <div class="input-group date">
                 <input class="form-control" data-val="true" data-val-required="The День рождения field is required." id="Author_BDay" name="Author.BDay" type="text" 
-                       value="@(Model.Author.BDay == DateTime.MinValue ? "" : Model.Author.BDay.ToShortDateString())">
+                       value="@((Model.Author == null) 
+                                ?""
+                                : Model.Author.BDay == DateTime.MinValue ? "" : Model.Author.BDay.ToShortDateString())">
                 <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
             </div>
         </div>

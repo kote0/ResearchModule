@@ -2,6 +2,8 @@
 @model ResearchModule.Models.User
 @{
     ViewData["Title"] = "Профиль";
+    //Url.ActionContext.HttpContext.Request.Path
+    var roles = (ViewData["roles"] != null) ? ViewData["roles"] as IList<string> : null;
 }
 
 @if (Model == null)
@@ -15,34 +17,49 @@
 <div class="row">
     <div class="col-md-12">
         <h2>
-            Профиль<a href="@Url.Action("ChangeUser", "Account", new { name = Model.UserName, returnUrl = Url.ActionContext.HttpContext.Request.Path } )" 
-                      class="btn btn-default">Редактировать</a>
+            Профиль <a href="@Url.Action("ChangeUser", "Account", new { name = Model.UserName, returnUrl = Url.Action("Profile", "Account", new { name = Model.UserName }) } )"
+                       class="btn btn-default">Редактировать</a>
         </h2>
     </div>
 </div>
 <div class="row">
-    <div class="col-md-4">
-        <img src="~/images/nophoto.jpg" style="width:250px; height:250px;" />
-    </div>
-    <div class="col-md-7 propertyDisplay">
-        <div class="row">
+    <div class="col-md-12 propertyDisplay">
+        <div class="">
             <h4>@(haveAuthor ? Model.Author.ToStringFormat() : Model.UserName.TrimEnd(' '))</h4>
         </div>
-        <div class="row">
+        <div class="">
             <div class="propertyName">Почта:</div>
             <div>@(Model.Email ?? "")</div>
         </div>
-        <div class="row">
+        <div class="">
             <div class="propertyName">День рожденья:</div>
             <div>@(haveAuthor ? Model.Author.BDay.ToShortDateString() : "Не указано")</div>
         </div>
-        <div class="row">
+        <div class="">
             <div class="propertyName">Права доступа:</div>
-            <div>Не указано</div>
+            <div>
+                @if (roles == null || roles.Count == 0)
+                {
+                    @("Не указано")
+                }
+                else
+                {
+                    @string.Join(",", roles)
+                }
+            </div>
         </div>
-        <div class="row">
-            <a href="@Url.Action("Index", "Admin")" class="btn btn-primary">Администрирование</a>
-        </div>
+        @if (roles.Count != 0 && roles.FirstOrDefault(r => r.Equals(RoleInitializer.AdminRole)) != null)
+        {
+            <div class="propertyName">
+                <a href="@Url.Action("Index", "Admin")" class="btn btn-primary">Администрирование</a>
+            </div>
+        }
+        @if (roles.Count != 0 && roles.FirstOrDefault(r => r.Equals(RoleInitializer.AnalystRole)) != null)
+        {
+            <div class="propertyName">
+                <a href="@Url.Action("#", "#")" class="btn btn-info">Статистика</a>
+            </div>
+        }
     </div>
 </div>
 
@@ -50,6 +67,7 @@
 <style>
     .propertyName {
         width: 150px;
+        margin-bottom: 10px;
     }
 
     .propertyDisplay > * {

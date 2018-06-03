@@ -31,11 +31,11 @@ namespace ResearchModule.Controllers
         }
 
         
-        public PartialViewResult SearchAuthors(string character)
+        public PartialViewResult SearchAuthors(string character, string propertyName = "Author")
         {
             if (character == null) return null;
             var authors = repository.Get<Author>(a => a.Contains(character));
-            ViewData["AuthorName"] = "Author";
+            ViewData["AuthorName"] = propertyName;
             return PartialView(authors.ToList());
         }
     }

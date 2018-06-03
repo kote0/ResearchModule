@@ -14,5 +14,11 @@ namespace ResearchModule.ViewModels
 
         public List<Author> Authors { get; set; }
 
+        public PublicationFilterViewModel()
+        {
+            Publication = new Publication();
+            PublicationTypes = new List<PublicationType>();
+            Authors = new List<Author>();
+        }
     }
 }

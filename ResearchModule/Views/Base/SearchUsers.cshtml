@@ -1,86 +1,14 @@
-﻿@model object
+﻿
 @{
-    ViewData["Title"] = "Поиск авторов";
     var action = ViewData["action"] != null ? (string)ViewData["action"] : "#";
     var controller = ViewData["controller"] != null ? (string)ViewData["controller"] : "#";
-    var id = "formId";
 }
 
-<script type="text/javascript">
-    const authors = "authors";
-    const author = "author";
-    const modelName = "Author";
-    const searchResult = "result";
-    const removeAuthorFunc = "removeAuthor";
-    const load = "load";
-    const formId = "@id";
-
-    function onkeyUpAurhor(elem) {
-        if (elem.value === "") return;
-        $.ajax({
-            type: 'POST',
-            url: '/Author/SearchAuthors?character=' + elem.value,
-            success: function (data) {
-                if (data != null)
-                {
-                    $(`#${searchResult}`).html(data);
-                    $(`.${load}`).css("display", "");
-                }
-            }
-        });
-    }
-
-
-    function removeAuthor(elem, id) {
-        $(elem).parent().remove();
-        $(`#${author}_${id} button`).attr("disabled", false);
-    }
-
-    function appendAuthor(text, id, elem) {
-        let remove =
-            `<span onclick='${removeAuthorFunc}(this, ${id})' >
-                <i class="glyphicon glyphicon-remove"></i>
-            </span>
-            <input type='hidden' name="${modelName}[${id}].Id" value="${id}"/>`;
-
-        if ($(`#${authors}:contains('${text}')`).length == 0) {
-            $(`#${authors}`).append(`<div class="col-md-2">${text} ${remove}</div>`);
-        }
-        $(elem).attr("disabled", true);
-    }
-
-    function convertName(list) {
-        let oldName = '';
-        let countItem = -1;
-        let id;
-        for (var item of list) {
-
-            let name = item.name.match(/\d/g)[0];
-            if (oldName != item.name && id !== name) {
-                id = name;
-                countItem++;
-            }
-            $("[name='" + item.name + "']").attr("name", item.name.replace(/\d/g, countItem));
-            oldName = item.name;
-        }
-        return countItem;
-    }
-        
-        function submixt() {
-            debugger;
-            var list = $(`#${authors} [name^='${modelName}']`);
-            convertName(list);
-            $(`#${formId}`).submit();
-        }
-    
-</script>
-
-
-@using (Html.BeginForm(action, controller, new { parentModel = Model, id = id }))
+@using (Html.BeginForm(action, controller, new { id = "searchAuhorsFormId" }))
 {
     <div class="row">
         <div class="col-md-12">
-            <button type="button" class="btn btn-default" onclick="submixt()">
+            <button type="button" class="btn btn-default" onclick="authorsSubmit()">
                 <span>
                     <i class="glyphicon glyphicon-menu-left"></i>
                     Вернуться назад
@@ -94,7 +22,6 @@
             @Html.TextBox("SearchAuthor", "", new { @class = "form-control", placeholder = "Иванов", onkeyUp = "onkeyUpAurhor(this)" })
         </div>
     </div>
-
     <div class="row" id="authors">
     </div>
 }

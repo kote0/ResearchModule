@@ -5,7 +5,7 @@
     ViewData["Title"] = "Выберите параметры";
 }
 <div class="">
-    <h2>Выберите параметры для учета частоты публикаций</h2>
+    <h2>Выберите параметры </h2>
 </div>
 @using (Html.BeginForm("Create", "Analyst"))
 {
@@ -30,15 +30,14 @@
     </div>
     <div class="row propertyName">
         <div class="col-md-5">
-            <label style="font-style: normal">Выберите пользователей</label>
-            @Html.Button("SearchUsers", "", Html.Icon("search"),
+            @Html.Button("SearchUsers", " Выбрать пользователей", Html.Icon("search"),
                                         new { type = "button", onClick = "SearchUserModal.open('Authors', '#loadUsers')" })
             <div id="loadUsers"></div>
         </div>
     </div>
     <div class="row propertyName">
         <div class="col-md-3">
-            <button type="submit" class="btn btn-info">Показать</button>
+            <button type="submit" class="btn btn-success">Показать</button>
         </div>
     </div>
 }

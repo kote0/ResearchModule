@@ -72,21 +72,34 @@ namespace ResearchModule.Components.TagHelpers
 
         public string Title { get; set; }
 
+        public string Name { get; set; }
+
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-            var name = Items.GetName();
             output.TagName = "select";
-            output.Attributes.SetAttribute("name", name);
-            output.Attributes.SetAttribute("id", name.Replace(".", "_"));
-            if (Items.Elements== null || Items.Elements.Count == 0)
+            var classNames = "form-control selectpicker";
+            if (Items != null)
             {
-                output.Attributes.SetAttribute("title", Title ?? "Ничего не выбрано");
+                var name = Items.GetName() ?? Name;
+                if (!string.IsNullOrEmpty(name))
+                {
+                    output.Attributes.SetAttribute("name", name);
+                    output.Attributes.SetAttribute("id", name.Replace(".", "_"));
+                    classNames += string.Format(" selectpicker_{0}", name);
+
+                }
+                if (Items.Elements == null || Items.Elements.Count == 0)
+                {
+                    Title = Title ?? "Ничего не выбрано";
+                }
+
+                foreach (var elem in Items.Elements)
+                {
+                    output.Content.AppendFormat("<option {2} value={1}>{0}</option>", elem.Text, elem.Value, elem.Selected ? "selected" : "");
+                }
             }
-            output.Attributes.SetAttribute("class", "form-control selectpicker selectpicker_" + name);
-            foreach (var elem in Items.Elements)
-            {
-                output.Content.AppendFormat("<option {2} value={1}>{0}</option>", elem.Text, elem.Value, elem.Selected ? "selected" : "");
-            }
+            output.Attributes.SetAttribute("class", classNames);
+            output.Attributes.SetAttribute("title", Title ?? "Ничего не выбрано");
         }
     }
 

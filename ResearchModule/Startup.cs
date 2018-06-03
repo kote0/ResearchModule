@@ -48,9 +48,11 @@ namespace ResearchModule
             {
                 options.AddPolicy("admin", policy => policy.RequireRole("admin"));
             });
-
-            #endregion
+            services.AddSingleton<Microsoft.AspNetCore.Http.IHttpContextAccessor, Microsoft.AspNetCore.Http.HttpContextAccessor>();
+            services.AddScoped<UserManager>();
             
+            #endregion
+
             services.AddScoped<IBaseRepository, BaseRepository>();
             services.AddTransient<AuthorService>();
             services.AddTransient<PublicationService>();
@@ -85,7 +87,7 @@ namespace ResearchModule
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Base}/{action=SearchUsers}/{id?}");
+                    template: "{controller=Publication}/{action=CreatePublicationNew}/{id?}");
             });
         }
     }

@@ -25,15 +25,7 @@ namespace ResearchModule.Controllers
 
         public IActionResult PublicationChart(DateTime? date)
         {
-            DateTime dateTime;
-            if (date.HasValue)
-            {
-                dateTime = date.Value;
-            }
-            else
-            {
-                dateTime = DateTime.Now;
-            }
+            var dateTime = date.HasValue ? date.Value : DateTime.Now;
             ViewData["DateTimeNow"] = dateTime;
             return View(chartService.PublicationCount(dateTime));
         }

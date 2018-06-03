@@ -25,6 +25,7 @@
         @Html.Hidden(string.Concat(name, "Surname"), item.Surname)
         @Html.Hidden(string.Concat(name, "Name"), item.Name)
         @Html.Hidden(string.Concat(name, "Lastname"), item.Lastname)
-        @Html.Hidden(string.Concat(name, "BDay"), item.BDay)
+        @Html.Hidden(string.Concat(name, "BDay"), item.BDay != DateTime.MinValue ? item.BDay.ToShortDateString() : "")
+        @Html.Hidden(string.Concat(name, "UserId"), item.UserId)
     </tr>
 }

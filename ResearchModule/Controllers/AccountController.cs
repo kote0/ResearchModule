@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ResearchModule.Components.Models;
 using ResearchModule.Components.Models.Interfaces;
 using ResearchModule.Models;
@@ -29,29 +30,6 @@ namespace ResearchModule.Controllers
             this.signInManager = signInManager;
             this.manager = manager;
 
-        }
-
-        public IActionResult Chart()
-        {
-            var months = new string[] { "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"};
-            var data = new List<string>();
-            var list = new Chart();
-            for (var i = 1; i<= 12; i++)
-            {
-                var count = manager.LongCount<Publication>(p => p.CreateDate.Month == i);
-                data.Add(count.ToString());
-            }
-            list.Data = string.Join(",", data.Select(a => string.Format("'{0}'", a)));
-            list.Label = string.Join(",", months.Select(a => string.Format("'{0}'", a)));
-
-            return View(list);
-        }
-
-        [HttpPost]
-        public IActionResult Chart(int id)
-        {
-
-            return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> SaveUser(User user, Author author, string returnUrl)
@@ -86,12 +64,12 @@ namespace ResearchModule.Controllers
             return Redirect(returnUrl);
         }
 
-        public IActionResult Profile(string name)
+        public async Task<IActionResult> Profile(string name)
         {
             var user = manager.Include<User, Author>(u => u.Author)
                 .Where(u => u.UserName == name)
                 .FirstOrDefault();
-
+            ViewData["roles"] = await userManager.GetRolesAsync(user);
             return View(user);
         }
 

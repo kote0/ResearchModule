@@ -13,7 +13,7 @@ namespace ResearchModule
 
         public const string AdminRole = "admin";
 
-        public const string AnalystRole = "admin";
+        public const string AnalystRole = "analyst";
 
 
         public static async Task InitializeAsync(UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
@@ -28,6 +28,11 @@ namespace ResearchModule
             {
                 await roleManager.CreateAsync(new IdentityRole(UserRole));
             }
+            if (await roleManager.FindByNameAsync(AnalystRole) == null)
+            {
+                await roleManager.CreateAsync(new IdentityRole(AnalystRole));
+            }
+            
             if (await userManager.FindByNameAsync(adminEmail) == null)
             {
                 User admin = new User { Email = "admin@gmail.com", UserName = adminEmail };

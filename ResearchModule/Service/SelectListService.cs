@@ -3,6 +3,7 @@ using System.Linq;
 using ResearchModule.Models;
 using ResearchModule.Extensions;
 using ResearchModule.Repository.Interfaces;
+using ResearchModule.Models.Interfaces;
 
 namespace ResearchModule.Service
 {
@@ -15,6 +16,17 @@ namespace ResearchModule.Service
         {
             this.publicationElements = publicationElements;
             this.manager = manager;
+        }
+
+        public SelectList Create<T>(int? id) where T : class, IName
+        {
+            return Create<T>(manager.GetQuery<T>(p => p != null), id);
+        }
+
+        public SelectList Create<T>(IQueryable<T> list, int? id) where T : class, IName
+        {
+            var selectedId = id.HasValue ? id.Value : 0;
+            return selectListCreate(list.Select(a => CreateItem(a.Name, a.Id, selectedId)).ToList());
         }
 
         public SelectList LoadSelectAuthor(int id = 0)
@@ -70,6 +82,12 @@ namespace ResearchModule.Service
             return selectList;
         }
 
+        private SelectList selectListCreate(IEnumerable<SelectListItem> list)
+        {
+            var selectList = new ResearchModule.Models.SelectList();
+            selectList.AddRange(list);
+            return selectList;
+        }
         #endregion
     }
 }

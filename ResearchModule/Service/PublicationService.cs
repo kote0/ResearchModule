@@ -29,13 +29,13 @@ namespace ResearchModule.Service
         public PublicationService(
             PublicationElements publicationElements, IFileManager fileManager,
             AuthorService authorService,
-            PublicationManager manager)
+            PublicationManager manager, UserManager userManager)
         {
             this.publicationElements = publicationElements;
             this.fileManager = fileManager;
             this.authorService = authorService;
             this.manager = manager;
-            this.publicationPage = new PublicationPage(manager, authorService, this);
+            this.publicationPage = new PublicationPage(manager, authorService, this, userManager);
         }
 
         

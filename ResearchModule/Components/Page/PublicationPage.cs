@@ -1,5 +1,6 @@
 ﻿using ResearchModule.Components.Models;
 using ResearchModule.Managers;
+using ResearchModule.Models;
 using ResearchModule.Service;
 using ResearchModule.ViewModels;
 using System;
@@ -14,12 +15,14 @@ namespace ResearchModule.Components.Page
         private readonly PublicationManager manager;
         private readonly AuthorService authorService;
         private readonly PublicationService publicationService;
+        private readonly Author author;
 
-        public PublicationPage(PublicationManager manager, AuthorService authorService, PublicationService publicationService)
+        public PublicationPage(PublicationManager manager, AuthorService authorService, PublicationService publicationService, UserManager userManager)
         {
             this.manager = manager;
             this.authorService = authorService;
             this.publicationService = publicationService;
+            author = userManager.CurrentAuthor();
         }
 
         public object CreatePagination(int first, string action, string controller, string dataId = null)
@@ -31,8 +34,7 @@ namespace ResearchModule.Components.Page
             page.SetUrl(action, controller);
             if (dataId != null)
                 page.DataId = dataId;
-
-            return new PublicationsViewModel(publicationService, authorService, list, page);
+            return new PublicationsViewModel(publicationService, authorService, list, page, author?.Id);
         }
 
         public object CreatePagination(object list, int first, string action, string controller, string dataId = null)
@@ -42,7 +44,7 @@ namespace ResearchModule.Components.Page
                 if (filter.PublicationTypes == null && string.IsNullOrEmpty(filter.Publication.PublicationName)
                     && string.IsNullOrEmpty(filter.Publication.OutputData))
                 {
-                    return CreatePagination(first, action, controller, dataId) as PublicationsViewModel;
+                    return CreatePagination(first, action, controller, dataId);
                 }
                 else
                 {

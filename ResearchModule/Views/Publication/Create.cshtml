@@ -22,6 +22,8 @@
 @using (Html.BeginForm("Create", "Publication", FormMethod.Post, new { id = formId, enctype = "multipart/form-data" }))
 {
     <div>
+
+        <div class="row"><div class="col-md-8 info "></div></div>
         <div class="row">
             <div class="col-md-4">@Html.DisplayNameFor(m => m.PublicationName)</div>
             <div class="col-md-8">
@@ -29,7 +31,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-offset-4 col-md-8">
                 @Html.CheckBox("IsTranslate", false, new { onClick = "clickIsTarslate(this)" }) Иностранный язык
             </div>
         </div>
@@ -73,8 +75,10 @@
                         { "rows", 5 },
                         { "style", "max-width: 100%;" },
                         { "data-val", true },
-                        { "data-val-required", "Заполните обязательное поле" }
-                    })
+                        { "data-val-required", "Заполните обязательное поле" },
+                        { "placeholder",
+                            @"Сб.: Материалы международной научно-практической конференции “Экономические и социальные технологии переходного общества”, 2-3 декабря 1997 г.- Пермь: ПГУ, 1997. - С.199." }
+         })
             </div>
         </div>
         <div class="row" id="VolumeCreate">

@@ -15,20 +15,21 @@ namespace ResearchModule.Controllers
     [Authorize(Roles ="admin")]
     public class AdminController : Controller
     {
-        private readonly UserManager<User> userManager;
-        private readonly SignInManager<User> signInManager;
+        //private readonly UserManager<User> userManager;
+        //private readonly SignInManager<User> signInManager;
         private readonly IBaseRepository repository;
-        private readonly RoleManager<IdentityRole> roleManager;
+        //private readonly RoleManager<IdentityRole> roleManager;
         private readonly UserPage userPage;
 
         public AdminController(UserManager<User> userManager,
             SignInManager<User> signInManager, IBaseRepository repository, 
             RoleManager<IdentityRole> roleManager)
         {
-            this.userManager = userManager;
-            this.signInManager = signInManager;
+            //this.userManager = userManager;
+            //this.signInManager = signInManager;
+            // this.roleManager = roleManager;
             this.repository = repository;
-            this.roleManager = roleManager;
+           
             this.userPage = new UserPage(repository);
 
         }
@@ -54,5 +55,10 @@ namespace ResearchModule.Controllers
             return View();
         }
 
+        //public async Task<IActionResult> GiveRole(string name)
+        //{
+        //    await userManager.FindByNameAsync(name);
+        //    return View();
+        //}
     }
 }

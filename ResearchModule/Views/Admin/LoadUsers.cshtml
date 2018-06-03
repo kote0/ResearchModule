@@ -29,6 +29,8 @@
                         <td>@(item.Email ?? "Не указано")</td>
                         <th>
                             <a href="@Url.Action("ChangeUser", "Account", new { name = item.UserName, returnUrl= Url.Action("Index", "Admin") })" class="btn btn-default" aria-label="Left Align">Редактировать</a>
+                        
+                            <a href="@Url.Action("#", "#", new { name = item.UserName, returnUrl= Url.Action("Index", "Admin") })" class="btn btn-danger" aria-label="Left Align">Удалить</a>
                         </th>
                     </tr>
                 }
