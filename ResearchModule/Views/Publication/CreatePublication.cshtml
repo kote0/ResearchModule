@@ -25,25 +25,67 @@
     <h2>Добавить публикацию</h2>
     @using (Html.BeginForm("CreatePublicationNew", "Publication", FormMethod.Post, new { id = formId, enctype = "multipart/form-data" }))
     {
-        <div class="row">
-            <div class="col-md-4">@Html.DisplayNameFor(m => m.Publication.PublicationType)</div>
-            <div class="col-md-8" id="load_select-Section">
-                <select-list items="@Model.PublicationTypes" name="Publication.PublicationTypeId"></select-list>
+        <div>
+            <div class="row">
+                <div class="col-md-4">@Html.DisplayNameFor(m => m.Publication.PublicationName)</div>
+                <div class="col-md-8">
+                    @Html.TextBoxFor(m => m.Publication.PublicationName, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">Написана ли публикация на иностранном языке</div>
+                <div class="col-md-8">
+                    @Html.CheckBox("IsTranslate", false, new { onClick = "Translate(this)" })
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">@Html.DisplayNameFor(m => m.Publication.TranslateText)</div>
+                <div class="col-md-8">
+                    @Html.TextBoxFor(m => m.Publication.TranslateText, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">@Html.DisplayNameFor(m => m.Publication.OutputData)</div>
+                <div class="col-md-8">
+                    @Html.TextAreaFor(m => m.Publication.OutputData, new
+           {
+               @class = "form-control",
+               rows = 5,
+               placeholder = @"Сб.: Материалы международной научно-практической конференции “Экономические и социальные технологии переходного общества”, 2-3 декабря 1997 г.- Пермь: ПГУ, 1997. - С.199."
+           })
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">@Html.DisplayNameFor(m => m.Publication.PublicationType)</div>
+                <div class="col-md-8" id="load_select-Section">
+                    <select-list items="@Model.PublicationTypes" name="Publication.PublicationTypeId"></select-list>
+                </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-4">@Html.DisplayNameFor(m => m.Publication.PublicationName)</div>
-            <div class="col-md-8">
-                @Html.Button("SearchAuthors", " Найти", Html.Icon("search"), new Dictionary<string, object> { { "type", "button" }, { "onclick", "hidePublicationCreateForm()" } })
-                @Html.Button("CreateAuthors", " Добавить", Html.Icon("plus"), new Dictionary<string, object> { { "type", "button" }, { "onclick", "addAuthor(this);" }, { "dataCount", "100" } })
+        <div>
+            <div class="row">
+                <div class="col-md-4">@Html.DisplayNameFor(m => m.Publication.Volume)</div>
+                <div class="col-md-8">
+                    @Html.TextBoxFor(m => m.Publication.Volume, new { @class = "form-control" })
+                </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-12" id="authorInfo">
+        <div>
+            <div class="row">
+                <div class="col-md-4">Список соавторов</div>
+                <div class="col-md-8">
+                    @Html.Button("SearchAuthors", " Найти", Html.Icon("search"), new Dictionary<string, object> { { "type", "button" }, { "onclick", "hidePublicationCreateForm()" } })
+                    @Html.Button("CreateAuthors", " Добавить", Html.Icon("plus"), new Dictionary<string, object> { { "type", "button" }, { "onclick", "addAuthor(this);" }, { "dataCount", "100" } })
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12" id="authorInfo">
+                </div>
             </div>
         </div>
 
         <input type="button" value="Оправить" onclick="publicationSubmit()" />
+        
     }
 </div>
 
@@ -51,7 +93,7 @@
 
 <script type="text/javascript">
     //конвертирование листа на корректные номера
-    function convertName(list) {
+    function convertList(list) {
         let oldName = '';
         let countItem = -1;
         let id;
@@ -63,8 +105,9 @@
                 id = name;
                 countItem++;
             }
-            $("[name='" + item.name + "']").attr("name", item.name.replace(/\[\d*]/g, `[${countItem}]`));
-            oldName = item.name;
+            let propertyName = item.name;
+            $(`[name='${propertyName}']`).attr("name", item.name.replace(/w*\[\d*]/g, `[${countItem}]`));
+            oldName = propertyName;
         }
         return countItem;
     }
@@ -89,8 +132,8 @@
     const authorTableInPublication = "authorInfo";
     const selectedAuthor = "selectedAuthor";
     // --- Author
-    const authorProperties = ['Surname', 'Name', 'Lastname', 'BDay', "Id"];
-    const authorLabels = ['Фамилия', 'Имя', 'Отчество', 'Дата рождения', '#'];
+    const authorProperties = ['Coauthor',  'Surname', 'Name', 'Lastname', 'BDay'];
+    const authorLabels = ['Соавтор', 'Фамилия', 'Имя', 'Отчество', 'Дата рождения' ];
     const weightProperty = "Weight";
     // ---
 
@@ -109,7 +152,6 @@
             }
         });
     }
-
 
     function removeAuthor(elem, id) {
         $(elem).parent().remove();
@@ -138,92 +180,140 @@
         for (let author of $(authorList).filter("[name$=Id]:not([name$=UserId])")) {
             // на этом же листе, фильтрируем по текущему Id
             var authorInfo = $(authorList).filter(`[name*='[${author.value}]']`);
-            appendAuthorHidden(authorInfo);
+
+            // ------
+            // добавление скрытых полей
+            // ------
+            let text = authorInfo.filter(`[name$='FIO']`).val();
+            let id = authorInfo.filter(`[name$='Id']`).val();
+            let remove =
+                `<span onclick='${removeAuthorFunc}(this, ${id})' >
+                <i class="glyphicon glyphicon-remove"></i>
+            </span>`;
+
+            if ($(`#${selectedAuthors}:contains('${text}')`).length == 0) {
+                let hiddenProperties = author;
+                let newDiv = $(`<div class="col-md-2">${text} ${remove}</div>`).append(hiddenProperties);
+                $(`#${selectedAuthors}`).append(newDiv);
+            }
+            // ------
         }
 
     }
 
-    function appendAuthorHidden(author) {
-        let text = author.filter(`[name$='FullName']`).val();
-        let id = author.filter(`[name$='Id']`).val();
-        let remove =
-            `<span onclick='${removeAuthorFunc}(this, ${id})' >
-                <i class="glyphicon glyphicon-remove"></i>
-            </span>`;
+    function convertName(example, propertyName) {
+        let name = $(example).attr("name");
+        return name.match(/\w*\[\d*]./g) + propertyName; //\w*\.[\d] - Author[2].Id -> Author[2].
+    }
 
-        if ($(`#${selectedAuthors}:contains('${text}')`).length == 0) {
-            let hiddenProperties = author;
-            let newDiv = $(`<div class="col-md-2">${text} ${remove}</div>`).append(hiddenProperties);
-            $(`#${selectedAuthors}`).append(newDiv);
+    function convertId(example, propertyName) {
+        let id = $(example).attr("id");
+        return id.match(/\w*_\d*__/g) + propertyName; // \w*_\d__ -- Author_2__Id -> Author_2__
+    }
+
+    function createCoauthor(author) {
+        let propertyName = "Coauthor";
+        
+        let input = document.createElement('input');
+        $(input).attr("type", 'checkbox');
+        if ($(author).filter(`[name$=.${propertyName}]`).length != 0 && $(author).val()) {
+            debugger;
+            if ($(author).val() != "False") {
+                $(input).attr("checked", "checked");
+                $(author).val("True");
+            }
+            else {
+                $(author).val("False");
+            }
+            
         }
+        $(input).attr("name", convertName(author, propertyName));
+        $(input).attr("id", convertId(author, propertyName));
+        return input;
     }
 
     function createTbody(table, list, withWeight) {
         let tbody = $('<tbody>');
         $(tbody).attr("id", $(table).attr("id") + "Tbody");
-        appendTbody(tbody, list, withWeight);
+        appendTbody(tbody, list);
         table.append(tbody);
+        return $(tbody).find("tr");
     }
 
-    function appendTbody(tbody, list, withWeight) {
+    function appendTbody(tbody, list) {
         let data = list;
         // находим Id авторов
-        for (let item of $(data).filter("[name$=Id]:not([name$=UserId])")) {
-            debugger;
+        for (let item of $(data).filter("[name$='.Id']")) {
             let tbodyId = $(tbody).attr("id");
             if ($(`#${tbodyId} > #${selectedAuthor}_${item.value}`).length != 0) {
                 continue;
             }
             // на этом же листе, фильтрируем по текущему Id
             let authorInfo = $(data).filter(`[name*='[${item.value}]']`);
+            let tr = $('<tr>');
+            let isTh = false;
+            appendThOrTd(tr, isTh, "");
+            // установка идентификатора строки
+            $(tr).attr("id", `${selectedAuthor}_${item.value}`);
             // ищем среди них нужные столбцы
-            tbody.append(
-                createAuthorTr(
-                    false,
-                    authorInfo.filter(`[name$='${authorProperties[0]}']`),
-                    authorInfo.filter(`[name$='${authorProperties[1]}']`),
-                    authorInfo.filter(`[name$='${authorProperties[2]}']`),
-                    authorInfo.filter(`[name$='${authorProperties[3]}']`),
-                    authorInfo.filter(`[name$='${authorProperties[4]}']`)
-                )
-            );
-            if (withWeight) {
-                let weight = $("<input >");
-                $(weight).addClass("form-control");
-                $(weight).attr("type", "text");
-                let example = authorInfo[0];
-                if (example != null) {
-                    //\w*\.[\d] - Author[2].Id -> Author[2].
-                    $(weight).attr("name", example.name.match(/\w*\[\d*]./g) + weightProperty);
-                    // \w*_\d__ -- Author_2__Id -> Author_2__
-                    $(weight).attr("id", example.id.match(/\w*_\d*__/g) + weightProperty);
+            for (let i of authorProperties) {
+                if (i == "Id") {
+                    appendThOrTd(tr, isTh, "");
                 }
-                tbody.find("td:last").append(weight);
+                else {
+                    let author = $(authorInfo).filter(`[name$='.${i}']`);
+                    if (i == "Coauthor" && author.length == 0 && $(tr).find("[name$='.Coauthor']").length == 0) {
+                        author = createCoauthor($(authorInfo).filter(`[name$='.${authorProperties[2]}']`));
+                    }
+                    appendThOrTd(tr, isTh, author);
+                  
+                }
             }
-            
+            appendThOrTd(tr, isTh, "");
+            tbody.append(tr);
+            // метод для расчета веса
+            if (true) {
+                tbody.find("td:last").append(addWeight(authorInfo[0]));
+            }
+
             if ($(authorInfo).filter("[type=text]").length == 0)
                 tbody.find("td:last").append($(authorInfo).clone());
         }
     }
 
+    function addWeight(example) {
+        let weight = $("<input >");
+        $(weight).addClass("form-control");
+        $(weight).attr("type", "text");
+        if (example != null) {
+            $(weight).attr("name", example.name.match(/\w*\[\d*]./g) + weightProperty); //\w*\.[\d] - Author[2].Id -> Author[2].
+            $(weight).attr("id", example.id.match(/\w*_\d*__/g) + weightProperty);      // \w*_\d__ -- Author_2__Id -> Author_2__
+        }
+        return weight;
+    }
+
     function createThead(table) {
         let thead = $('<thead>');
-        let tr = createAuthorTr(
-            true,
-            authorLabels[0],
-            authorLabels[1],
-            authorLabels[2],
-            authorLabels[3],
-            authorLabels[4]
-        );
+        let tr = $('<tr>');
+        let isTh = true;
+        appendThOrTd(tr, isTh, "");
+        for (let i of authorLabels) {
+            if (i == "#") {
+                appendThOrTd(tr, isTh, "");
+            }
+            else {
+                appendThOrTd(tr, isTh, i);
+            }
+        }
+        appendThOrTd(tr, isTh, "");
         thead.append(tr);
         table.append(thead);
     }
-    function createAuthorTr(isTh, surname, name, lastName, bDay, id) {
+    function createAuthorTr(isTh, surname, name, lastName, bDay, id, coathor) {
         let tr = $('<tr>');
         $(tr).attr("id", `${selectedAuthor}_${$(id).val()}`);
         appendThOrTd(tr, isTh, "");
-        appendThOrTd(tr, isTh, id);
+        appendThOrTd(tr, isTh, coathor);
         appendThOrTd(tr, isTh, surname);
         appendThOrTd(tr, isTh, name);
         appendThOrTd(tr, isTh, lastName);
@@ -237,12 +327,21 @@
             tr.append(elem.append(input));
             return;
         }
-        if ($(input).attr("type") == "text" && $(input).filter("[name$=Id]:not([name$=UserId])").length == 0) {
+        if (($(input).attr("type") == "text" || $(input).attr("type") == "checkbox") && $(input).filter("[name$=Id]:not([name$=UserId])").length == 0) {
             tr.append(elem.append(input));
             return;
         }
         if (input != null && input.length != 0) {
-            tr.append(elem.append(input.val()));
+            let coathor;
+            if ($(input).filter(`[name$='.Coauthor']`).length != 0) {
+                coathor = createCoauthor(input);
+            }
+            if (coathor != null) {
+                tr.append(elem.append(coathor));
+            }
+            else {
+                tr.append(elem.append(input.val()));
+            }
             return;
         }
         else {
@@ -276,8 +375,9 @@
         table.attr("id", tableHereId+"Id")
         table.addClass("table");
         createThead(table);
-        createTbody(table, list, withWeight);
-        $(`#${tableHereId}`).html(table);
+        let haveRecords = createTbody(table, list, withWeight);
+        if (haveRecords.length != 0)
+            $(`#${tableHereId}`).html(table);
         return table;
     }
 
@@ -288,7 +388,7 @@
         }
         else {
             let tbody = $(`#${tableId}Id tbody`);
-            appendTbody(tbody, list, true);
+            appendTbody(tbody, list);
         }
     }
 
@@ -299,15 +399,16 @@
             foreach (var author in Model.Authors)
             {
                 var i = author.Id;
-                @Html.Hidden(string.Format("{0}[{1}].{2}", name, i, "Id"), author.Id, new { });
-                @Html.Hidden(string.Format("{0}[{1}].{2}", name, i, "FullName"), author.ToStringFormat(), new { });
+                @Html.Hidden(string.Format("{0}[{1}].{2}", name, i, "Id"), author.Id, new { })
+                @Html.Hidden(string.Format("{0}[{1}].{2}", name, i, "FIO"), author.ToStringFormat(), new { })
                 @Html.Hidden(string.Format("{0}[{1}].{2}", name, i, "UserId"), author.UserId, new { });
-                if (author.UserId == null)
+                var coathor = string.Format("{0}[{1}].{2}", name, i, "Coauthor");
+                if (author.UserId != null)
                 {
-                    @Html.Hidden(string.Format("{0}[{1}].{2}", name, i, "Name"), author.Name, new { });
-                    @Html.Hidden(string.Format("{0}[{1}].{2}", name, i, "Lastname"), author.Lastname, new { });
-                    @Html.Hidden(string.Format("{0}[{1}].{2}", name, i, "Surname"), author.Surname, new { });
-                    @Html.Hidden(string.Format("{0}[{1}].{2}", name, i, "BDay"), author.BDay, new { });
+                    @Html.Hidden(string.Format("{0}[{1}].{2}", name, i, "Name"), author.Name, new { })
+                    @Html.Hidden(string.Format("{0}[{1}].{2}", name, i, "Lastname"), author.Lastname, new { })
+                    @Html.Hidden(string.Format("{0}[{1}].{2}", name, i, "Surname"), author.Surname, new { })
+                    @Html.Hidden(string.Format("{0}[{1}].{2}", name, i, "BDay"), author.BDay, new { })
                 }
                 else
                 {
@@ -315,7 +416,7 @@
                     @Html.TextBox(string.Format("{0}[{1}].{2}", name, i, "Lastname"), author.Lastname, new { @class = "form-control" })
                     @Html.TextBox(string.Format("{0}[{1}].{2}", name, i, "Surname"), author.Surname, new { @class = "form-control" })
                     @Html.TextBox(string.Format("{0}[{1}].{2}", name, i, "BDay"), author.BDay, new { @class = "form-control" })
-
+                    @:<input type="checkbox" name="@coathor" id="@(name + "_" + i + "__Coauthor")" @(author.Coauthor? "checked": "") />
                 }
             }
         }`;
@@ -331,18 +432,24 @@
     function addAuthor(elem) {
         let id = $(elem).attr("datacount");
         let list = [];
-
+        authorProperties.push("Id");
         for (let item of authorProperties) {
             let input = document.createElement('input');
-            $(input).addClass('form-control');
-            $(input).attr("type", 'text');
+            if (item === "Coauthor") {
+                $(input).attr("type", 'checkbox');
+                $(input).attr("value", true);
+            }
+            else {
+                $(input).addClass('form-control');
+                $(input).attr("type", 'text');
+            }
             $(input).attr("name", `${modelName}[${id}].${item}`);
             $(input).attr("id", `${modelName}_${id}__${item}`);
             if (item === "Id") {
                 $(input).attr("value", id);
             }
-            list.push(input);
 
+            list.push(input);
         }
         createOrUpdateAuthors(authorTableInPublication, list, true);
         $(elem).attr("datacount", ++id);
@@ -356,7 +463,7 @@
     //------------------
     function publicationSubmit() {
         var createResult = $(`#${authorTableInPublication}`).find("input");
-        convertName(createResult);
+        convertList(createResult);
         $("#@(formId)").submit();
 
     }

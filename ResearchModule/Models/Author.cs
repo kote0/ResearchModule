@@ -26,6 +26,9 @@ namespace ResearchModule.Models
         [DisplayName("День рождения")]
         public DateTime BDay { get; set; }
 
+        [DisplayName("Соавтор")]
+        public bool Coauthor { get; set; }
+
         [NotMapped]
         public bool Selected { get; set; }
 
