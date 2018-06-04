@@ -9,6 +9,7 @@
             <div class="col-md-4">@Html.DisplayNameFor(m => m.Volume)</div>
             <div class="col-md-8">
                 @Html.TextBoxFor(m => m.Volume, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Volume)
             </div>
         </div>
     </div>

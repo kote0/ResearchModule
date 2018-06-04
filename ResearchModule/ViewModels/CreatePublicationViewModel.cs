@@ -13,7 +13,7 @@ namespace ResearchModule.ViewModels
         [Required]
         public Publication Publication { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Заполните обязательное поле")]
         public IFormFile FormFile { get; set; }
 
         public string OldFileName { get; set; }

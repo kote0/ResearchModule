@@ -25,11 +25,13 @@
     <h2>Добавить публикацию</h2>
     @using (Html.BeginForm("CreatePublicationNew", "Publication", FormMethod.Post, new { id = formId, enctype = "multipart/form-data" }))
     {
+        @Html.ValidationSummary(true)
         <div>
             <div class="row propertyName">
                 <div class="col-md-4">@Html.DisplayNameFor(m => m.Publication.PublicationName)</div>
                 <div class="col-md-8">
                     @Html.TextBoxFor(m => m.Publication.PublicationName, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Publication.PublicationName)
                 </div>
             </div>
             <div class="row propertyName">
@@ -53,6 +55,7 @@
                rows = 5,
                placeholder = @"Сб.: Материалы международной научно-практической конференции “Экономические и социальные технологии переходного общества”, 2-3 декабря 1997 г.- Пермь: ПГУ, 1997. - С.199."
            })
+                    @Html.ValidationMessageFor(model => model.Publication.OutputData)
                 </div>
             </div>
             <div class="row propertyName">
@@ -71,6 +74,7 @@
                 <div class="col-md-4">@Html.DisplayNameFor(m => m.Publication.PublicationType)</div>
                 <div class="col-md-8" id="load_select-Section">
                     <select-list items="@Model.PublicationTypes" name="Publication.PublicationTypeId"></select-list>
+                    @Html.ValidationMessageFor(model => model.Publication.PublicationTypeId)
                 </div>
             </div>
         </div>
@@ -93,6 +97,7 @@
             <div class="col-md-8">
                 @Html.FileFor(m=>m.FormFile)
                 @Html.HiddenFor(m=>m.OldFileName)
+                @Html.ValidationMessageFor(model => model.FormFile)
             </div>
         </div>
         <input type="button" value="Оправить" onclick="publicationSubmit()" />

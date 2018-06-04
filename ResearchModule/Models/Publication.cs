@@ -10,11 +10,11 @@ namespace ResearchModule.Models
     {
         public int Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Заполните обязательное поле")]
         [DisplayName("Название публикации")]
         public string PublicationName { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Заполните обязательное поле")]
         [DisplayName("Вид публикации")]
         public int PublicationTypeId { get; set; }
 
@@ -24,39 +24,39 @@ namespace ResearchModule.Models
         /// <summary>
         /// Раздел
         /// </summary>
-        [Required]
+        [Required(ErrorMessage = "Заполните обязательное поле")]
         [DisplayName("Раздел")]
         public int PublicationPartition { get; set; }
 
         /// <summary>
         /// Форма работы
         /// </summary>
-        [Required]
+        [Required(ErrorMessage = "Заполните обязательное поле")]
         [DisplayName("Форма работы")]
         public int PublicationForm { get; set; }
 
         /// <summary>
         /// Выходные данные / Издательство
         /// </summary>
-        [Required]
+        [Required(ErrorMessage = "Заполните обязательное поле")]
         [DisplayName("Издательство")]
         public string OutputData { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Заполните обязательное поле")]
         [DisplayName("Объем")]
         public long Volume { get; set; }
 
         /// <summary>
         /// Дата создания
         /// </summary>
-        [Required]
+        [Required(ErrorMessage = "Заполните обязательное поле")]
         [DisplayName("Дата создания")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// Дата изменения
         /// </summary>
-        [Required]
+        [Required(ErrorMessage = "Заполните обязательное поле")]
         [DisplayName("Дата изменения")]
         public DateTime ModifyDate { get; set; }
 
@@ -68,7 +68,7 @@ namespace ResearchModule.Models
         /// <summary>
         /// Файл
         /// </summary>
-        [Required]
+        [Required(ErrorMessage = "Заполните обязательное поле")]
         [DisplayName("Файл")]
         public int PublicationFileId { get; set; }
 

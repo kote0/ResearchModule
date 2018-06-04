@@ -10,6 +10,7 @@ using ResearchModule.ViewModels;
 using System.Collections.Generic;
 using ResearchModule.Extensions;
 using System.Linq;
+using System;
 
 namespace ResearchModule.Controllers
 {
@@ -42,10 +43,15 @@ namespace ResearchModule.Controllers
         [HttpPost]
         public IActionResult CreatePublicationNew(CreatePublicationViewModel createPublication)
         {
+            createPublication.Publication.CreateDate = DateTime.Now;
+            createPublication.Publication.ModifyDate = DateTime.Now;
             createPublication = publicationService.Create(createPublication);
-
             createPublication.PublicationTypes = selectListService
                 .Create<PublicationType>(createPublication.Publication.PublicationTypeId);
+            
+            if (ModelState.IsValid)
+                return View("CreatePublication", createPublication);
+
             createPublication.PublicationPartions = selectListService
                 .Create(PublicationElems.GetPartions(), createPublication.Publication.PublicationPartition);
             createPublication.PublicationForms = selectListService
