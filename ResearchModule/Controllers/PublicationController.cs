@@ -33,7 +33,9 @@ namespace ResearchModule.Controllers
         {
             var model = new CreatePublicationViewModel();
             model.PublicationTypes = selectListService.Create<PublicationType>(null);
-            
+            model.PublicationPartions = selectListService.Create(PublicationElems.GetPartions(), null);
+            model.PublicationForms = selectListService.Create(PublicationElems.GetForms(), null);
+
             return View("CreatePublication", model);
         }
 
@@ -42,6 +44,10 @@ namespace ResearchModule.Controllers
         {
             createPublication.PublicationTypes = selectListService
                 .Create<PublicationType>(createPublication.Publication.PublicationTypeId);
+            createPublication.PublicationPartions = selectListService
+                .Create(PublicationElems.GetPartions(), createPublication.Publication.PublicationPartition);
+            createPublication.PublicationForms = selectListService
+                .Create(PublicationElems.GetForms(), createPublication.Publication.PublicationForm);
 
             return View("CreatePublication", createPublication);
         }

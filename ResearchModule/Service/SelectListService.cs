@@ -25,8 +25,13 @@ namespace ResearchModule.Service
 
         public SelectList Create<T>(IQueryable<T> list, int? id) where T : class, IName
         {
+            return Create(list.ToList(), id);
+        }
+
+        public SelectList Create<T>(IEnumerable<T> list, int? id) where T : class, IName
+        {
             var selectedId = id.HasValue ? id.Value : 0;
-            return selectListCreate(list.Select(a => CreateItem(a.Name, a.Id, selectedId)).ToList());
+            return selectListCreate(list.Select(a => CreateItem(a.Name, a.Id, selectedId)));
         }
 
         public SelectList LoadSelectAuthor(int id = 0)

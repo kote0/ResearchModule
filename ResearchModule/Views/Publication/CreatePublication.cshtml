@@ -56,6 +56,18 @@
                 </div>
             </div>
             <div class="row">
+                <div class="col-md-4">@Html.DisplayNameFor(m => m.Publication.PublicationPartition)</div>
+                <div class="col-md-8" id="load_select-Section">
+                    <select-list items="@Model.PublicationPartions" name="Publication.PublicationPartition"></select-list>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">@Html.DisplayNameFor(m => m.Publication.PublicationForm)</div>
+                <div class="col-md-8" id="load_select-Section">
+                    <select-list items="@Model.PublicationForms" name="Publication.PublicationForm"></select-list>
+                </div>
+            </div>
+            <div class="row">
                 <div class="col-md-4">@Html.DisplayNameFor(m => m.Publication.PublicationType)</div>
                 <div class="col-md-8" id="load_select-Section">
                     <select-list items="@Model.PublicationTypes" name="Publication.PublicationTypeId"></select-list>
