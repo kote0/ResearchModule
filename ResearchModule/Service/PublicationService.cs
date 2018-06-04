@@ -38,7 +38,7 @@ namespace ResearchModule.Service
             this.publicationPage = new PublicationPage(manager, authorService, this, userManager);
         }
 
-        
+
 
         public string GetFormName(int id)
         {
@@ -69,7 +69,24 @@ namespace ResearchModule.Service
         {
             return manager.Get(id);
         }
-        
+
+        public CreatePublicationViewModel Create(CreatePublicationViewModel createPublication)
+        {
+            //var file = fileManager.CreateInfo(createPublication.FormFile);
+            var oldFileName = createPublication.OldFileName;
+            if (createPublication.FormFile != null)
+            {
+                // изменить на Uid
+                // FileName не нужен, так как используется Html.FileFor
+                createPublication.OldFileName = string.IsNullOrEmpty(oldFileName) 
+                    ? createPublication.FormFile.FileName
+                    : !oldFileName.Equals(createPublication.FormFile.FileName)
+                        ? createPublication.FormFile.FileName
+                        : oldFileName;
+            }
+            return createPublication;
+        }
+
         public IResult Create(Publication publication, PublicationType type, IFormFile file, 
             IEnumerable<Author> createdAuthors, IEnumerable<Author> selectedAuthors)
         {

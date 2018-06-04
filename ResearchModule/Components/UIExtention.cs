@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
@@ -138,6 +139,20 @@ namespace ResearchModule.Components
             html.ViewData["description"] = description;
             html.ViewData["displayname"] = displayName;
             return html.Partial(Components+"File");
+        }
+
+        public static IHtmlContent FileFor<TModel, TValue>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression)
+        {
+            Func<ModelMetadata, string> propertyName = m => m.PropertyName;
+            var modelExplorer = ExpressionMetadataProvider.FromLambdaExpression(expression, html.ViewData, html.MetadataProvider);
+            if (modelExplorer != null && modelExplorer.Metadata != null)
+            {
+                html.ViewData["filename"] = propertyName(modelExplorer.Metadata);
+                var name = modelExplorer.GetExplorerForProperty("FileName");
+                html.ViewData["displayname"] = name == null ? "" : name.Model;
+            }
+            return html.Partial(Components + "File");
+
         }
 
         private static IHtmlContent MetaDataFor<TModel, TValue>(this IHtmlHelper<TModel> html,

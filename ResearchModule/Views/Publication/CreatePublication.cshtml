@@ -26,25 +26,25 @@
     @using (Html.BeginForm("CreatePublicationNew", "Publication", FormMethod.Post, new { id = formId, enctype = "multipart/form-data" }))
     {
         <div>
-            <div class="row">
+            <div class="row propertyName">
                 <div class="col-md-4">@Html.DisplayNameFor(m => m.Publication.PublicationName)</div>
                 <div class="col-md-8">
                     @Html.TextBoxFor(m => m.Publication.PublicationName, new { @class = "form-control" })
                 </div>
             </div>
-            <div class="row">
+            <div class="row propertyName">
                 <div class="col-md-4">Написана ли публикация на иностранном языке</div>
                 <div class="col-md-8">
                     @Html.CheckBox("IsTranslate", false, new { onClick = "Translate(this)" })
                 </div>
             </div>
-            <div class="row">
+            <div class="row propertyName">
                 <div class="col-md-4">@Html.DisplayNameFor(m => m.Publication.TranslateText)</div>
                 <div class="col-md-8">
                     @Html.TextBoxFor(m => m.Publication.TranslateText, new { @class = "form-control" })
                 </div>
             </div>
-            <div class="row">
+            <div class="row propertyName">
                 <div class="col-md-4">@Html.DisplayNameFor(m => m.Publication.OutputData)</div>
                 <div class="col-md-8">
                     @Html.TextAreaFor(m => m.Publication.OutputData, new
@@ -55,47 +55,46 @@
            })
                 </div>
             </div>
-            <div class="row">
+            <div class="row propertyName">
                 <div class="col-md-4">@Html.DisplayNameFor(m => m.Publication.PublicationPartition)</div>
                 <div class="col-md-8" id="load_select-Section">
                     <select-list items="@Model.PublicationPartions" name="Publication.PublicationPartition"></select-list>
                 </div>
             </div>
-            <div class="row">
+            <div class="row propertyName">
                 <div class="col-md-4">@Html.DisplayNameFor(m => m.Publication.PublicationForm)</div>
                 <div class="col-md-8" id="load_select-Section">
                     <select-list items="@Model.PublicationForms" name="Publication.PublicationForm"></select-list>
                 </div>
             </div>
-            <div class="row">
+            <div class="row propertyName">
                 <div class="col-md-4">@Html.DisplayNameFor(m => m.Publication.PublicationType)</div>
                 <div class="col-md-8" id="load_select-Section">
                     <select-list items="@Model.PublicationTypes" name="Publication.PublicationTypeId"></select-list>
                 </div>
             </div>
         </div>
+        @Html.Partial("Volume", Model.Publication)
         <div>
-            <div class="row">
-                <div class="col-md-4">@Html.DisplayNameFor(m => m.Publication.Volume)</div>
-                <div class="col-md-8">
-                    @Html.TextBoxFor(m => m.Publication.Volume, new { @class = "form-control" })
-                </div>
-            </div>
-        </div>
-        <div>
-            <div class="row">
+            <div class="row propertyName">
                 <div class="col-md-4">Список соавторов</div>
                 <div class="col-md-8">
                     @Html.Button("SearchAuthors", " Найти", Html.Icon("search"), new Dictionary<string, object> { { "type", "button" }, { "onclick", "hidePublicationCreateForm()" } })
                     @Html.Button("CreateAuthors", " Добавить", Html.Icon("plus"), new Dictionary<string, object> { { "type", "button" }, { "onclick", "addAuthor(this);" }, { "dataCount", "100" } })
                 </div>
             </div>
-            <div class="row">
+            <div class="row propertyName">
                 <div class="col-md-12" id="authorInfo">
                 </div>
             </div>
         </div>
-
+        <div class="row">
+            <div class="col-md-4">Файл</div>
+            <div class="col-md-8">
+                @Html.FileFor(m=>m.FormFile)
+                @Html.HiddenFor(m=>m.OldFileName)
+            </div>
+        </div>
         <input type="button" value="Оправить" onclick="publicationSubmit()" />
         
     }
@@ -470,6 +469,7 @@
 </script>
 
 <script type="text/javascript">
+    const volumeId = "divVolumeId";
     //------------------
     // Работа с публикацией
     //------------------

@@ -15,7 +15,9 @@ namespace ResearchModule.ViewModels
 
         [Required]
         public IFormFile FormFile { get; set; }
-        
+
+        public string OldFileName { get; set; }
+
         public IEnumerable<Author> Authors { get; set; }
 
         public SelectList PublicationTypes { get; set; }
