@@ -13,8 +13,8 @@
         @Html.Partial("PublicationView", Model)
     </div>
     <div class="publications_filters col-md-offset-1 col-md-4">
-        @Html.Partial("Filter", Model.PublicationFilterViewModel != null
-            ? Model.PublicationFilterViewModel
+        @Html.Partial("Filter", Model.PublicationFilter != null
+            ? Model.PublicationFilter
             : new PublicationFilterViewModel())
     </div>
 </div>
@@ -33,5 +33,8 @@
         vertical-align: bottom;
         bottom: 0;
         right: 15px;
+    }
+    .propertyName {
+        margin-top: 10px;
     }
 </style>

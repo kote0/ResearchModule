@@ -20,7 +20,9 @@ namespace ResearchModule.Repository.Interfaces
         T Single<T>(Expression<Func<T, bool>> func) where T : class;
         T Get<T>(params object[] keyValues) where T : class;
         IEnumerable<T> Get<T>(Func<T, bool> func) where T : class;
-        
+        Task ForEachAsync<T>(Action<T> func) where T : class;
+
+
         IAsyncEnumerable<T> GetAsync<T>(Func<T, bool> func) where T : class;
 
         IQueryable<T> GetQuery<T>(Expression<Func<T, bool>> func) where T : class;

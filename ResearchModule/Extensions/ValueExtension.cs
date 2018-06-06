@@ -40,6 +40,11 @@ namespace ResearchModule.Extensions
 
         #region Author
 
+        public static bool IsAdmin(this Author author)
+        {
+            return author != null && !string.IsNullOrEmpty(author.UserId) 
+                && author.UserId.Equals(RoleInitializer.AdminName);
+        }
 
         public static bool IsValid(this Author author)
         {

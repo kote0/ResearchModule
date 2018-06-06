@@ -32,6 +32,17 @@ namespace ResearchModule.Controllers
 
         }
 
+        public IActionResult DeleteUser(string name, string returnUrl)
+        {
+            var user = manager.GetQuery<User>(m => m.UserName.Equals(name)).FirstOrDefault();
+            if (user != null && !user.UserName.Equals(RoleInitializer.AdminName))
+            {
+                user.IsDeleted = true;
+                manager.Update(user);
+            }
+            return Redirect(returnUrl);
+        }
+
         public async Task<IActionResult> SaveUser(User user, Author author, string returnUrl)
         {
             var result = new Result();

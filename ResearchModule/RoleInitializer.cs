@@ -15,10 +15,11 @@ namespace ResearchModule
 
         public const string AnalystRole = "analyst";
 
+        public const string AdminName = "admin0";
+
 
         public static async Task InitializeAsync(UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
         {
-            string adminEmail = "admin0";
             string password = "_Aa123456";
             if (await roleManager.FindByNameAsync(AdminRole) == null)
             {
@@ -33,9 +34,9 @@ namespace ResearchModule
                 await roleManager.CreateAsync(new IdentityRole(AnalystRole));
             }
             
-            if (await userManager.FindByNameAsync(adminEmail) == null)
+            if (await userManager.FindByNameAsync(AdminName) == null)
             {
-                User admin = new User { Email = "admin@gmail.com", UserName = adminEmail };
+                User admin = new User { Email = "admin@gmail.com", UserName = AdminName };
 
                 IdentityResult result = await userManager.CreateAsync(admin, password);
                 if (result.Succeeded)

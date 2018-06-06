@@ -1,10 +1,12 @@
-﻿using ResearchModule.Components.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using ResearchModule.Components.Models;
 using ResearchModule.Components.Models.Interfaces;
 using ResearchModule.Models.Interfaces;
 using ResearchModule.Repository.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ResearchModule.Repository
 {
@@ -54,13 +56,13 @@ namespace ResearchModule.Repository
 
         public IEnumerable<T> Find(int publicationId)
         {
-            var multiples = repository.GetQuery<TPM>(pm => pm.PublicationId == publicationId)
-                .ToList();
+            var multiples = repository.GetQuery<TPM>(pm => pm.PublicationId == publicationId).ToList();
 
             List<T> objs = new List<T>();
+
             foreach (var item in multiples)
             {
-                var obj = repository.GetQuery<T>(a => a.Id == item.MultipleId)
+                var obj = repository.Get<T>(a => a.Id == item.MultipleId)
                     .FirstOrDefault();
 
                 if (obj != null)

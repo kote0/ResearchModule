@@ -3,18 +3,18 @@
 @model ResearchModule.ViewModels.PublicationFilterViewModel
 @{
     ViewData["Title"] = "Выберите параметры";
+    var types = ViewData["types"] != null ? (ResearchModule.Models.SelectList)ViewData["types"] : null;
 }
 <div class="">
     <h2>Выберите параметры </h2>
 </div>
-@using (Html.BeginForm("Create", "Analyst"))
+@using (Html.BeginForm("PublicationChart", "Analyst"))
 {
     <div class="row propertyName">
         <div class="col-md-5">
             <label>Выберите дату создания публикации</label>
             <div class="input-group date">
-                <input class="form-control" data-val="true" data-val-required="The День рождения field is required."
-                       id="Publication_CreateDate" name="Publication.CreateDate" type="text" value="">
+                @Html.TextBoxFor(m=>m.Publication.CreateDate, new { @class="form-control" })
                 <span class="input-group-addon">
                     <i class="glyphicon glyphicon-th"></i>
                 </span>
@@ -25,13 +25,13 @@
     <div class="row propertyName">
         <div class="col-md-5">
             <label style="font-style: normal">Укажите виды</label>
-            @Html.SelectList(SelectListService.LoadSelectPublicationType("PublicationTypes", -1), true)
+            <select-list items="types" name="@Html.NameFor(m=>m.PublicationTypesId)" multiple="true"></select-list>
         </div>
     </div>
     <div class="row propertyName">
         <div class="col-md-5">
-            @Html.Button("SearchUsers", " Выбрать пользователей", Html.Icon("search"),
-                                        new { type = "button", onClick = "SearchUserModal.open('Authors', '#loadUsers')" })
+            <label>Выберите пользователей</label>
+            <select-list items="@Model.AuthorList" name="@Html.NameFor(m=>m.Authors)" multiple="true" live-search="true"></select-list>
             <div id="loadUsers"></div>
         </div>
     </div>

@@ -18,6 +18,10 @@ namespace ResearchModule.Service
             this.manager = manager;
         }
 
+        public SelectListService()
+        {
+        }
+
         public SelectList Create<T>(int? id) where T : class, IName
         {
             return Create<T>(manager.GetQuery<T>(p => p != null), id);
@@ -33,6 +37,19 @@ namespace ResearchModule.Service
             var selectedId = id.HasValue ? id.Value : 0;
             return selectListCreate(list.Select(a => CreateItem(a.Name, a.Id, selectedId)));
         }
+
+        public SelectList Create<T>(IEnumerable<int> id) where T : class, IName
+        {
+            return selectListCreate(manager.GetQuery<T>(p => p != null)
+                .ToList()
+                .Select(a => CreateItem(a.Name, a.Id, id)));
+        }
+
+        public SelectList Create<T>(IEnumerable<T> list, IEnumerable<int> id) where T : class, IName
+        {
+            return selectListCreate(list.Select(a => CreateItem(a.Name, a.Id, id)));
+        }
+
 
         public SelectList LoadSelectAuthor(int id = 0)
         {
@@ -76,6 +93,16 @@ namespace ResearchModule.Service
                 Value = id,
                 Text = str,
                 Selected = (selectId != 0 && selectId.Equals(id) ? true : false)
+            };
+        }
+
+        private SelectListItem CreateItem(string str, int id, IEnumerable<int> ids)
+        {
+            return new SelectListItem
+            {
+                Value = id,
+                Text = str,
+                Selected = (ids.Count() != 0 && ids.Count(a => a.Equals(id)) > 0 ? true : false)
             };
         }
 

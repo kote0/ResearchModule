@@ -74,6 +74,12 @@ namespace ResearchModule.Components.TagHelpers
 
         public string Name { get; set; }
 
+        public string OnChange { get; set; }
+
+        public bool Multiple { get; set; }
+
+        public bool LiveSearch { get; set; }
+
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
             output.TagName = "select";
@@ -100,6 +106,23 @@ namespace ResearchModule.Components.TagHelpers
             }
             output.Attributes.SetAttribute("class", classNames);
             output.Attributes.SetAttribute("title", Title ?? "Ничего не выбрано");
+
+            if (!string.IsNullOrEmpty(OnChange))
+            {
+                output.Attributes.SetAttribute("onChange", OnChange);
+            }
+
+            if (Multiple)
+            {
+                output.Attributes.SetAttribute("multiple", "");
+            }
+            
+            if (LiveSearch)
+            {
+                output.Attributes.SetAttribute("data-live-search", "true");
+
+            }
+
         }
     }
 

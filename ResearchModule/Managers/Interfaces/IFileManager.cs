@@ -55,5 +55,13 @@ namespace ResearchModule.Managers.Interfaces
         /// <param name="publicationFileId"></param>
         /// <returns></returns>
         FileDetail UpdateFile(IFormFile file, int publicationFileId);
+
+        FileDetail Get(int id);
+
+        FileDetail Get(string uid);
+
+        string Download(string uid);
+
+        string GetContentType(string name);
     }
 }

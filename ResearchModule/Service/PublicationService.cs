@@ -29,13 +29,15 @@ namespace ResearchModule.Service
         public PublicationService(
             PublicationElements publicationElements, IFileManager fileManager,
             AuthorService authorService,
-            PublicationManager manager, UserManager userManager)
+            PublicationManager manager, UserManager userManager,
+            SelectListService selectListService)
         {
             this.publicationElements = publicationElements;
             this.fileManager = fileManager;
             this.authorService = authorService;
             this.manager = manager;
-            this.publicationPage = new PublicationPage(manager, authorService, this, userManager);
+            this.publicationPage = new PublicationPage(manager, authorService, 
+                this, userManager.CurrentAuthor(), selectListService);
         }
 
 
@@ -78,11 +80,17 @@ namespace ResearchModule.Service
             result.Model = createPublication;
             //createPublication.Authors = createPublication.Authors.Distinct();
            var selectedAuthors = createPublication.Authors.Where(s => s.Id != 0);
-            var createdAuthors = createPublication.Authors.Where(a => a.IsValid());
+            var createdAuthors = createPublication.Authors.Where(a => a.Id == 0 && a.IsValid());
+            var author = createPublication.Authors.Count(a => !a.Coauthor);
+            if (author > 1)
+                return result.Set("Автором публикации может быть только один");
+
+            if (author == 0)
+                return result.Set("Не указан автор публикации");
 
             // проверка на наличие авторов
             if (createdAuthors.Count() == 0 && selectedAuthors.Count() == 0)
-                return result.Set("Отсутсутствуют авторы");
+                return result.Set("Отсутсутствуют автор или соавторы");
 
             var res = manager.AppendFile(createPublication);
             if (res.Failed)
@@ -105,9 +113,17 @@ namespace ResearchModule.Service
             if (typeId > 0)
                 publication.PublicationTypeId = typeId;
 
+            bool newPublication = publication.Id == 0;
             manager.CreateOrUpdatePublication(publication);
 
-            manager.CreatePA(publication.Id, createPublication.Authors);
+            if (newPublication)
+            {
+                manager.CreatePA(publication.Id, createPublication.Authors);
+            }
+            else
+            {
+                manager.UpdatePA(publication.Id, createdAuthors, selectedAuthors);
+            }
 
             if (result.Failed) return result.Set("Не удалось добавить авторов");
 
@@ -192,12 +208,9 @@ namespace ResearchModule.Service
         /// <returns></returns>
         private void AppendFileInfo(FileDetail fileDetails, ref Publication publication)
         {
-            var electronicSource = (int)PublicationElements.FormEnum.electronic_source;
-            var audioVisual = (int)PublicationElements.FormEnum.audiovisual;
-
             publication.PublicationFile = fileDetails;
 
-            if (publication.PublicationForm.Equals(electronicSource) || publication.PublicationForm.Equals(audioVisual))
+            if (publication.PublicationForm.Equals(PublicationElems.electronicSource.Id) || publication.PublicationForm.Equals(PublicationElems.audiovisual.Id))
             {
                 publication.Volume = fileDetails.Size;
             }

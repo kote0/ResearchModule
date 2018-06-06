@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ResearchModule.Models
 {
-    public partial class Author : IID
+    public partial class Author : IName
     {
         public int Id { get; set; }
 
@@ -26,6 +26,7 @@ namespace ResearchModule.Models
         [DisplayName("День рождения")]
         public DateTime BDay { get; set; }
 
+        [NotMapped]
         [DisplayName("Соавтор")]
         public bool Coauthor { get; set; }
 

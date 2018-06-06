@@ -63,7 +63,10 @@
                 <label>Файл</label>
             </div>
             <div class="col-md-7">
-                <span class="glyphicon glyphicon-download-alt"></span> @Model.PublicationFile.Name (@Model.PublicationFile.Size Бит)
+                <a href="@Url.Action("Download", "Publication", new { uid= Model.PublicationFile.Uid, name = Model.PublicationFile.Name })">
+                    <span class="glyphicon glyphicon-download-alt"></span> @Model.PublicationFile.Name (@Model.PublicationFile.Size Бит)
+                </a>
+                
             </div>
         </div>
         @if (Model.Volume != Model.PublicationFile.Size)
@@ -77,7 +80,7 @@
                 </div>
             </div>
         }
-        @if (Model.Language.HasValue)
+        @if (Model.Language.HasValue && !string.IsNullOrEmpty(Model.TranslateText))
         {
             <div class="row">
                 <div class="col-md-5">
@@ -92,7 +95,7 @@
                     @Html.LabelFor(m => m.TranslateText)
                 </div>
                 <div class="col-md-7">
-                    @(Model.TranslateText.Length == 0 ? Model.TranslateText : "")
+                    @(!string.IsNullOrEmpty(Model.TranslateText)? Model.TranslateText : "")
                 </div>
             </div>
         }

@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace ResearchModule.Repository
 {
@@ -210,6 +211,12 @@ namespace ResearchModule.Repository
         public IQueryable<T> GetQuery<T>(Expression<Func<T, bool>> func) where T : class
         {
             return _db.Set<T>().Where(func);
+        }
+
+        //Action<Publication>
+        public Task ForEachAsync<T>(Action<T> func) where T : class
+        {
+            return _db.Set<T>().ForEachAsync(func);
         }
 
         public IAsyncEnumerable<T> GetAsync<T>(Func<T, bool> func) where T : class

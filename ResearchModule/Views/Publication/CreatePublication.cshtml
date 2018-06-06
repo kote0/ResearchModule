@@ -24,9 +24,13 @@
 
 <div id="form@(formId)">
     <h2>Добавить публикацию</h2>
+    
     @using (Html.BeginForm("CreatePublicationNew", "Publication", FormMethod.Post, new { id = formId, enctype = "multipart/form-data" }))
     {
         @Html.ValidationSummary(true)
+        @Html.HiddenFor(m => m.Publication.Id)
+        @Html.HiddenFor(m => m.Publication.ModifyDate)
+        @Html.HiddenFor(m => m.Publication.CreateDate)
         <div>
             <div class="row propertyName">
                 <div class="col-md-4">@Html.DisplayNameFor(m => m.Publication.PublicationName)</div>
@@ -86,7 +90,7 @@
                 <div class="row propertyName">
                     <div class="col-md-4">@Html.DisplayNameFor(m => m.Publication.PublicationForm)</div>
                     <div class="col-md-8" id="load_select-Section">
-                        <select-list items="@Model.PublicationForms" name="Publication.PublicationForm"></select-list>
+                        <select-list items="@Model.PublicationForms" name="Publication.PublicationForm" onChange="showWeightProperty()"></select-list>
                     </div>
                 </div>
                 <div class="row propertyName">
@@ -101,8 +105,9 @@
                     <div class="row propertyName">
                         <div class="col-md-4">Файл</div>
                         <div class="col-md-8">
-                            @Html.FileFor(m => m.FormFile)
                             @Html.HiddenFor(m => m.OldFileName)
+                            @Html.FileFor(m => m.FormFile, m => m.Publication.PublicationFile.Name)
+                            @Html.HiddenFor(m=>m.Publication.PublicationFileId)
                             @Html.ValidationMessageFor(model => model.FormFile)
                         </div>
                     </div>
@@ -182,6 +187,7 @@
     const authorProperties = ['Coauthor',  'Surname', 'Name', 'Lastname', 'BDay'];
     const authorLabels = ['Соавтор', 'Фамилия', 'Имя', 'Отчество', 'Дата рождения' ];
     const weightProperty = "Weight";
+    const weightTdClass = "weightProperty";
     // ---
 
     // --- SearchAuthors
@@ -330,6 +336,8 @@
 
             }
             if (true) {
+                let $tdLast = tr.find("td:last");
+                $tdLast.addClass(weightTdClass);
                 tr.find("td:last").append(addWeight(authorInfo[0]));
             }
 
@@ -344,6 +352,20 @@
 
             if ($(authorInfo).filter("[type=text]").length == 0)
                 tbody.find("td:last").append($(authorInfo).clone());
+        }
+    }
+
+    function showWeightProperty() {
+        let selectedForm = $('#@Html.IdFor(m=>m.Publication.PublicationForm) option:selected').val();
+        let volumeName = 'Volume';
+        if (selectedForm == "3" || selectedForm == "4") {
+            $(`.${weightTdClass}`).hide();
+            $(`[name='${volumeName}']`).parent().parent().hide();
+        }
+        else {
+            $(`.${weightTdClass}`).show();
+            $(`[name='${volumeName}']`).parent().parent().show();
+
         }
     }
 
@@ -444,8 +466,10 @@
         table.addClass("table");
         createThead(table);
         let haveRecords = createTbody(table, list, withWeight);
-        if (haveRecords.length != 0)
+        if (haveRecords.length != 0) {
             $(`#${tableHereId}`).html(table);
+            showWeightProperty();
+        }
         return table;
     }
 
@@ -457,6 +481,7 @@
         else {
             let tbody = $(`#${tableId}Id tbody`);
             appendTbody(tbody, list);
+            showWeightProperty();
         }
     }
 
@@ -499,7 +524,7 @@
         if (!translateName) {
             $("#translateName").hide();
         }
-
+        showWeightProperty();
     });
 
 
@@ -540,9 +565,12 @@
     // Работа с публикацией
     //------------------
     function publicationSubmit() {
+
         var createResult = $(`#${authorTableInPublication}`).find("input");
         convertList(createResult);
         let $form = $("#@(formId)");
+        let $inputs = $(`#${authorTableInPublication}`).find(":checked");
+        $inputs.attr("value", true);
         if (isValid('@(formId)')) {
             $("#@(formId)").submit();
         }
@@ -558,7 +586,7 @@
 
     function isValid(formId) {
         let res = true;
-        let e = $(`#${formId}`).find(`[data-val='True'], [data-val='true'] `);
+        let e = $(`#${formId}`).find(`[data-val='True']:visible, [data-val='true']:visible `);
         var reqInput = $(`#${formId} [data-val='True']`);
         for (var input of e) {
             let parent = $(input).parent();

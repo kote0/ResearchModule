@@ -6,6 +6,7 @@ using ResearchModule.Managers.Interfaces;
 using ResearchModule.Models;
 using ResearchModule.Repository;
 using ResearchModule.Repository.Interfaces;
+using ResearchModule.Service;
 using ResearchModule.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -20,38 +21,55 @@ namespace ResearchModule.Managers
         private readonly IBaseRepository repository;
         private readonly IFileManager fileManager;
         private readonly PAuthorRepository paRepository;
+        private readonly AuthorService authorService;
 
         public PublicationManager(IBaseRepository repository, IFileManager fileManager,
-             PAuthorRepository paRepository)
+             PAuthorRepository paRepository, AuthorService authorService)
         {
             this.repository = repository;
             this.fileManager = fileManager;
             this.paRepository = paRepository;
+            this.authorService = authorService;
         }
 
         public IResult AppendFile(CreatePublicationViewModel createPublication)
         {
             var res = new Result();
 
-            if (createPublication.FormFile == null)
-                return res.Set("Не добавлен файл");
-
             var oldFileName = createPublication.OldFileName;
-            // изменить на Uid
-            var fileName = string.IsNullOrEmpty(oldFileName)
-                ? createPublication.FormFile.FileName
-                : !oldFileName.Equals(createPublication.FormFile.FileName)
-                    ? createPublication.FormFile.FileName
-                    : oldFileName;
+            var fileId = createPublication.Publication.PublicationFileId;
 
-            var file = fileManager.CreateInfo(createPublication.FormFile);
-            if (!fileName.Equals(oldFileName))
+            // нет записи о файле и есть файл
+            if (fileId == 0 && createPublication.FormFile != null)
             {
+                var file = fileManager.CreateInfo(createPublication.FormFile);
                 fileManager.SaveFileInServer(file);
+                createPublication.OldFileName = file.Uid;
+                res.Model = file;
+                return res;
             }
-
-            res.Model = file;
-            return res;
+            // есть запись о файле
+            // пришел новый файл
+            if (fileId != 0 && createPublication.FormFile != null)
+            {
+                var oldFile = fileManager.Get(oldFileName);
+                var file = fileManager.CreateInfo(createPublication.FormFile);
+                file.Uid = oldFile.Uid;
+                file.Id = oldFile.Id;
+                createPublication.OldFileName = file.Uid;
+                fileManager.Delete(file.Uid);
+                fileManager.SaveFileInServer(file);
+                res.Model = file;
+                return res;
+            }
+            // есть запись о файле и нет файла
+            if (fileId != 0 && createPublication.FormFile == null)
+            {
+                res.Model = fileManager.Get(oldFileName);
+                return res;
+            }
+            // нет записи о файле и нет самого файла
+            return res.Set("Не добавлен файл");
         }
 
         public long Count(Expression<Func<Publication, bool>> func)
@@ -78,7 +96,7 @@ namespace ResearchModule.Managers
 
         public IQueryable<Publication> FilterQuery(PublicationFilterViewModel filter)
         {
-            return repository.GetQuery<Publication>(p => Contains(p, filter));
+            return repository.GetQuery((Publication p) =>  Contains(p, filter) );
         }
 
         public IQueryable<Publication> Page(int first)
@@ -112,11 +130,10 @@ namespace ResearchModule.Managers
                     && model.OutputData.ToLower().Contains(filter.Publication.OutputData))
                     return true;
             }
-            if (filter.PublicationTypes != null)
+
+            if (filter.PublicationTypesId.Count != 0)
             {
-                var type = filter.PublicationTypes.Where(t => t.Id == model.PublicationTypeId).FirstOrDefault();
-                if (type != null)
-                    return true;
+                return filter.PublicationTypesId.Count(t => t == model.PublicationTypeId) > 0;
             }
             return false;
         }
@@ -187,6 +204,7 @@ namespace ResearchModule.Managers
                     else
                     {
                         pa.Weight = item.Weight;
+                        pa.Coauthor = item.Coauthor;
                         repository.Update(pa);
                     }
                     pas.Remove(pa);

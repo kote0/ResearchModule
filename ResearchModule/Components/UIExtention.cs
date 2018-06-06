@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.AspNetCore.Routing;
 using System;
@@ -152,6 +153,40 @@ namespace ResearchModule.Components
                 html.ViewData["displayname"] = name == null ? "" : name.Model;
             }
             return html.Partial(Components + "File");
+
+        }
+
+        public static IHtmlContent FileFor<TModel, TValue, TDisplay>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, Expression<Func<TModel, TDisplay>> displayName)
+        {
+            Func<ModelMetadata, string> propertyName = m => m.PropertyName;
+            var explorerFile = GetExplorer(html, expression);
+            if (explorerFile != null && explorerFile.Metadata != null)
+            {
+                html.ViewData["filename"] = propertyName(explorerFile.Metadata);
+                var name = explorerFile.GetExplorerForProperty("FileName");
+                object fileDisplayName = null;
+                if (name != null && name.Model != null)
+                {
+                    fileDisplayName = name.Model;
+                }
+                else
+                {
+                    var explorerDisplay = GetExplorer(html, displayName);
+                    if (explorerDisplay != null && explorerDisplay.Model != null)
+                    {
+                        fileDisplayName = explorerDisplay.Model;
+                    }
+                }
+                html.ViewData["displayname"] = fileDisplayName;
+            }
+            return html.Partial(Components + "File");
+
+        }
+
+
+        private static ModelExplorer GetExplorer<TModel, TValue>(IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression)
+        {
+            return ExpressionMetadataProvider.FromLambdaExpression(expression, html.ViewData, html.MetadataProvider);
 
         }
 

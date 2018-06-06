@@ -13,7 +13,7 @@
     var data = string.IsNullOrEmpty(Model.DataId) ? null : Html.Raw(string.Concat(type, " data:  $('#", Model.DataId, "').find('input, select'),"));
 
 }
-<div class="row">
+<div class="row propertyName">
     <div class="col-md-12">
         <div class="btn-group">
             <button type="button" onclick="loadPageInfoResult(@(havePrevious ? Model.PageNumber - 1 : -1))" aria-label="Previous" class="btn btn-default" disabled="@(havePrevious ? false : true)">

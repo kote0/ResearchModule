@@ -27,6 +27,24 @@ namespace ResearchModule.Managers
             }
         }
 
+        private static Dictionary<string, string> GetMimeTypes()
+        {
+            return new Dictionary<string, string>
+            {
+                {".txt", "text/plain"},
+                {".pdf", "application/pdf"},
+                {".doc", "application/vnd.ms-word"},
+                {".docx", "application/vnd.ms-word"},
+                {".xls", "application/vnd.ms-excel"},
+                {".xlsx", "application/vnd.openxmlformats"},
+                {".png", "image/png"},
+                {".jpg", "image/jpeg"},
+                {".jpeg", "image/jpeg"},
+                {".gif", "image/gif"},
+                {".csv", "text/csv"}
+            };
+        }
+
         private readonly IBaseRepository repository;
 
         public FileManager(IBaseRepository repository)
@@ -53,6 +71,8 @@ namespace ResearchModule.Managers
 
         public IResult Create(FileDetail fileDetails)
         {
+            if (fileDetails.Id != 0)
+                return repository.Update(fileDetails);
             return repository.Add(fileDetails);
         }
 
@@ -100,5 +120,29 @@ namespace ResearchModule.Managers
             }
             return null;
         }
+
+        public FileDetail Get(int id)
+        {
+            return repository.Get<FileDetail>(id);
+        }
+
+        public FileDetail Get(string uid)
+        {
+            return repository.First<FileDetail>(a=>a.Uid.Equals(uid));
+        }
+
+        public string Download(string uid)
+        {
+            return Path.Combine(directory, uid);
+        }
+
+        public string GetContentType(string name)
+        {
+            var types = GetMimeTypes();
+            var ext = Path.GetExtension(name).ToLowerInvariant();
+            return types[ext];
+        }
+
+        
     }
 }

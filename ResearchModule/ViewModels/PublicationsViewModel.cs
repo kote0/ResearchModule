@@ -11,33 +11,13 @@ namespace ResearchModule.ViewModels
 {
     public class PublicationsViewModel
     {
-        public IEnumerable<PublicationViewModel> Publications { get; private set; }
+        public IEnumerable<PublicationViewModel> Publications { get; set; }
         public PageInfo PageInfo { get; set; }
-        public PublicationFilterViewModel PublicationFilterViewModel { get; set; }
+        public PublicationFilterViewModel PublicationFilter { get; set; }
 
-        public PublicationsViewModel(PublicationService publicationService, AuthorService authorService, 
-            IEnumerable<Publication> publications, PageInfo pageInfo)
+        public PublicationsViewModel()
         {
-            if (publications.Any())
-            {
-                this.Publications = publications
-                    .Select(a => new PublicationViewModel(publicationService, authorService,  a))
-                    .ToList();
-                this.PageInfo = pageInfo;
-            }
         }
-        public PublicationsViewModel(PublicationService publicationService, AuthorService authorService,
-            IEnumerable<Publication> publications, PageInfo pageInfo, int? authorId)
-        {
-            if (publications.Any())
-            {
-                this.Publications = publications
-                    .Select(a => new PublicationViewModel(publicationService, authorService, a, authorId))
-                    .ToList();
-                this.PageInfo = pageInfo;
-            }
-        }
-
 
     }
 
@@ -47,42 +27,8 @@ namespace ResearchModule.ViewModels
         public IEnumerable<Author> Authors { get; set; }
         public bool IsCurrentAuthor { get; set; }
 
-        private PublicationService publicationService;
-        private AuthorService authorService;
-
         public PublicationViewModel()
         {
-        }
-
-        public PublicationViewModel(PublicationService publicationService, AuthorService authorService, Publication publication)
-        {
-            this.publicationService = publicationService;
-            this.authorService = authorService;
-            Create(publication);
-        }
-
-        public PublicationViewModel(PublicationService publicationService, AuthorService authorService, Publication publication, int? authorId) 
-            : this(publicationService, authorService, publication)
-        {
-            AddCurrentAuthor(Publication, authorId);
-            
-        }
-
-        public void Create(Publication publication)
-        {
-            this.Publication = publication;
-            this.Authors = authorService.GetAuthors(publication.Id);
-        }
-
-        public void AddCurrentAuthor(Publication publication, int? authorId)
-        {
-            if (authorId.HasValue) { 
-                IsCurrentAuthor = Authors.Where(a => a.Id == authorId).Any();
-            }
-            else
-            {
-                IsCurrentAuthor = false;
-            }
         }
     }
 }

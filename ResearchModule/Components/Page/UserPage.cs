@@ -21,7 +21,7 @@ namespace ResearchModule.Components.Page
 
         public object CreatePagination(int first, string action, string controller, string dataId = null)
         {
-            var list = repository.Include<User, Author>(a => a.Author);
+            var list = repository.Include<User, Author>(a => a.Author).Where(u=>!u.IsDeleted);
             var count = list.LongCount<User>();
             var page = new PageInfo(first, count);
             page.SetUrl(action, controller);

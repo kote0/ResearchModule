@@ -6,27 +6,34 @@ using Microsoft.AspNetCore.Mvc;
 using ResearchModule.Components.Models;
 using ResearchModule.Service;
 using ResearchModule.ViewModels;
+using ResearchModule.Models;
 
 namespace ResearchModule.Controllers
 {
     public class AnalystController : Controller
     {
         private readonly ChartService chartService;
+        private readonly SelectListService selectListService;
 
-        public AnalystController(ChartService chartService)
+        public AnalystController(ChartService chartService, SelectListService selectListService)
         {
+            this.selectListService = selectListService;
             this.chartService = chartService;
         }
 
         public IActionResult Index()
         {
-            return View(new PublicationFilterViewModel());
+            ViewData["types"] = selectListService.Create<PublicationType>(0);
+            var model = new PublicationFilterViewModel();
+            model.Publication.CreateDate = DateTime.Now;
+            return View(model);
         }
 
-        public IActionResult PublicationChart(DateTime? date)
+        public IActionResult PublicationChart(PublicationFilterViewModel model)
         {
-            var dateTime = date.HasValue ? date.Value : DateTime.Now;
+            var dateTime = model.Publication.CreateDate;
             ViewData["DateTimeNow"] = dateTime;
+
             return View(chartService.PublicationCount(dateTime));
         }
     }

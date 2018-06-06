@@ -48,17 +48,20 @@
                 }
             </div>
         </div>
-        @if (roles.Count != 0 && roles.FirstOrDefault(r => r.Equals(RoleInitializer.AdminRole)) != null)
-        {
-            <div class="propertyName">
-                <a href="@Url.Action("Index", "Admin")" class="btn btn-primary">Администрирование</a>
-            </div>
-        }
-        @if (roles.Count != 0 && roles.FirstOrDefault(r => r.Equals(RoleInitializer.AnalystRole)) != null)
-        {
-            <div class="propertyName">
-                <a href="@Url.Action("#", "#")" class="btn btn-info">Статистика</a>
-            </div>
+        @if (roles.Count != 0) {
+            var admin = roles.FirstOrDefault(r => r.Equals(RoleInitializer.AdminRole)) != null;
+            if (admin)
+            {
+                <div class="propertyName">
+                    <a href="@Url.Action("Index", "Admin")" class="btn btn-primary">Администрирование</a>
+                </div>
+            }
+            if (roles.FirstOrDefault(r => r.Equals(RoleInitializer.AnalystRole) || admin) != null)
+            {
+                <div class="propertyName">
+                    <a href="@Url.Action("Index", "Analyst")" class="btn btn-info">Статистика</a>
+                </div>
+            }
         }
     </div>
 </div>
