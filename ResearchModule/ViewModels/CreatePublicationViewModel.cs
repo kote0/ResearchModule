@@ -16,6 +16,14 @@ namespace ResearchModule.ViewModels
         [Required(ErrorMessage = "Заполните обязательное поле")]
         public IFormFile FormFile { get; set; }
 
+        public bool TranslateName
+        {
+            get
+            {
+                return Publication != null && !string.IsNullOrEmpty(Publication.TranslateText) && Publication.Language.HasValue;
+            }
+        }
+
         public string OldFileName { get; set; }
 
         public IEnumerable<Author> Authors { get; set; }

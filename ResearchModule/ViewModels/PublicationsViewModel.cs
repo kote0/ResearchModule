@@ -74,10 +74,11 @@ namespace ResearchModule.ViewModels
             this.Authors = authorService.GetAuthors(publication.Id);
         }
 
-        public void AddCurrentAuthor(Publication publication, int? authorId) 
+        public void AddCurrentAuthor(Publication publication, int? authorId)
         {
-            if (authorId.HasValue)
+            if (authorId.HasValue) { 
                 IsCurrentAuthor = Authors.Where(a => a.Id == authorId).Any();
+            }
             else
             {
                 IsCurrentAuthor = false;

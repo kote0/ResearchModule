@@ -20,6 +20,8 @@ namespace ResearchModule.Components.Models.Interfaces
         /// </summary>
         bool Failed { get; }
 
+        object Model { get; set; }
+
         /// <summary>
         /// Список ошибкок
         /// </summary>

@@ -43,15 +43,22 @@ namespace ResearchModule.Controllers
         [HttpPost]
         public IActionResult CreatePublicationNew(CreatePublicationViewModel createPublication)
         {
-            createPublication.Publication.CreateDate = DateTime.Now;
-            createPublication.Publication.ModifyDate = DateTime.Now;
-            createPublication = publicationService.Create(createPublication);
+            if (ModelState.IsValid)
+            {
+                var res = publicationService.Create(createPublication);
+                createPublication = res as CreatePublicationViewModel;
+                if (res.Failed)
+                {
+                    ViewData["result"] = res;
+                }
+                else
+                {
+                    return View("View", createPublication.Publication.Id);
+                }
+            }
+
             createPublication.PublicationTypes = selectListService
                 .Create<PublicationType>(createPublication.Publication.PublicationTypeId);
-            
-            if (ModelState.IsValid)
-                return View("CreatePublication", createPublication);
-
             createPublication.PublicationPartions = selectListService
                 .Create(PublicationElems.GetPartions(), createPublication.Publication.PublicationPartition);
             createPublication.PublicationForms = selectListService

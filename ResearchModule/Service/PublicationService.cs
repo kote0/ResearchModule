@@ -70,21 +70,48 @@ namespace ResearchModule.Service
             return manager.Get(id);
         }
 
-        public CreatePublicationViewModel Create(CreatePublicationViewModel createPublication)
+        
+
+        public IResult Create(CreatePublicationViewModel createPublication)
         {
-            //var file = fileManager.CreateInfo(createPublication.FormFile);
-            var oldFileName = createPublication.OldFileName;
-            if (createPublication.FormFile != null)
+            var result = new Result();
+            result.Model = createPublication;
+            //createPublication.Authors = createPublication.Authors.Distinct();
+           var selectedAuthors = createPublication.Authors.Where(s => s.Id != 0);
+            var createdAuthors = createPublication.Authors.Where(a => a.IsValid());
+
+            // проверка на наличие авторов
+            if (createdAuthors.Count() == 0 && selectedAuthors.Count() == 0)
+                return result.Set("Отсутсутствуют авторы");
+
+            var res = manager.AppendFile(createPublication);
+            if (res.Failed)
             {
-                // изменить на Uid
-                // FileName не нужен, так как используется Html.FileFor
-                createPublication.OldFileName = string.IsNullOrEmpty(oldFileName) 
-                    ? createPublication.FormFile.FileName
-                    : !oldFileName.Equals(createPublication.FormFile.FileName)
-                        ? createPublication.FormFile.FileName
-                        : oldFileName;
+                result.Set(res);
+                return result;
             }
-            return createPublication;
+
+            var fileDetails = res.Model as FileDetail;
+
+            if (fileManager.Create(fileDetails).Failed) return result.Set("Не удалось создать Файл");
+
+            var publication = createPublication.Publication;
+            if (fileDetails != null)
+                AppendFileInfo(fileDetails, ref publication);
+
+            publication.PublicationFileId = fileDetails.Id;
+
+            var typeId = manager.CreateOrUpdatePublicationType(createPublication.Publication.PublicationType, publication.PublicationTypeId);
+            if (typeId > 0)
+                publication.PublicationTypeId = typeId;
+
+            manager.CreateOrUpdatePublication(publication);
+
+            manager.CreatePA(publication.Id, createPublication.Authors);
+
+            if (result.Failed) return result.Set("Не удалось добавить авторов");
+
+            return result;
         }
 
         public IResult Create(Publication publication, PublicationType type, IFormFile file, 

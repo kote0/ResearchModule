@@ -29,6 +29,31 @@ namespace ResearchModule.Managers
             this.paRepository = paRepository;
         }
 
+        public IResult AppendFile(CreatePublicationViewModel createPublication)
+        {
+            var res = new Result();
+
+            if (createPublication.FormFile == null)
+                return res.Set("Не добавлен файл");
+
+            var oldFileName = createPublication.OldFileName;
+            // изменить на Uid
+            var fileName = string.IsNullOrEmpty(oldFileName)
+                ? createPublication.FormFile.FileName
+                : !oldFileName.Equals(createPublication.FormFile.FileName)
+                    ? createPublication.FormFile.FileName
+                    : oldFileName;
+
+            var file = fileManager.CreateInfo(createPublication.FormFile);
+            if (!fileName.Equals(oldFileName))
+            {
+                fileManager.SaveFileInServer(file);
+            }
+
+            res.Model = file;
+            return res;
+        }
+
         public long Count(Expression<Func<Publication, bool>> func)
         {
             return repository.LongCount(func);
@@ -108,7 +133,7 @@ namespace ResearchModule.Managers
         /// </summary>
         public int CreateOrUpdatePublicationType(PublicationType publicationType, int publicationTypeId)
         {
-            if (!publicationType.IsValid())
+            if (publicationType == null || (publicationType != null && !publicationType.IsValid()))
                 return -1; // не успех
 
             if (publicationTypeId != 0)
@@ -188,6 +213,11 @@ namespace ResearchModule.Managers
             listAuthors.AddRange(createdAuthors);
             listAuthors.AddRange(selectedAuthors);
             paRepository.Create(listAuthors, publicationId);
+        }
+
+        public void CreatePA(int publicationId, IEnumerable<Author> authors)
+        {
+            paRepository.Create(authors, publicationId);
         }
         #endregion
     }

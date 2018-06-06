@@ -21,6 +21,8 @@ namespace ResearchModule.Components.Models
 
         public List<string> Error { get; private set; }
 
+        public object Model { get; set; }
+
         #region ctor
 
         public Result()

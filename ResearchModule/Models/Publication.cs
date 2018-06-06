@@ -49,14 +49,12 @@ namespace ResearchModule.Models
         /// <summary>
         /// Дата создания
         /// </summary>
-        [Required(ErrorMessage = "Заполните обязательное поле")]
         [DisplayName("Дата создания")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// Дата изменения
         /// </summary>
-        [Required(ErrorMessage = "Заполните обязательное поле")]
         [DisplayName("Дата изменения")]
         public DateTime ModifyDate { get; set; }
 

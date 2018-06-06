@@ -173,6 +173,13 @@ namespace ResearchModule.Components
             return html.MetaDataFor(expression, m => m.DisplayName);
         }
 
+        public static string NameFor<TModel, TValue>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression)
+        {
+            Func<ModelMetadata, string> propertyName = m => m.PropertyName;
+            var modelExplorer = ExpressionMetadataProvider.FromLambdaExpression(expression, html.ViewData, html.MetadataProvider);
+            return modelExplorer != null ? propertyName(modelExplorer.Metadata) : "";
+        }
+
     }
     
 }
