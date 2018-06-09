@@ -39,7 +39,7 @@
                 @Html.LabelFor(m => m.PublicationForm)
             </div>
             <div class="col-md-7">
-                @PublicationService.GetFormName(Model.PublicationForm)
+                @PublicationElems.GetFormName(Model.PublicationForm)
             </div>
         </div>
         <div class="row">
@@ -47,7 +47,7 @@
                 @Html.LabelFor(m => m.PublicationPartition)
             </div>
             <div class="col-md-7">
-                @PublicationService.GetPartitionName(Model.PublicationPartition)
+                @PublicationElems.GetPartionName(Model.PublicationPartition)
             </div>
         </div>
         <div class="row">

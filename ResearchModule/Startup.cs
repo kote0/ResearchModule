@@ -55,6 +55,7 @@ namespace ResearchModule
 
             services.AddScoped<IBaseRepository, BaseRepository>();
             services.AddTransient<AuthorService>();
+            services.AddScoped<PublicationPage>();
             services.AddTransient<PublicationService>();
             services.AddTransient<SelectListService>();
             services.AddScoped<IFileManager, FileManager>();
@@ -62,6 +63,8 @@ namespace ResearchModule
             services.AddTransient<PAuthorRepository>();
             services.AddScoped<PublicationManager>();
             services.AddScoped<ChartService>();
+            
+            
 
             Services = services;
             ServiceProvider = services.BuildServiceProvider();

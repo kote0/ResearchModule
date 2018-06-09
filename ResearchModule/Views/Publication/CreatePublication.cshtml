@@ -24,7 +24,7 @@
 
 <div id="form@(formId)">
     <h2>Добавить публикацию</h2>
-    
+
     @using (Html.BeginForm("CreatePublicationNew", "Publication", FormMethod.Post, new { id = formId, enctype = "multipart/form-data" }))
     {
         @Html.ValidationSummary(true)
@@ -42,7 +42,7 @@
             <div class="row propertyName">
                 <div class="col-md-4">Написана ли публикация на иностранном языке</div>
                 <div class="col-md-8">
-                    @Html.CheckBoxFor(m=>m.TranslateName, new  { onClick = "translateName(this)" })
+                    @Html.CheckBoxFor(m => m.TranslateName, new { onClick = "translateName(this)" })
                 </div>
             </div>
             <div id="translateName">
@@ -71,16 +71,6 @@
             </div>
         </div>
         <div>
-            <div>
-                <div class="row propertyName">
-                    <div class="col-md-4">
-                        <a role="button" data-toggle="collapse" href="#collapseProperties" aria-expanded="false" aria-controls="collapseProperties">
-                            Основные свойства *
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <div id="collapseProperties" aria-expanded="false" class="collapse">
                 <div class="row propertyName">
                     <div class="col-md-4">@Html.DisplayNameFor(m => m.Publication.PublicationPartition)</div>
                     <div class="col-md-8" id="load_select-Section">
@@ -96,50 +86,90 @@
                 <div class="row propertyName">
                     <div class="col-md-4">@Html.DisplayNameFor(m => m.Publication.PublicationType)</div>
                     <div class="col-md-8" id="load_select-Section">
-                        <select-list items="@Model.PublicationTypes" name="Publication.PublicationTypeId"></select-list>
+                        <div class="input-group">
+                            <select-list items="@Model.PublicationTypes" name="Publication.PublicationTypeId"></select-list>
+                            <span class="input-group-btn">
+                                @Html.Button("CreatePublicationTypeName", "", Html.Icon("plus"), new { type = "button", onClick = "hidePublicationTypeName(false)" })
+                            </span>
+                        </div>
                         @Html.ValidationMessageFor(model => model.Publication.PublicationTypeId)
                     </div>
                 </div>
-                @Html.Partial("Volume", Model.Publication)
+                <div class="row propertyName" id="publicationTypeName">
+                    <div class="col-md-4">@Html.DisplayNameFor(m => m.PublicationTypeName)</div>
+                    <div class="col-md-8">
+                        <div class="input-group">
+                            @Html.TextBoxFor(m => m.PublicationTypeName, new { @class = "form-control" })
+                            <span class="input-group-btn">
+                                @Html.Button("RemovePublicationTypeName", "", Html.Icon("remove"), new { type = "button", onClick = "hidePublicationTypeName(true)" })
+                            </span>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.PublicationTypeName)
+                    </div>
+                </div>
+                @if (Model.Publication == null || (Model.Publication != null && (Model.Publication.PublicationForm == 1 || Model.Publication.PublicationForm == 2)))
+                {
+                    <div id="divVolumeId">
+                        <div class="row propertyName">
+                            <div class="col-md-4">@Html.DisplayNameFor(m => m.Publication.Volume)</div>
+                            <div class="col-md-8">
+                                @Html.TextBoxFor(m => m.Publication.Volume, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Publication.Volume)
+                            </div>
+                        </div>
+                    </div>
+                }
                 <div>
                     <div class="row propertyName">
+                        <div class="col-md-4">@Html.DisplayNameFor(m => m.Publication.PFs)</div>
+                        <div class="col-md-8">
+                            <select-list items="@Model.PublicationFilters" name="@Html.NameFor(m=>m.PublicationFiltersId)" multiple="true" live-search="true"></select-list>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                     <div class="row propertyName">
                         <div class="col-md-4">Файл</div>
                         <div class="col-md-8">
                             @Html.HiddenFor(m => m.OldFileName)
                             @Html.FileFor(m => m.FormFile, m => m.Publication.PublicationFile.Name)
-                            @Html.HiddenFor(m=>m.Publication.PublicationFileId)
+                            @Html.HiddenFor(m => m.Publication.PublicationFileId)
                             @Html.ValidationMessageFor(model => model.FormFile)
                         </div>
                     </div>
                 </div>
                 <hr />
+        </div>
+        <div>
+            <div>
+                <div class="row propertyName">
+                    <div class="col-md-4">
+                        <a role="button" data-toggle="collapse" href="#collapseProperties" aria-expanded="false" aria-controls="collapseProperties">
+                            Список соавторов
+                        </a>
+                    </div>
+                    <div class="col-md-8">
+                        @Html.Button("SearchAuthors", " Найти", Html.Icon("search"), new Dictionary<string, object> { { "type", "button" }, { "onclick", "hidePublicationCreateForm()" } })
+                        @Html.Button("CreateAuthors", " Добавить", Html.Icon("plus"), new Dictionary<string, object> { { "type", "button" }, { "onclick", "addAuthor(this);" }, { "dataCount", "100" } })
+                    </div>
+                </div>
+            </div>
+            <div id="collapseProperties" aria-expanded="false" class="collapse in">
+                <div class="col-md-12" id="authorInfo">
+                </div>
             </div>
         </div>
-
         <div>
             <div class="row propertyName">
                 <div class="col-md-4">
-                    Список соавторов
+                    @Html.Button("x", "Сохранить", null, new { onclick = "publicationSubmit()", type = "button", @class= "btn btn-success" })
                 </div>
                 <div class="col-md-8">
-                    @Html.Button("SearchAuthors", " Найти", Html.Icon("search"), new Dictionary<string, object> { { "type", "button" }, { "onclick", "hidePublicationCreateForm()" } })
-                    @Html.Button("CreateAuthors", " Добавить", Html.Icon("plus"), new Dictionary<string, object> { { "type", "button" }, { "onclick", "addAuthor(this);" }, { "dataCount", "100" } })
-                </div>
-            </div>
-            <div class="col-md-12" id="authorInfo">
-            </div>
-        </div>
-        <div>
-            <div class="row propertyName">
-                <div class="col-md-4">
-                    @Html.Button("x", "Отправить", null, new { onclick = "publicationSubmit()", type="button" })
-                </div>
-                <div class="col-md-8">
-                    <div class="info"></div>
+                    <div class="info "></div>
                 </div>
             </div>
         </div>
-    }
+                    }
 </div>
 
 <script type="text/javascript" src="~/lib/languages/language.js"></script>
@@ -183,6 +213,7 @@
     const publicationCreateForm = "form@(formId)";
     const authorTableInPublication = "authorInfo";
     const selectedAuthor = "selectedAuthor";
+    const publicationTypeName = "publicationTypeName";
     // --- Author
     const authorProperties = ['Coauthor',  'Surname', 'Name', 'Lastname', 'BDay'];
     const authorLabels = ['Соавтор', 'Фамилия', 'Имя', 'Отчество', 'Дата рождения' ];
@@ -218,7 +249,7 @@
         else {
             $(elem).parent().remove();
             $(`#${author}_${id} button`).attr("disabled", false);
-        }        
+        }
     }
 
     function appendAuthor(text, id, elem) {
@@ -320,7 +351,7 @@
             // ищем среди них нужные столбцы
             for (let i of authorProperties) {
                 if (i == "Id") {
-                    appendThOrTd(tr, isTh, "");
+                    //appendThOrTd(tr, isTh, "");
                 }
                 else {
                     let author = $(authorInfo).filter(`[name$='.${i}']`);
@@ -331,11 +362,8 @@
 
                 }
             }
-            if ($(tr).find("td").length == 6) {
-                appendThOrTd(tr, isTh, "");
-
-            }
             if (true) {
+                appendThOrTd(tr, isTh, "");
                 let $tdLast = tr.find("td:last");
                 $tdLast.addClass(weightTdClass);
                 tr.find("td:last").append(addWeight(authorInfo[0]));
@@ -351,7 +379,7 @@
             tbody.append(tr);
 
             if ($(authorInfo).filter("[type=text]").length == 0)
-                tbody.find("td:last").append($(authorInfo).clone());
+                tbody.find("td:last").append($(authorInfo).filter("[type=hidden]").clone());
         }
     }
 
@@ -497,23 +525,14 @@
                 @Html.Hidden(string.Format("{0}[{1}].{2}", name, i, "FIO"), author.ToStringFormat(), new { })
                 @Html.Hidden(string.Format("{0}[{1}].{2}", name, i, "UserId"), author.UserId, new { });
                 var coathor = string.Format("{0}[{1}].{2}", name, i, "Coauthor");
-                if (author.UserId != null)
-                {
-                    @Html.Hidden(string.Format("{0}[{1}].{2}", name, i, "Name"), author.Name, new { })
-                    @Html.Hidden(string.Format("{0}[{1}].{2}", name, i, "Lastname"), author.Lastname, new { })
-                    @Html.Hidden(string.Format("{0}[{1}].{2}", name, i, "Surname"), author.Surname, new { })
-                    @Html.Hidden(string.Format("{0}[{1}].{2}", name, i, "BDay"), author.BDay, new { })
-                }
-                else
-                {
-                    @Html.TextBox(string.Format("{0}[{1}].{2}", name, i, "Name"), author.Name, new { @class="form-control" })
-                    @Html.TextBox(string.Format("{0}[{1}].{2}", name, i, "Lastname"), author.Lastname, new { @class = "form-control" })
-                    @Html.TextBox(string.Format("{0}[{1}].{2}", name, i, "Surname"), author.Surname, new { @class = "form-control" })
-                    @Html.TextBox(string.Format("{0}[{1}].{2}", name, i, "BDay"), author.BDay, new { @class = "form-control" })
-                    @:<input type="checkbox" name="@coathor" id="@(name + "_" + i + "__Coauthor")" @(author.Coauthor? "checked": "") />
-                }
+                @Html.Hidden(string.Format("{0}[{1}].{2}", name, i, "Name"), author.Name, new { })
+                @Html.Hidden(string.Format("{0}[{1}].{2}", name, i, "Lastname"), author.Lastname, new { })
+                @Html.Hidden(string.Format("{0}[{1}].{2}", name, i, "Surname"), author.Surname, new { })
+                @Html.Hidden(string.Format("{0}[{1}].{2}", name, i, "BDay"), author.BDay.ToShortDateString(), new { })
+                @:<input type="checkbox" name="@coathor" id="@(name + "_" + i + "__Coauthor")" @(author.Coauthor? "checked": "") />
             }
         }`;
+        debugger;
         let authorsList = $(authors).find("input");
         appendAuthors(authorsList);
         createOrUpdateAuthors(authorTableInPublication, authorsList, true);
@@ -525,6 +544,8 @@
             $("#translateName").hide();
         }
         showWeightProperty();
+
+        hidePublicationTypeName("@(string.IsNullOrEmpty(Model.PublicationTypeName))");
     });
 
 
@@ -534,7 +555,9 @@
     function addAuthor(elem) {
         let id = $(elem).attr("datacount");
         let list = [];
-        authorProperties.push("Id");
+        if (authorProperties.indexOf("Id") == -1) {
+            authorProperties.push("Id");
+        }
         for (let item of authorProperties) {
             let input = document.createElement('input');
             if (item === "Coauthor") {
@@ -578,6 +601,26 @@
             setError("Заполните обязательные поля");
 
         }
+    }
+
+    function hidePublicationTypeName(hide) {
+        let $name = $(`#${publicationTypeName}`);
+        let typeId = ("[name='Publication.PublicationTypeId']");
+        if (hide || typeof (hide) == 'string' && hide.toLowerCase() == "true") {
+            //
+            $name.hide();
+            $name.find("input").attr("data-val", false);
+            $(typeId).prop('disabled', false);
+
+        }
+        else {
+            $(typeId).prop('disabled', true);
+            // disable
+            $name.show();
+            $name.find("input").attr("data-val", true);
+        }
+
+
     }
 
     function setError(text) {

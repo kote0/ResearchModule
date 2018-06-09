@@ -10,11 +10,9 @@ namespace ResearchModule.Service
     public class SelectListService
     {
         private readonly IBaseRepository manager;
-        private readonly PublicationElements publicationElements;
 
-        public SelectListService(IBaseRepository manager, PublicationElements publicationElements)
+        public SelectListService(IBaseRepository manager)
         {
-            this.publicationElements = publicationElements;
             this.manager = manager;
         }
 
@@ -56,32 +54,6 @@ namespace ResearchModule.Service
             var list =  manager.Get<Author>(a => a.IsValid()) //сделать асинхронным
                 .Select(a => CreateItem(a.ToStringFormat(),a.Id, id));
             return selectListCreate(list, "Author");
-        }
-
-        public SelectList LoadSelectPublicationType(int id = 1)
-        {
-            return LoadSelectPublicationType("Publication.PublicationTypeId", id);
-        }
-
-        public SelectList LoadSelectPublicationType(string name, int id = 1)
-        {
-            var list = manager.GetQuery<PublicationType>(a => a.IsValid())
-                .Select(a => CreateItem(a.Name, a.Id, id));
-            return selectListCreate(list.ToList(), name);
-        }
-
-        public SelectList LoadSelectPublicationPartition(int id = 0)
-        {
-            var list = publicationElements.Partitions
-                .Select(a => CreateItem(a.Name, a.Id, id));
-            return selectListCreate(list, "Publication.PublicationPartition");
-        }
-
-        public SelectList LoadSelectPublicationForm(int id = 0)
-        {
-            var list = publicationElements.Forms
-                .Select(a => CreateItem(a.Name, a.Id, id));
-            return selectListCreate(list, "Publication.PublicationForm");
         }
 
         #region private

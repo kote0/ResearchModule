@@ -22,21 +22,7 @@ namespace ResearchModule.Managers.Interfaces
         /// </summary>
         /// <param name="fileDetails"></param>
         /// <returns></returns>
-        IResult Create(FileDetail fileDetails);
-
-        /// <summary>
-        /// Изменение записи о файле
-        /// </summary>
-        /// <param name="fileDetail"></param>
-        /// <returns></returns>
-        IResult Update(FileDetail fileDetail);
-
-        /*/// <summary>
-        /// Создание и сохранение файла
-        /// </summary>
-        /// <param name="file"></param>
-        /// <returns></returns>
-        FileDetail CreateAndSave(IFormFile file);*/
+        IResult CreateOrUpdate(FileDetail fileDetails);
 
         /// <summary>
         /// Сохранение файла в директории Files
@@ -63,5 +49,7 @@ namespace ResearchModule.Managers.Interfaces
         string Download(string uid);
 
         string GetContentType(string name);
+
+        void Save();
     }
 }

@@ -2,6 +2,7 @@
 using ResearchModule.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,11 +29,19 @@ namespace ResearchModule.ViewModels
 
         public IEnumerable<Author> Authors { get; set; }
 
+        [DisplayName("Название вид публикации")]
+        public string PublicationTypeName { get; set; }
+
         public SelectList PublicationTypes { get; set; }
 
         public SelectList PublicationPartions { get; set; }
 
         public SelectList PublicationForms { get; set; }
+
+        public SelectList PublicationFilters { get; set; }
+
+        public IEnumerable<int> PublicationFiltersId { get; set; }
+
 
         public CreatePublicationViewModel()
         {

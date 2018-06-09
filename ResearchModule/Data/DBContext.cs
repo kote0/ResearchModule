@@ -33,62 +33,46 @@ namespace ResearchModule.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Author>(entity =>
-            {
-                entity.Property(e => e.Lastname).HasColumnType("nchar(100)");
 
-                entity.Property(e => e.Name).HasColumnType("nchar(100)");
+            modelBuilder.Entity<Publication>()
+              .HasMany(m => m.PAs)
+              .WithOne(m => m.Publication)
+              .HasForeignKey(pt => pt.PublicationId)
+              .HasPrincipalKey(p => p.Id)
+              .OnDelete(DeleteBehavior.Cascade);
 
-                entity.Property(e => e.Surname).HasColumnType("nchar(100)");
-            });
+            modelBuilder.Entity<Publication>()
+              .HasMany(m => m.PFs)
+              .WithOne(m => m.Publication)
+              .HasForeignKey(pt => pt.PublicationId)
+              .HasPrincipalKey(p => p.Id)
+              .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<User>()
                 .HasOne(a => a.Author)
                 .WithOne(u => u.User)
                 .HasPrincipalKey<User>(u=>u.UserName);
 
-            modelBuilder.Entity<PublicationType>(entity =>
-            {
-                entity.Property(e => e.Name).HasColumnType("nchar(100)");
-            });
-
             modelBuilder.Entity<PublicationType>()
                 .HasMany(p => p.Publications)
                 .WithOne(t => t.PublicationType)
                 .HasForeignKey(p=>p.PublicationTypeId);
 
-            modelBuilder.Entity<PA>()
-                .HasKey(t => new { t.MultipleId, t.PublicationId });
+            //modelBuilder.Entity<PA>()
+            //    .HasKey(t => new { t.MultipleId, t.PublicationId });
 
-            modelBuilder.Entity<PF>()
-                .HasKey(t => new { t.MultipleId, t.PublicationId });
-
-            modelBuilder.Entity<PA>()
-               .HasOne(p => p.Publication)
-               .WithMany(i => i.PAs)
-               .HasForeignKey(pt => pt.PublicationId)
-               .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<PA>()
-              .HasOne(p => p.Multiple)
-              .WithMany(i => i.PAs)
-              .HasForeignKey(pt => pt.MultipleId)
-              .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<PF>()
-               .HasOne(p => p.Publication)
-               .WithMany(i => i.PFs)
-               .HasForeignKey(pt => pt.PublicationId);
-
-            modelBuilder.Entity<PF>()
-              .HasOne(p => p.Multiple)
-              .WithMany(i => i.PFs)
-              .HasForeignKey(pt => pt.MultipleId);
+            //modelBuilder.Entity<PF>()
+            //    .HasKey(t => new { t.MultipleId, t.PublicationId });
 
             modelBuilder.Entity<FileDetail>()
                 .HasOne(p => p.Publication)
                 .WithOne(o => o.PublicationFile)
                 .HasForeignKey<Publication>(b=>b.PublicationFileId);
+
+            modelBuilder.Entity<Author>()
+                .HasOne(a => a.User)
+                .WithOne(u => u.Author)
+                .IsRequired(false);
 
             base.OnModelCreating(modelBuilder);
         }

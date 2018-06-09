@@ -40,6 +40,16 @@ namespace ResearchModule.Models
             return list;
         }
 
+        public static PublicationPartion GetPartion(int id)
+        {
+            return GetPartions().First(i => i.Id == id);
+        }
+
+        public static string GetPartionName(int id)
+        {
+            return GetPartion(id).Name;
+        }
+
         public static PublicationForm print =
             new PublicationForm() { Id = 1, Name = "печатная", ShortName = "печ." };
         public static PublicationForm handwritten =
@@ -59,5 +69,24 @@ namespace ResearchModule.Models
             return list;
         }
 
+        public static PublicationForm GetForm(int id)
+        {
+            return GetForms().First(i => i.Id == id);
+        }
+
+        public static string GetFormName(int id)
+        {
+            return GetForm(id).Name;
+        }
+
+        public static bool IsPrintForm(int id)
+        {
+            if (id == electronicSource.Id || id == audiovisual.Id)
+            {
+                return false;
+            }
+            return true;
+        }
+        
     }
 }

@@ -15,19 +15,13 @@ namespace ResearchModule.Controllers
     [Authorize(Roles ="admin")]
     public class AdminController : Controller
     {
-        //private readonly UserManager<User> userManager;
-        //private readonly SignInManager<User> signInManager;
         private readonly IBaseRepository repository;
-        //private readonly RoleManager<IdentityRole> roleManager;
         private readonly UserPage userPage;
 
         public AdminController(UserManager<User> userManager,
             SignInManager<User> signInManager, IBaseRepository repository, 
             RoleManager<IdentityRole> roleManager)
         {
-            //this.userManager = userManager;
-            //this.signInManager = signInManager;
-            // this.roleManager = roleManager;
             this.repository = repository;
            
             this.userPage = new UserPage(repository);
@@ -52,8 +46,18 @@ namespace ResearchModule.Controllers
 
         public IActionResult Index()
         {
+
+            //var t =  repository.Include<Publication, ICollection<PA>>(a => a.PAs).First();
+
+            //var t =  repository.Include<TestOne, ICollection<TestOneM>>(a => a.OneMs).First(a => a.Short == 2);
+            //var o = new TestOne() { Short = 2 };
+            //var t = new TestM() { Name = "второе" };
+            //var tom = new TestOneM() { One = o, M = t };
+            //repository.Add(tom);
             return View();
         }
+
+        
 
         //public async Task<IActionResult> GiveRole(string name)
         //{

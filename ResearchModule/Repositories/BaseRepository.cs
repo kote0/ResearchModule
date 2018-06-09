@@ -56,7 +56,8 @@ namespace ResearchModule.Repository
             {
                 if (record == null) return result.Set("{0} is null", record);
                 _db.Add(record);
-                _db.SaveChanges();
+                //_db.SaveChanges();
+                result.Model = record;
             }
             catch (Exception ex)
             {
@@ -78,8 +79,9 @@ namespace ResearchModule.Repository
             try
             {
                 if (record == null) return result.Set("{0} is null", record);
+                //_db.Entry(record).State = EntityState.Deleted;
                 _db.Remove(record);
-                _db.SaveChanges();
+                //_db.SaveChanges();
             }
             catch (Exception ex)
             {
@@ -96,7 +98,7 @@ namespace ResearchModule.Repository
             {
                 if (records == null && records.Count() != 0) return result.Set("{0} is null", records);
                 _db.RemoveRange(records);
-                _db.SaveChanges();
+                ////_db.SaveChanges();
             }
             catch (Exception ex)
             {
@@ -120,7 +122,9 @@ namespace ResearchModule.Repository
             {
                 if (record == null) return result.Set("{0} is null", record);
                 _db.Update(record);
-                _db.SaveChanges();
+                //_db.Entry(record).State = EntityState.Modified;
+                //_db.SaveChanges();
+                result.Model = record;
             }
             catch (Exception ex)
             {
@@ -139,7 +143,7 @@ namespace ResearchModule.Repository
                 if (records.Count() == 0)
                     return result.Set("Нет записей для изменения {0}", records);
                 _db.UpdateRange(records);
-                _db.SaveChanges();
+                //_db.SaveChanges();
             }
             catch (Exception ex)
             {
@@ -157,7 +161,7 @@ namespace ResearchModule.Repository
                 if (records.Count() == 0)
                     return result.Set("Нет записей для изменения {0}", records);
                 _db.UpdateRange(records);
-                _db.SaveChanges();
+                //_db.SaveChanges();
             }
             catch (Exception ex)
             {
@@ -176,7 +180,7 @@ namespace ResearchModule.Repository
                 if (records.Count() == 0)
                     return result.Set("Нет записей {0}", records);
                 _db.AddRange(records);
-                _db.SaveChanges();
+                //_db.SaveChanges();
             }
             catch (Exception ex)
             {
@@ -194,7 +198,7 @@ namespace ResearchModule.Repository
                 if (records.Count() == 0)
                     return result.Set("Нет записей {0}", records);
                 _db.AddRange(records);
-                _db.SaveChanges();
+                //_db.SaveChanges();
             }
             catch (Exception ex)
             {
@@ -253,6 +257,11 @@ namespace ResearchModule.Repository
         public IQueryable<T> Page<T>(IQueryable<T> list, int page, int pageSize = 10) where T : class
         {
             return list.Skip((page - 1) * pageSize).Take(pageSize);
+        }
+
+        public void SQL(string str)
+        {
+            _db.Database.ExecuteSqlCommand(str);
         }
 
         public IIncludableQueryable<T, TProperty> Include<T, TProperty>(Expression<Func<T, TProperty>> func, DbSet<T> type = null) where T : class

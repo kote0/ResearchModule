@@ -69,17 +69,16 @@ namespace ResearchModule.Managers
             return fileDetails;
         }
 
-        public IResult Create(FileDetail fileDetails)
+        public IResult CreateOrUpdate(FileDetail fileDetails)
         {
             if (fileDetails.Id != 0)
                 return repository.Update(fileDetails);
             return repository.Add(fileDetails);
         }
 
-        public IResult Update(FileDetail fileDetail)
+        public void Save()
         {
-            return repository.Update(fileDetail);
-
+            repository.Save();
         }
 
         /*public FileDetail CreateAndSave(IFormFile file)
@@ -119,6 +118,11 @@ namespace ResearchModule.Managers
                     return fileDetails;
             }
             return null;
+        }
+
+        private IResult Update(FileDetail fileDetails)
+        {
+            throw new NotImplementedException();
         }
 
         public FileDetail Get(int id)

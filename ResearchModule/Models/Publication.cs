@@ -79,8 +79,9 @@ namespace ResearchModule.Models
         [DisplayName("Язык")]
         public int? Language { get; set; }
 
-        public ICollection<PA> PAs { get; set; }
+        public List<PA> PAs { get; set; }
 
+        [DisplayName("Фильтры")]
         public virtual ICollection<PF> PFs { get; set; }
 
         /*[DisplayName("Автор публикации")]

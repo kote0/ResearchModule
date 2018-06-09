@@ -15,25 +15,19 @@ namespace ResearchModule.Components.Page
     {
         private readonly PublicationManager manager;
         private readonly AuthorService authorService;
-        private readonly PublicationService publicationService;
-        private SelectListService selectListService;
         private readonly Author author;
 
-        public PublicationPage(PublicationManager manager, AuthorService authorService, 
-            PublicationService publicationService, Author author, SelectListService selectListService)
+        public PublicationPage(PublicationManager manager, AuthorService authorService, UserManager userManager)
         {
             this.manager = manager;
             this.authorService = authorService;
-            this.publicationService = publicationService;
-            this.author = author;
-            this.selectListService = selectListService;
+            this.author = userManager.CurrentAuthor();
         }
 
         public object CreatePagination(int first, string action, string controller, string dataId = null)
         {
-            var list = manager.Page(first);
+            var list = manager.LoadWithAuthors().Page(first);
             var count = manager.Count();
-
             var page = new PageInfo(first, count);
             page.SetUrl(action, controller);
             if (dataId != null)
@@ -50,7 +44,7 @@ namespace ResearchModule.Components.Page
             var model = new PublicationViewModel();
             model.Publication = publication;
             var id = publication.Id;
-            model.Authors = authorService.GetAuthors(id);
+            model.Authors = publication.PAs.Count != 0 ? publication.PAs.Select(a => a.Multiple) : null; 
             model.IsCurrentAuthor = (author != null) 
                 ? author.IsAdmin() 
                     ? true 
@@ -73,19 +67,6 @@ namespace ResearchModule.Components.Page
                     var listFilters = manager.FilterQuery(filter);
 
                     var publications = listFilters.Page(first).ToList();
-                    var publicationList = new List<Publication>();
-                    if (filter.Authors.Count != 0)
-                    {
-                        foreach (var pub in publications)
-                        {
-                            var authors = authorService.GetAuthors(pub.Id);
-                            if (filter.Authors.Count(au => authors.Any(p => p.Id == au)) > 0)
-                            {
-                                publicationList.Add(pub);
-                            }
-                        }
-                        publications = publicationList;
-                    }
                     
 
                     var page = new PageInfo(first, listFilters.LongCount());
@@ -97,7 +78,7 @@ namespace ResearchModule.Components.Page
 
                     if (publications.Any())
                     {
-                        view.Publications = publications.ToList()
+                        view.Publications = publications
                             .Select(a => AppendPublication(a));
                         view.PageInfo = page;
                     }

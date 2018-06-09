@@ -42,6 +42,7 @@ namespace ResearchModule.Controllers
             model.PublicationTypes = selectListService.Create<PublicationType>(0);
             model.PublicationPartions = selectListService.Create(PublicationElems.GetPartions(), PublicationElems.scientific.Id);
             model.PublicationForms = selectListService.Create(PublicationElems.GetForms(), PublicationElems.electronicSource.Id);
+            model.PublicationFilters = selectListService.Create<PublicationFilters>(0);
 
             return View("CreatePublication", model);
         }
@@ -53,11 +54,26 @@ namespace ResearchModule.Controllers
                 || publicationFileId != 0 && file == null;
         }
 
+        private bool Valid(CreatePublicationViewModel createPublication)
+        {
+            var publicationFileId = createPublication.Publication.PublicationFileId;
+            var file = createPublication.FormFile;
+            var validFile = publicationFileId == 0 && file != null
+                || publicationFileId != 0 && file != null
+                || publicationFileId != 0 && file == null;
+
+            var typeId = createPublication.Publication.PublicationTypeId;
+            var typeName = string.IsNullOrEmpty(createPublication.PublicationTypeName);
+
+            var validType = typeId == 0 && !typeName || typeId != 0;
+
+            return validFile && validType;
+        }
+
         [HttpPost]
         public IActionResult CreatePublicationNew(CreatePublicationViewModel createPublication)
         {
-            if (ModelState.IsValid || (!ModelState.IsValid 
-                && ValidFile(createPublication.Publication.PublicationFileId, createPublication.FormFile)))
+            if (ModelState.IsValid || (!ModelState.IsValid && Valid(createPublication)))
             {
                 var res = publicationService.Create(createPublication);
                 createPublication = res.Model as CreatePublicationViewModel;
@@ -67,7 +83,7 @@ namespace ResearchModule.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("View", createPublication.Publication.Id);
+                    return RedirectToAction("View", new { id = createPublication.Publication.Id });
                 }
             }
 
@@ -77,6 +93,8 @@ namespace ResearchModule.Controllers
                 .Create(PublicationElems.GetPartions(), createPublication.Publication.PublicationPartition);
             createPublication.PublicationForms = selectListService
                 .Create(PublicationElems.GetForms(), createPublication.Publication.PublicationForm);
+            createPublication.PublicationFilters = selectListService
+                .Create<PublicationFilters>(createPublication.PublicationFiltersId);
 
             return View("CreatePublication", createPublication);
         }
@@ -86,6 +104,12 @@ namespace ResearchModule.Controllers
         {
             ViewData["types"] = selectListService.Create<PublicationType>(viewModel.PublicationTypesId);
             return View("Publications", GetViewModel(viewModel, first));
+        }
+
+        public IActionResult Delete(int id)
+        {
+            publicationService.Delete(id);
+            return RedirectToAction("Publications");
         }
 
         public PartialViewResult FilterPage(PublicationFilterViewModel viewModel, int first = 1)
@@ -131,12 +155,6 @@ namespace ResearchModule.Controllers
             return PartialView("PublicationView", view);
         }
 
-        //public ActionResult Edit(int id)
-        //{
-        //    var item = publicationService.Load(id) as Publication;
-        //    return View(item);
-        //}
-
         public ActionResult Edit(int id)
         {
             var item = publicationService.Load(id) as Publication;
@@ -152,6 +170,8 @@ namespace ResearchModule.Controllers
                 .Create(PublicationElems.GetPartions(), item.PublicationPartition);
             createPublication.PublicationForms = selectListService
                 .Create(PublicationElems.GetForms(), item.PublicationForm);
+            createPublication.PublicationFilters = selectListService
+                .Create<PublicationFilters>(item.PFs.Select(f => f.MultipleId));
 
             return View("CreatePublication", createPublication);
         }
@@ -165,32 +185,6 @@ namespace ResearchModule.Controllers
             filter.Publication.PublicationName = character;
             var view = publicationService.Filter(filter, 1, "FilterPage", PublicationControllerName, "PublicationFilterFormId");
             return View("Publications", view);
-        }
-
-        
-        [HttpPost]
-        public ActionResult Create(IEnumerable<Author> Author, [Bind(Prefix ="Search")]IEnumerable<Author> Search,
-            Publication Publication, PublicationType PublicationType, IFormFile FormFile, int PublicationTypeId)
-        {
-            IResult result = null;
-            if (PublicationTypeId != 0) Publication.PublicationTypeId = PublicationTypeId;
-            
-            if (Publication.Id == 0)
-            {
-                result = publicationService.Create(Publication, PublicationType, FormFile, Author, Search);
-            }
-            else
-            {
-                result = publicationService.Update(Publication, PublicationType, FormFile, Author, Search);
-            }
-
-            if (result.Failed)
-            {
-                ViewData["result"] = result;
-                return View();
-            }
-
-            return RedirectToAction("Publications");
         }
 
         public IActionResult View(int id)

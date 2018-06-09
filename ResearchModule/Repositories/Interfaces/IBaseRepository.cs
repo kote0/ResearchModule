@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Query;
 using ResearchModule.Components.Models.Interfaces;
 using ResearchModule.Data;
@@ -29,5 +30,8 @@ namespace ResearchModule.Repository.Interfaces
         IQueryable<T> GetAll<T>() where T : class;
         IQueryable<T> Page<T>(int page, int pageSize = 10) where T : class;
         IQueryable<T> Page<T>(IQueryable<T> list, int page, int pageSize = 10) where T : class;
+
+        //EntityEntry<T> sa<T>(T record) where T : class;
+        void SQL(string str);
     }
 }

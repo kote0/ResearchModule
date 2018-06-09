@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using ResearchModule.Components.Models;
 using ResearchModule.Components.Models.Interfaces;
 using ResearchModule.Managers.Interfaces;
@@ -21,15 +22,18 @@ namespace ResearchModule.Managers
         private readonly IBaseRepository repository;
         private readonly IFileManager fileManager;
         private readonly PAuthorRepository paRepository;
-        private readonly AuthorService authorService;
 
         public PublicationManager(IBaseRepository repository, IFileManager fileManager,
-             PAuthorRepository paRepository, AuthorService authorService)
+             PAuthorRepository paRepository)
         {
             this.repository = repository;
             this.fileManager = fileManager;
             this.paRepository = paRepository;
-            this.authorService = authorService;
+        }
+
+        public void Delete(int id)
+        {
+            repository.Delete<Publication>(id);
         }
 
         public IResult AppendFile(CreatePublicationViewModel createPublication)
@@ -54,12 +58,14 @@ namespace ResearchModule.Managers
             {
                 var oldFile = fileManager.Get(oldFileName);
                 var file = fileManager.CreateInfo(createPublication.FormFile);
-                file.Uid = oldFile.Uid;
-                file.Id = oldFile.Id;
+                oldFile.FormFile = file.FormFile;
+                oldFile.Name = file.Name;
+                oldFile.Size = file.Size;
+                oldFile.Uid = file.Uid;
                 createPublication.OldFileName = file.Uid;
-                fileManager.Delete(file.Uid);
-                fileManager.SaveFileInServer(file);
-                res.Model = file;
+                //fileManager.Delete(file.Uid);
+                //fileManager.SaveFileInServer(file);
+                res.Model = oldFile;
                 return res;
             }
             // есть запись о файле и нет файла
@@ -82,7 +88,7 @@ namespace ResearchModule.Managers
             return repository.LongCount<Publication>();
         }
 
-        public object Get(int id)
+        public object Load(int id)
         {
             return repository
                 .Include<Publication, FileDetail>(f => f.PublicationFile)
@@ -96,7 +102,7 @@ namespace ResearchModule.Managers
 
         public IQueryable<Publication> FilterQuery(PublicationFilterViewModel filter)
         {
-            return repository.GetQuery((Publication p) =>  Contains(p, filter) );
+            return LoadWithAuthors().Where(p => Contains(p, filter));
         }
 
         public IQueryable<Publication> Page(int first)
@@ -118,8 +124,24 @@ namespace ResearchModule.Managers
             return publication;
         }
 
+        public void Save()
+        {
+            repository.Save();
+        }
+
         private bool Contains(Publication model, PublicationFilterViewModel filter)
         {
+            if (model.PAs != null)
+            {
+                foreach (var i in filter.Authors)
+                {
+                    if (model.PAs.FirstOrDefault(a => a.MultipleId == i) != null)
+                    {
+                        return true;
+                    }
+                }
+            }
+
             if (filter.Publication != null)
             {
                 var name = filter.Publication.PublicationName;
@@ -135,76 +157,35 @@ namespace ResearchModule.Managers
             {
                 return filter.PublicationTypesId.Count(t => t == model.PublicationTypeId) > 0;
             }
+            
             return false;
         }
 
         #region otherTypes
 
-        public void UpdatePublicationType(PublicationType publicationType)
+        public List<PA> AppendPA(Publication publication, IEnumerable<Author> createdAuthors, IEnumerable<Author> selectedAuthors)
         {
-            repository.Update(publicationType);
-        }
+            var list = new List<PA>();
 
-        /// <summary>
-        /// Сохранение изменений в PublicationType
-        /// </summary>
-        public int CreateOrUpdatePublicationType(PublicationType publicationType, int publicationTypeId)
-        {
-            if (publicationType == null || (publicationType != null && !publicationType.IsValid()))
-                return -1; // не успех
-
-            if (publicationTypeId != 0)
+            if (createdAuthors.Count() > 0)
             {
-                publicationType.Id = publicationTypeId;
-                UpdatePublicationType(publicationType);
-                return 0; // id не изменилось
+                list.AddRange(CreatePA(createdAuthors, publication));
             }
-
-            repository.Add(publicationType);
-            return publicationType.Id;
-        }
-
-        public FileDetail UpdateFile(IFormFile file, int publicationFileId)
-        {
-            if (file != null)
-            {
-                var fileDetails = fileManager.CreateInfo(file);
-                var id = publicationFileId;
-                var fileInfo = repository.Get<FileDetail>(id);
-                // удалить файл из сервера по fileInfo.Uid
-                //fileManager.Delete();
-                fileDetails.Id = id;
-                fileManager.Update(fileDetails);
-                return fileDetails;
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// Изменение записи в РА
-        /// </summary>
-        /// <param name="publicationId"></param>
-        /// <param name="createdAuthors">Авторы не существующие в системе</param>
-        /// <param name="selectedAuthors">Авторы существующие в системе</param>
-        /// <param name="result"></param>
-        public void UpdatePA(int publicationId, IEnumerable<Author> createdAuthors, IEnumerable<Author> selectedAuthors)
-        {
-            paRepository.Create(createdAuthors, publicationId);
 
             if (selectedAuthors.Count() != 0)
             {
-                var pas = repository.GetQuery<PA>(i => i.PublicationId == publicationId).ToList();
+                var pas = repository.GetQuery<PA>(i => i.PublicationId == publication.Id).ToList();
                 foreach (var item in selectedAuthors)
                 {
-                    var pa = pas.FirstOrDefault(i => i.PublicationId == publicationId && i.MultipleId == item.Id);
+                    var pa = pas.FirstOrDefault(i => i.MultipleId == item.Id);
                     if (pa == null)
                     {
-                        pa = paRepository.Create(item, publicationId);
+                        list.Add(CreatePA(item, publication));
                     }
                     else
                     {
-                        pa.Weight = item.Weight;
                         pa.Coauthor = item.Coauthor;
+                        pa.Weight = item.Weight;
                         repository.Update(pa);
                     }
                     pas.Remove(pa);
@@ -215,28 +196,55 @@ namespace ResearchModule.Managers
                     repository.DeleteRange(pas);
                 }
             }
+            
+            return list;
 
         }
 
-        /// <summary>
-        /// Создание записи в РА
-        /// </summary>
-        /// <param name="publicationId"></param>
-        /// <param name="createdAuthors">Авторы не существующие в системе</param>
-        /// <param name="selectedAuthors">Авторы существующие в системе</param>
-        /// <param name="result"></param>
-        public void CreatePA(int publicationId, IEnumerable<Author> createdAuthors, IEnumerable<Author> selectedAuthors)
+        private ICollection<PA> CreatePA(IEnumerable<Author> authors, Publication publication)
         {
-            var listAuthors = new List<Author>();
-            listAuthors.AddRange(createdAuthors);
-            listAuthors.AddRange(selectedAuthors);
-            paRepository.Create(listAuthors, publicationId);
+            return authors.Select(a => CreatePA(a, publication)).ToList();
         }
 
-        public void CreatePA(int publicationId, IEnumerable<Author> authors)
+        private PA CreatePA(Author author, Publication publication)
         {
-            paRepository.Create(authors, publicationId);
+            if (author.Id != 0)
+            {
+                return new PA()
+                {
+                    MultipleId = author.Id,
+                    Coauthor = author.Coauthor,
+                    Weight = author.Weight,
+                    Publication = publication,
+                    PublicationId = publication.Id
+                };
+            }
+            return new PA()
+            {
+                MultipleId = author.Id,
+                Multiple = author,
+                Coauthor = author.Coauthor,
+                Weight = author.Weight,
+                Publication = publication,
+                PublicationId = publication.Id
+            };
+        }
+
+        public void SQL(string str)
+        {
+            repository.SQL(str);
+        }
+
+        public void CreatePA(IEnumerable<PA> authors)
+        {
+            repository.Add(authors);
         }
         #endregion
+
+        public IIncludableQueryable<Publication, Author> LoadWithAuthors()
+        {
+            return repository.Include<Publication, ICollection<PA>>(a => a.PAs)
+                .ThenInclude(p => p.Multiple);
+        }
     }
 }

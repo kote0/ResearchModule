@@ -2,10 +2,10 @@
 using Microsoft.AspNetCore.Identity;
 using ResearchModule.Models;
 using ResearchModule.Repository.Interfaces;
-using ResearchModule.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Threading.Tasks;
 
 namespace ResearchModule.Managers
@@ -13,20 +13,17 @@ namespace ResearchModule.Managers
     public class UserManager
     {
         private readonly UserManager<User> userManager;
-        private readonly SignInManager<User> signInManager;
         private readonly IBaseRepository repository;
-        private readonly RoleManager<IdentityRole> roleManager;
         private readonly IHttpContextAccessor httpContextAccessor;
+        public static IIdentity IdentityUser { get; private set; }
 
-        public UserManager(UserManager<User> userManager,
-            SignInManager<User> signInManager, IBaseRepository repository, RoleManager<IdentityRole> roleManager, IHttpContextAccessor httpContextAccessor)
+
+        public UserManager(UserManager<User> userManager, IBaseRepository repository, IHttpContextAccessor httpContextAccessor)
         {
             this.userManager = userManager;
-            this.signInManager = signInManager;
             this.repository = repository;
-            this.roleManager = roleManager;
             this.httpContextAccessor = httpContextAccessor;
-
+            IdentityUser = httpContextAccessor.HttpContext.User.Identity;
         }
 
         public User Load(string name)
@@ -36,25 +33,23 @@ namespace ResearchModule.Managers
 
         public User CurrentUser()
         {
-            return GetUserNavs().Where(u => u.UserName == httpContextAccessor.HttpContext.User.Identity.Name)
+            return GetUserNavs().Where(u => u.UserName == IdentityUser.Name)
                 .FirstOrDefault();
         }
 
         public Author CurrentAuthor()
         {
             var user = CurrentUser();
-            if (user != null && user.Author != null)
-                return user.Author;
-
-            return null;
+            return user != null && user.Author != null ? user.Author : null;
         }
 
         public async Task<ICollection<string>> CurrentUserRolesAsync()
         {
             var user = CurrentUser();
-            if (user != null)
-                return await userManager.GetRolesAsync(user);
-            return null;
+            if (user == null)
+                throw new Exception("Текущий пользователь отсутствует");
+
+            return await userManager.GetRolesAsync(user);
         }
 
         private Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<User, Author> GetUserNavs()

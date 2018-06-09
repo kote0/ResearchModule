@@ -32,9 +32,10 @@ namespace ResearchModule.Controllers
 
         }
 
-        public IActionResult DeleteUser(string name, string returnUrl)
+        public async Task<IActionResult> DeleteUser(string name, string returnUrl)
         {
-            var user = manager.GetQuery<User>(m => m.UserName.Equals(name)).FirstOrDefault();
+            
+            var user = await userManager.FindByNameAsync(name);
             if (user != null && !user.UserName.Equals(RoleInitializer.AdminName))
             {
                 user.IsDeleted = true;
@@ -51,7 +52,7 @@ namespace ResearchModule.Controllers
             result.Set(author.Id == 0
                 ? manager.Add(author).Error
                 : manager.Update(author).Error);
-            
+            manager.Save();
             await userManager.UpdateAsync(user);
 
             if (result.Succeeded)
@@ -63,7 +64,7 @@ namespace ResearchModule.Controllers
         public IActionResult ChangeUser(string name, string returnUrl)
         {
             var currUser = User.Identity.Name;
-            if (currUser == name || currUser == "admin0")
+            if (currUser == name || currUser.Equals(RoleInitializer.AdminName))
             {
                 var user = manager.Include<User, Author>(u => u.Author)
                        .Where(u => u.UserName == name)
@@ -110,7 +111,7 @@ namespace ResearchModule.Controllers
             }
 
 
-            ModelState.AddModelError("", "Название/пароль не найдены");
+            ModelState.AddModelError("AccountError", "Название/пароль не найдены");
             return View(loginViewModel);
         }
 
@@ -137,28 +138,24 @@ namespace ResearchModule.Controllers
             if (ModelState.IsValid)
             {
                 var user = await userManager.FindByNameAsync(loginViewModel.UserName);
-                bool res = false;
                 if (user == null)
                 {
-                    var result = await userManager
-                        .CreateAsync(new User() { UserName = loginViewModel.UserName }, loginViewModel.Password);
-                    res = result.Succeeded;
-                }
-                else
-                {
-                    res = await LoginUser(user, loginViewModel.Password);
-                }
-                /*res = (user == null)
-                    ? (await userManager
-                        .CreateAsync(new User() { UserName = loginViewModel.UserName }, loginViewModel.Password))
-                        .Succeeded
-                    : await LoginUser(user, loginViewModel.Password); */
+                    user = new User() { UserName = loginViewModel.UserName };
+                    var result = await userManager.CreateAsync(user, loginViewModel.Password);
 
-                if (res)
-                {
-                    return RedirectToAction("Publications", "Publication");
+                    if (result.Succeeded)
+                    {
+                        await userManager.AddToRoleAsync(user, RoleInitializer.UserRole);
+                        return RedirectToAction("Publications", "Publication");
+                    }
+                    else
+                    {
+                        return View(loginViewModel);
+                    }
                 }
 
+                await LoginUser(user, loginViewModel.Password);
+                return RedirectToAction("Publications", "Publication");
             }
             return View(loginViewModel);
         }
