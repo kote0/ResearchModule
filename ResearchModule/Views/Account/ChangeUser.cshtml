@@ -1,0 +1,87 @@
+﻿@model ResearchModule.Models.User
+@{
+    ViewData["Title"] = "Изменение данных пользователя";
+    var returnUrl = (string)ViewData["ReturnUrl"];
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>Изменение данных пользователя: @Model.UserName</h2>
+    </div>
+</div>
+@using (Html.BeginForm("SaveUser", "Account", FormMethod.Post))
+{
+    <div class="row">
+        <div class="col-md-3 propertyName">
+            <label>Фамилия</label>
+            @Html.TextBoxFor(v => v.Author.Surname, new { @class="form-control" })
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3 propertyName">
+            <label>Имя</label>
+            @Html.TextBoxFor(v => v.Author.Name, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3 propertyName">
+            <label>Отчество</label>
+            @Html.TextBoxFor(v => v.Author.Lastname, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3 propertyName">
+            <label>День рождения</label>
+            <div class="input-group date">
+                <input class="form-control" data-val="true" data-val-required="The День рождения field is required." id="Author_BDay" name="Author.BDay" type="text" 
+                       value="@((Model.Author == null) 
+                                ?""
+                                : Model.Author.BDay == DateTime.MinValue ? "" : Model.Author.BDay.ToShortDateString())">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3 propertyName">
+            <label>Почта</label>
+            @Html.TextBoxFor(v => v.Email, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-1 propertyName">
+            <input type="submit" class="btn btn-success" value="Сохранить"/>
+        </div>
+        <div class="col-md-3 propertyName">
+            <a href="@returnUrl" class="btn btn-default" name="returnUrl">Отменить</a>
+        </div>
+    </div>
+    @Html.HiddenFor(m => m.Author.Id)
+    @Html.HiddenFor(m => m.AccessFailedCount)
+    @Html.HiddenFor(m => m.ConcurrencyStamp)
+    @Html.HiddenFor(m => m.EmailConfirmed)
+    @Html.HiddenFor(m => m.IsDeleted)
+    @Html.HiddenFor(m => m.LockoutEnabled)
+    @Html.HiddenFor(m => m.NormalizedEmail)
+    @Html.HiddenFor(m => m.NormalizedUserName)
+    @Html.HiddenFor(m => m.PasswordHash)
+    @Html.HiddenFor(m => m.PhoneNumber)
+    @Html.HiddenFor(m => m.PhoneNumberConfirmed)
+    @Html.HiddenFor(m => m.SecurityStamp)
+    @Html.HiddenFor(m => m.TwoFactorEnabled)
+    @Html.HiddenFor(m => m.UserName)
+    @Html.Hidden("returnUrl", returnUrl)
+}
+<style>
+    .propertyName {
+        margin-top: 10px;
+    }
+</style>
+
+<script type="text/javascript">
+    $('.input-group.date').datepicker({
+        format: "dd-mm-yyyy",
+        maxViewMode: 1,
+        language: "ru",
+        keyboardNavigation: false
+    });
+</script>

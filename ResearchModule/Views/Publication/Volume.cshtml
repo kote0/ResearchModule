@@ -1,0 +1,16 @@
+﻿@using ResearchModule.Models
+@model Publication
+
+
+@if (Model == null || (Model != null && (Model.PublicationForm == 1 || Model.PublicationForm == 2)))
+{
+    <div id="divVolumeId">
+        <div class="row propertyName">
+            <div class="col-md-4">@Html.DisplayNameFor(m => m.Volume)</div>
+            <div class="col-md-8">
+                @Html.TextBoxFor(m => m.Volume, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Volume)
+            </div>
+        </div>
+    </div>
+}

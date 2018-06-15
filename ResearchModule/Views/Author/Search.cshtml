@@ -1,17 +1,32 @@
 ﻿@using ResearchModule.Models
 @model IEnumerable<Author>
-
 @foreach (var item in Model)
 {
-    
+    var name = string.Format("Search[{0}].", item.Id);
     <tr id="AuthorItem_@item.Id">
-        @Html.Hidden("Search[" + item.Id + "].Id", item.Id)
         <td class="author_Remove">
-            @Html.CheckBox(string.Concat("Selected_",item.Id.ToString()), item.Selected, new { onClick = "Author.searchResult().append(this," + item.Id + ")" })
+
+            @Html.CheckBox(string.Concat(name, "Selected"), item.Selected,
+                new
+                {
+                    onClick = string.Format("Author.searchResult().append(this,{0})", item.Id), 
+                    id = string.Format("Search_{0}__Selected", item.Id)
+                })
+
         </td>
         <td>@item.Surname</td>
         <td>@item.Name</td>
         <td>@item.Lastname</td>
-        <td>@item.BDay</td>
+        <td>@(item.BDay != DateTime.MinValue ? item.BDay.ToShortDateString() : "-")</td>
+        <td>
+        <input type="text" id="@string.Format("Search_{0}__Weight", item.Id)" name="@string.Concat(name, "Weight")" class="form-control"
+               value="@(item.Weight != 0 ? item.Weight.ToString() : "")" />
+        @*@Html.TextBox(string.Concat(name, "Weight"), item.Weight, new { @class="form-control"})*@</td>
+
+        @Html.Hidden(string.Concat(name, "Id"), item.Id)
+        @Html.Hidden(string.Concat(name, "Surname"), item.Surname)
+        @Html.Hidden(string.Concat(name, "Name"), item.Name)
+        @Html.Hidden(string.Concat(name, "Lastname"), item.Lastname)
+        @Html.Hidden(string.Concat(name, "BDay"), item.BDay)
     </tr>
 }

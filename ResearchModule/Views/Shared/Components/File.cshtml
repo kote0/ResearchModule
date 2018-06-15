@@ -1,0 +1,8 @@
+﻿<div class="input-group">
+    <label class="input-group-btn">
+        <span class="btn btn-default">
+            Обзор&hellip; <input type="file" name="@(ViewData["filename"])" style="display: none;" @*multiple*@ value="@(ViewData["fileValue"])">
+        </span>
+    </label>
+    <input type="text" class="form-control" data-val="True" data-val-required="Заполните обязательное поле" readonly value="@(ViewData["displayname"])">
+</div>

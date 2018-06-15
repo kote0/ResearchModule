@@ -1,0 +1,666 @@
+﻿@using ResearchModule.Components
+@using Microsoft.AspNetCore.Html
+@using ResearchModule.Components.Models.Interfaces
+@using static ResearchModule.Extensions.ValueExtension
+@inject ResearchModule.Service.SelectListService SelectListService
+@model ResearchModule.ViewModels.CreatePublicationViewModel
+
+@{
+    ViewData["Title"] = "Добавить публикацию";
+    var formId = "createPublication";
+    var result = (IResult)ViewData["result"];
+
+}
+
+@if (result != null && result.Failed)
+{
+    foreach (var item in result.Error)
+    {
+        <div class="alert alert-danger" role="alert">@item</div>
+    }
+
+}
+<div class="info"></div>
+
+<div id="form@(formId)">
+    <h2>Добавить публикацию</h2>
+
+    @using (Html.BeginForm("CreatePublicationNew", "Publication", FormMethod.Post, new { id = formId, enctype = "multipart/form-data" }))
+    {
+        @Html.ValidationSummary(true)
+        @Html.HiddenFor(m => m.Publication.Id)
+        @Html.HiddenFor(m => m.Publication.ModifyDate)
+        @Html.HiddenFor(m => m.Publication.CreateDate)
+        <div>
+            <div class="row propertyName">
+                <div class="col-md-4">@Html.DisplayNameFor(m => m.Publication.PublicationName)</div>
+                <div class="col-md-8">
+                    @Html.TextBoxFor(m => m.Publication.PublicationName, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Publication.PublicationName)
+                </div>
+            </div>
+            <div class="row propertyName">
+                <div class="col-md-4">Написана ли публикация на иностранном языке</div>
+                <div class="col-md-8">
+                    @Html.CheckBoxFor(m => m.TranslateName, new { onClick = "translateName(this)" })
+                </div>
+            </div>
+            <div id="translateName">
+                <div class="row propertyName">
+                    <div class="col-md-4 after-row">@Html.DisplayNameFor(m => m.Publication.Language)</div>
+                    <div class="col-md-8 after-row" id="languages"></div>
+                </div>
+                <div class="row propertyName">
+                    <div class="col-md-4">@Html.DisplayNameFor(m => m.Publication.TranslateText)</div>
+                    <div class="col-md-8">
+                        @Html.TextBoxFor(m => m.Publication.TranslateText, new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+            <div class="row propertyName">
+                <div class="col-md-4">@Html.DisplayNameFor(m => m.Publication.OutputData)</div>
+                <div class="col-md-8">
+                    @Html.TextAreaFor(m => m.Publication.OutputData, new
+               {
+                   @class = "form-control",
+                   rows = 5,
+                   placeholder = @"Сб.: Материалы международной научно-практической конференции “Экономические и социальные технологии переходного общества”, 2-3 декабря 1997 г.- Пермь: ПГУ, 1997. - С.199."
+               })
+                    @Html.ValidationMessageFor(model => model.Publication.OutputData)
+                </div>
+            </div>
+        </div>
+        <div>
+                <div class="row propertyName">
+                    <div class="col-md-4">@Html.DisplayNameFor(m => m.Publication.PublicationPartition)</div>
+                    <div class="col-md-8" id="load_select-Section">
+                        <select-list items="@Model.PublicationPartions" name="Publication.PublicationPartition"></select-list>
+                    </div>
+                </div>
+                <div class="row propertyName">
+                    <div class="col-md-4">@Html.DisplayNameFor(m => m.Publication.PublicationForm)</div>
+                    <div class="col-md-8" id="load_select-Section">
+                        <select-list items="@Model.PublicationForms" name="Publication.PublicationForm" onChange="showWeightProperty()"></select-list>
+                    </div>
+                </div>
+                <div class="row propertyName">
+                    <div class="col-md-4">@Html.DisplayNameFor(m => m.Publication.PublicationType)</div>
+                    <div class="col-md-8" id="load_select-Section">
+                        <div class="input-group">
+                            <select-list items="@Model.PublicationTypes" name="Publication.PublicationTypeId"></select-list>
+                            <span class="input-group-btn">
+                                @Html.Button("CreatePublicationTypeName", "", Html.Icon("plus"), new { type = "button", onClick = "hidePublicationTypeName(false)" })
+                            </span>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.Publication.PublicationTypeId)
+                    </div>
+                </div>
+                <div class="row propertyName" id="publicationTypeName">
+                    <div class="col-md-4">@Html.DisplayNameFor(m => m.PublicationTypeName)</div>
+                    <div class="col-md-8">
+                        <div class="input-group">
+                            @Html.TextBoxFor(m => m.PublicationTypeName, new { @class = "form-control" })
+                            <span class="input-group-btn">
+                                @Html.Button("RemovePublicationTypeName", "", Html.Icon("remove"), new { type = "button", onClick = "hidePublicationTypeName(true)" })
+                            </span>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.PublicationTypeName)
+                    </div>
+                </div>
+                @if (Model.Publication == null || (Model.Publication != null && (Model.Publication.PublicationForm == 1 || Model.Publication.PublicationForm == 2)))
+                {
+                    <div id="divVolumeId">
+                        <div class="row propertyName">
+                            <div class="col-md-4">@Html.DisplayNameFor(m => m.Publication.Volume)</div>
+                            <div class="col-md-8">
+                                @Html.TextBoxFor(m => m.Publication.Volume, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Publication.Volume)
+                            </div>
+                        </div>
+                    </div>
+                }
+                <div>
+                    <div class="row propertyName">
+                        <div class="col-md-4">@Html.DisplayNameFor(m => m.Publication.PFs)</div>
+                        <div class="col-md-8">
+                            <select-list items="@Model.PublicationFilters" name="@Html.NameFor(m=>m.PublicationFiltersId)" multiple="true" live-search="true"></select-list>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                     <div class="row propertyName">
+                        <div class="col-md-4">Файл</div>
+                        <div class="col-md-8">
+                            @Html.HiddenFor(m => m.OldFileName)
+                            @Html.FileFor(m => m.FormFile, m => m.Publication.PublicationFile.Name)
+                            @Html.HiddenFor(m => m.Publication.PublicationFileId)
+                            @Html.ValidationMessageFor(model => model.FormFile)
+                        </div>
+                    </div>
+                </div>
+                <hr />
+        </div>
+        <div>
+            <div>
+                <div class="row propertyName">
+                    <div class="col-md-4">
+                        <a role="button" data-toggle="collapse" href="#collapseProperties" aria-expanded="false" aria-controls="collapseProperties">
+                            Список соавторов
+                        </a>
+                    </div>
+                    <div class="col-md-8">
+                        @Html.Button("SearchAuthors", " Найти", Html.Icon("search"), new Dictionary<string, object> { { "type", "button" }, { "onclick", "hidePublicationCreateForm()" } })
+                        @Html.Button("CreateAuthors", " Добавить", Html.Icon("plus"), new Dictionary<string, object> { { "type", "button" }, { "onclick", "addAuthor(this);" }, { "dataCount", "100" } })
+                    </div>
+                </div>
+            </div>
+            <div id="collapseProperties" aria-expanded="false" class="collapse in">
+                <div class="col-md-12" id="authorInfo">
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="row propertyName">
+                <div class="col-md-4">
+                    @Html.Button("x", "Сохранить", null, new { onclick = "publicationSubmit()", type = "button", @class= "btn btn-success" })
+                </div>
+                <div class="col-md-8">
+                    <div class="info "></div>
+                </div>
+            </div>
+        </div>
+                    }
+</div>
+
+<script type="text/javascript" src="~/lib/languages/language.js"></script>
+<script type="text/javascript">
+    //конвертирование листа на корректные номера
+    function convertList(list) {
+        let oldName = '';
+        let countItem = -1;
+        let id;
+        for (var item of list) {
+            if (item.name.length == 0)
+                continue;
+            let name = item.name.match(/[\d*]/g).join("");
+            if (oldName != item.name && id !== name) {
+                id = name;
+                countItem++;
+            }
+            let propertyName = item.name;
+            $(`[name='${propertyName}']`).attr("name", item.name.replace(/w*\[\d*]/g, `[${countItem}]`));
+            oldName = propertyName;
+        }
+        return countItem;
+    }
+</script>
+
+<script type="text/javascript">
+    // -------------------------------
+    // Добавление пользователей
+    // -------------------------------
+    // --- SearchUsers
+    const selectedAuthors = "authors";
+    const searchResult = "result";
+    const removeAuthorFunc = "removeAuthor";
+    const load = "load";
+    const formId = "searchAuhorsFormId";
+    // --- SearchAuthors
+    const author = "author";
+    const modelName = "@Html.DisplayNameFor(m => m.Authors)";
+    // --- Publication
+    const loadAuthorsInPublication = "loadAthors";
+    const publicationCreateForm = "form@(formId)";
+    const authorTableInPublication = "authorInfo";
+    const selectedAuthor = "selectedAuthor";
+    const publicationTypeName = "publicationTypeName";
+    // --- Author
+    const authorProperties = ['Coauthor',  'Surname', 'Name', 'Lastname', 'BDay'];
+    const authorLabels = ['Соавтор', 'Фамилия', 'Имя', 'Отчество', 'Дата рождения' ];
+    const weightProperty = "Weight";
+    const weightTdClass = "weightProperty";
+    // ---
+
+    // --- SearchAuthors
+    function onkeyUpAurhor(elem) {
+        if (elem.value === "") return;
+        $.ajax({
+            type: 'POST',
+            url: `/Author/SearchAuthors?character=${elem.value}&propertyName=${modelName}`,
+            success: function (data) {
+                if (data != null)
+                {
+                    $(`#${searchResult}`).html(data);
+                    $(`.${load}`).css("display", "");
+                }
+            }
+        });
+    }
+
+    function removeAuthor(elem, id) {
+        let parent = $(elem).parent();
+        if ($(parent).is("td")) {
+            $(elem).parent().parent().remove();
+            let text = `div${author}_${id}`;
+            if ($(`#${selectedAuthors}`).find(`#${text}`).length != 0) {
+                $(`#${text}`).remove();
+            }
+        }
+        else {
+            $(elem).parent().remove();
+            $(`#${author}_${id} button`).attr("disabled", false);
+        }
+    }
+
+    function appendAuthor(text, id, elem) {
+        let remove =
+            `<span onclick='${removeAuthorFunc}(this, ${id})' >
+                <i class="glyphicon glyphicon-remove"></i>
+            </span>`;
+
+        if ($(`#${selectedAuthors}:contains('${text}')`).length == 0) {
+            let hiddenProperties = $(`#${author}_${id}`).find("input");
+            let newDiv = $(`<div class="col-md-2" id='div${author}_${id}'>${text} ${remove}</div>`).append(hiddenProperties)
+            $(`#${selectedAuthors}`).append(newDiv);
+        }
+        $(elem).attr("disabled", true);
+    }
+
+    function appendAuthors(authors) {
+        let authorList = authors;
+        if (authorList.length == 0 && authorList.prevObject.length != 0) {
+            authorList = authorList.prevObject;
+        }
+        for (let author of $(authorList).filter("[name$=Id]:not([name$=UserId])")) {
+            // на этом же листе, фильтрируем по текущему Id
+            var authorInfo = $(authorList).filter(`[name*='[${author.value}]']`);
+
+            // ------
+            // добавление скрытых полей
+            // ------
+            let text = authorInfo.filter(`[name$='FIO']`).val();
+            let id = authorInfo.filter(`[name$='Id']`).val();
+            let remove =
+                `<span onclick='${removeAuthorFunc}(this, ${id})' >
+                <i class="glyphicon glyphicon-remove"></i>
+            </span>`;
+
+            if ($(`#${selectedAuthors}:contains('${text}')`).length == 0) {
+                let hiddenProperties = author;
+                let newDiv = $(`<div class="col-md-2">${text} ${remove}</div>`).append(hiddenProperties);
+                $(`#${selectedAuthors}`).append(newDiv);
+            }
+            // ------
+        }
+
+    }
+
+    function convertName(example, propertyName) {
+        let name = $(example).attr("name");
+        return name.match(/\w*\[\d*]./g) + propertyName; //\w*\.[\d] - Author[2].Id -> Author[2].
+    }
+
+    function convertId(example, propertyName) {
+        let id = $(example).attr("id");
+        return id.match(/\w*_\d*__/g) + propertyName; // \w*_\d__ -- Author_2__Id -> Author_2__
+    }
+
+    function createCoauthor(author) {
+        let propertyName = "Coauthor";
+
+        let input = document.createElement('input');
+        $(input).attr("type", 'checkbox');
+        if ($(author).filter(`[name$=.${propertyName}]`).length != 0 && $(author).val()) {
+            if ($(author).val() != "False") {
+                $(input).attr("checked", "checked");
+                $(author).val("True");
+            }
+            else {
+                $(author).val("False");
+            }
+
+        }
+        $(input).attr("name", convertName(author, propertyName));
+        $(input).attr("id", convertId(author, propertyName));
+        return input;
+    }
+
+    function createTbody(table, list, withWeight) {
+        let tbody = $('<tbody>');
+        $(tbody).attr("id", $(table).attr("id") + "Tbody");
+        appendTbody(tbody, list);
+        table.append(tbody);
+        return $(tbody).find("tr");
+    }
+
+    function appendTbody(tbody, list) {
+        let data = list;
+        // находим Id авторов
+        for (let item of $(data).filter("[name$='.Id']")) {
+            let tbodyId = $(tbody).attr("id");
+            if ($(`#${tbodyId} > #${selectedAuthor}_${item.value}`).length != 0) {
+                continue;
+            }
+            // на этом же листе, фильтрируем по текущему Id
+            let authorInfo = $(data).filter(`[name*='[${item.value}]']`);
+            let tr = $('<tr>');
+            let isTh = false;
+            appendThOrTd(tr, isTh, "");
+            // установка идентификатора строки
+            $(tr).attr("id", `${selectedAuthor}_${item.value}`);
+            // ищем среди них нужные столбцы
+            for (let i of authorProperties) {
+                if (i == "Id") {
+                    //appendThOrTd(tr, isTh, "");
+                }
+                else {
+                    let author = $(authorInfo).filter(`[name$='.${i}']`);
+                    if (i == "Coauthor" && author.length == 0 && $(tr).find("[name$='.Coauthor']").length == 0) {
+                        author = createCoauthor($(authorInfo).filter(`[name$='.${authorProperties[2]}']`));
+                    }
+                    appendThOrTd(tr, isTh, author);
+
+                }
+            }
+            if (true) {
+                appendThOrTd(tr, isTh, "");
+                let $tdLast = tr.find("td:last");
+                $tdLast.addClass(weightTdClass);
+                tr.find("td:last").append(addWeight(authorInfo[0]));
+            }
+
+            let button = document.createElement("button");
+            $(button).attr("type", "button");
+            $(button).attr("class", "btn btn-default");
+            $(button).html('@Html.Icon("remove")');
+            $(button).attr("onclick", `${removeAuthorFunc}(this, ${item.value})`);
+            appendThOrTd(tr, isTh, button);
+
+            tbody.append(tr);
+
+            if ($(authorInfo).filter("[type=text]").length == 0)
+                tbody.find("td:last").append($(authorInfo).filter("[type=hidden]").clone());
+        }
+    }
+
+    function showWeightProperty() {
+        let selectedForm = $('#@Html.IdFor(m=>m.Publication.PublicationForm) option:selected').val();
+        let volumeName = 'Volume';
+        if (selectedForm == "3" || selectedForm == "4") {
+            $(`.${weightTdClass}`).hide();
+            $(`[name='${volumeName}']`).parent().parent().hide();
+        }
+        else {
+            $(`.${weightTdClass}`).show();
+            $(`[name='${volumeName}']`).parent().parent().show();
+
+        }
+    }
+
+    function addWeight(example) {
+        let weight = $("<input >");
+        $(weight).addClass("form-control");
+        $(weight).attr("type", "text");
+        if (example != null) {
+            $(weight).attr("name", example.name.match(/\w*\[\d*]./g) + weightProperty); //\w*\.[\d] - Author[2].Id -> Author[2].
+            $(weight).attr("id", example.id.match(/\w*_\d*__/g) + weightProperty);      // \w*_\d__ -- Author_2__Id -> Author_2__
+        }
+        $(weight).attr("data-val", 'true');
+        return weight;
+    }
+
+    function createThead(table) {
+        let thead = $('<thead>');
+        let tr = $('<tr>');
+        let isTh = true;
+        appendThOrTd(tr, isTh, "");
+        for (let i of authorLabels) {
+            if (i == "#") {
+                appendThOrTd(tr, isTh, "");
+            }
+            else {
+                appendThOrTd(tr, isTh, i);
+            }
+        }
+        appendThOrTd(tr, isTh, "");
+        thead.append(tr);
+        table.append(thead);
+    }
+    function createAuthorTr(isTh, surname, name, lastName, bDay, id, coathor) {
+        let tr = $('<tr>');
+        $(tr).attr("id", `${selectedAuthor}_${$(id).val()}`);
+        appendThOrTd(tr, isTh, "");
+        appendThOrTd(tr, isTh, coathor);
+        appendThOrTd(tr, isTh, surname);
+        appendThOrTd(tr, isTh, name);
+        appendThOrTd(tr, isTh, lastName);
+        appendThOrTd(tr, isTh, bDay);
+        appendThOrTd(tr, isTh, "");
+        return tr;
+    }
+    function appendThOrTd(tr, isTh, input) {
+        let elem = isTh ? $('<th>') : $('<td>');
+        if (typeof (input) == "string") {
+            tr.append(elem.append(input));
+            return;
+        }
+        if ($(input).attr("type") == "button" || ($(input).attr("type") == "text" || $(input).attr("type") == "checkbox")
+            && $(input).filter("[name$=Id]:not([name$=UserId])").length == 0) {
+            tr.append(elem.append(input));
+            return;
+        }
+        if (input != null && input.length != 0) {
+            let coathor;
+            if ($(input).filter(`[name$='.Coauthor']`).length != 0) {
+                coathor = createCoauthor(input);
+            }
+            if (coathor != null) {
+                tr.append(elem.append(coathor));
+            }
+            else {
+                tr.append(elem.append($(input).val()));
+            }
+            return;
+        }
+        else {
+            tr.append(elem.append(""));
+        }
+    }
+
+    function authorsSubmit() {
+        var list = $(`#${selectedAuthors}`).find("input");
+        createOrUpdateAuthors(authorTableInPublication, list, true); // изменить true на метод, которые опеределяет нужен ли вес
+        showPublicationCreateForm();
+    }
+
+        function hidePublicationCreateForm() {
+        $(`#${loadAuthorsInPublication}`).css("display", "");
+        $(`#${publicationCreateForm}`).css("display", "none");
+    }
+
+    function showPublicationCreateForm() {
+        $(`#${loadAuthorsInPublication}`).css("display", "none");
+        $(`#${publicationCreateForm}`).css("display", "");
+    }
+
+    function createAuthorTable(tableHereId, list, withWeight) {
+        if (list.length == 0 && list.prevObject.length != 0) {
+            list = list.prevObject;
+        }
+        if (list.length == 0)
+            return;
+        var table = $('<table>');
+        table.attr("id", tableHereId+"Id")
+        table.addClass("table");
+        createThead(table);
+        let haveRecords = createTbody(table, list, withWeight);
+        if (haveRecords.length != 0) {
+            $(`#${tableHereId}`).html(table);
+            showWeightProperty();
+        }
+        return table;
+    }
+
+    function createOrUpdateAuthors(tableId, list, withWeight) {
+        let table = $(`#${tableId}Id`);
+        if (table.length == 0) {
+            createAuthorTable(authorTableInPublication, list, withWeight);
+        }
+        else {
+            let tbody = $(`#${tableId}Id tbody`);
+            appendTbody(tbody, list);
+            showWeightProperty();
+        }
+    }
+
+        $(document).ready(function () {
+            $(`#${loadAuthorsInPublication}`).hide();
+        var authors = `
+        @{
+            var name = Html.DisplayNameFor(m => m.Authors);
+            foreach (var author in Model.Authors)
+            {
+                var i = author.Id;
+                @Html.Hidden(string.Format("{0}[{1}].{2}", name, i, "Id"), author.Id, new { })
+                @Html.Hidden(string.Format("{0}[{1}].{2}", name, i, "FIO"), author.ToStringFormat(), new { })
+                @Html.Hidden(string.Format("{0}[{1}].{2}", name, i, "UserId"), author.UserId, new { });
+                var coathor = string.Format("{0}[{1}].{2}", name, i, "Coauthor");
+                @Html.Hidden(string.Format("{0}[{1}].{2}", name, i, "Name"), author.Name, new { })
+                @Html.Hidden(string.Format("{0}[{1}].{2}", name, i, "Lastname"), author.Lastname, new { })
+                @Html.Hidden(string.Format("{0}[{1}].{2}", name, i, "Surname"), author.Surname, new { })
+                @Html.Hidden(string.Format("{0}[{1}].{2}", name, i, "BDay"), author.BDay.ToShortDateString(), new { })
+                @:<input type="checkbox" name="@coathor" id="@(name + "_" + i + "__Coauthor")" @(author.Coauthor? "checked": "") />
+            }
+        }`;
+        debugger;
+        let authorsList = $(authors).find("input");
+        appendAuthors(authorsList);
+        createOrUpdateAuthors(authorTableInPublication, authorsList, true);
+        let selectedId = @(Model.Publication != null && Model.Publication.Language.HasValue ? Model.Publication.Language.Value : 8);
+        let selectListLanguage = new language("@Html.NameFor(m => m.Publication.Language)", selectedId);
+        $("#languages").html(selectListLanguage.items);
+        let translateName = $('#@Html.IdFor(m => m.TranslateName)').attr("checked");
+        if (!translateName) {
+            $("#translateName").hide();
+        }
+        showWeightProperty();
+
+        hidePublicationTypeName("@(string.IsNullOrEmpty(Model.PublicationTypeName))");
+    });
+
+
+    //--------------------
+    // Создать автора
+    //--------------------
+    function addAuthor(elem) {
+        let id = $(elem).attr("datacount");
+        let list = [];
+        if (authorProperties.indexOf("Id") == -1) {
+            authorProperties.push("Id");
+        }
+        for (let item of authorProperties) {
+            let input = document.createElement('input');
+            if (item === "Coauthor") {
+                $(input).attr("type", 'checkbox');
+                $(input).attr("value", true);
+            }
+            else {
+                $(input).addClass('form-control');
+                $(input).attr("type", 'text');
+            }
+            $(input).attr("name", `${modelName}[${id}].${item}`);
+            $(input).attr("id", `${modelName}_${id}__${item}`);
+            if (item === "Id") {
+                $(input).attr("value", id);
+            }
+            $(input).attr("data-val", 'true');
+            list.push(input);
+        }
+        createOrUpdateAuthors(authorTableInPublication, list, true);
+        $(elem).attr("datacount", ++id);
+    }
+
+</script>
+
+<script type="text/javascript">
+    const volumeId = "divVolumeId";
+    //------------------
+    // Работа с публикацией
+    //------------------
+    function publicationSubmit() {
+
+        var createResult = $(`#${authorTableInPublication}`).find("input");
+        convertList(createResult);
+        let $form = $("#@(formId)");
+        let $inputs = $(`#${authorTableInPublication}`).find(":checked");
+        $inputs.attr("value", true);
+        if (isValid('@(formId)')) {
+            $("#@(formId)").submit();
+        }
+        else {
+            setError("Заполните обязательные поля");
+
+        }
+    }
+
+    function hidePublicationTypeName(hide) {
+        let $name = $(`#${publicationTypeName}`);
+        let typeId = ("[name='Publication.PublicationTypeId']");
+        if (hide || typeof (hide) == 'string' && hide.toLowerCase() == "true") {
+            //
+            $name.hide();
+            $name.find("input").attr("data-val", false);
+            $(typeId).prop('disabled', false);
+
+        }
+        else {
+            $(typeId).prop('disabled', true);
+            // disable
+            $name.show();
+            $name.find("input").attr("data-val", true);
+        }
+
+
+    }
+
+    function setError(text) {
+        $(".info").html(`<div class="alert alert-danger" role="alert">${text}</div>`);
+    }
+
+    function isValid(formId) {
+        let res = true;
+        let e = $(`#${formId}`).find(`[data-val='True']:visible, [data-val='true']:visible `);
+        var reqInput = $(`#${formId} [data-val='True']`);
+        for (var input of e) {
+            let parent = $(input).parent();
+            if (input.value === "") {
+                parent.addClass("has-error")
+                res = false;
+            }
+            else {
+                parent.removeClass("has-error")
+            }
+        }
+        return res;
+    }
+
+
+    function translateName(e) {
+        $("#translateName").css("display", e.checked ? "" : "none");
+    }
+</script>
+
+<script type="text/javascript">
+
+</script>
+
+<div id="loadAthors">
+    @await Html.PartialAsync("../Base/SearchUsers")
+</div>
+
+
+<style>
+    .propertyName {
+        margin-top: 10px;
+    }
+</style>

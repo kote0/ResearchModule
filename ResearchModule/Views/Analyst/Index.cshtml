@@ -1,0 +1,57 @@
+﻿@using ResearchModule.Components
+@inject ResearchModule.Service.SelectListService SelectListService
+@model ResearchModule.ViewModels.PublicationFilterViewModel
+@{
+    ViewData["Title"] = "Выберите параметры";
+    var types = ViewData["types"] != null ? (ResearchModule.Models.SelectList)ViewData["types"] : null;
+}
+<div class="">
+    <h2>Выберите параметры </h2>
+</div>
+@using (Html.BeginForm("PublicationChart", "Analyst"))
+{
+    <div class="row propertyName">
+        <div class="col-md-5">
+            <label>Выберите дату создания публикации</label>
+            <div class="input-group date">
+                @Html.TextBoxFor(m=>m.Publication.CreateDate, new { @class="form-control" })
+                <span class="input-group-addon">
+                    <i class="glyphicon glyphicon-th"></i>
+                </span>
+            </div>
+
+        </div>
+    </div>
+    <div class="row propertyName">
+        <div class="col-md-5">
+            <label style="font-style: normal">Укажите виды</label>
+            <select-list items="types" name="@Html.NameFor(m=>m.PublicationTypesId)" multiple="true"></select-list>
+        </div>
+    </div>
+    <div class="row propertyName">
+        <div class="col-md-5">
+            <label>Выберите пользователей</label>
+            <select-list items="@Model.AuthorList" name="@Html.NameFor(m=>m.Authors)" multiple="true" live-search="true"></select-list>
+            <div id="loadUsers"></div>
+        </div>
+    </div>
+    <div class="row propertyName">
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-success">Показать</button>
+        </div>
+    </div>
+}
+<style>
+    .propertyName {
+        margin-top: 20px;
+    }
+</style>
+
+<script type="text/javascript">
+    $('.input-group.date').datepicker({
+        format: "dd-mm-yyyy",
+        maxViewMode: 1,
+        language: "ru",
+        keyboardNavigation: false
+    });
+</script>

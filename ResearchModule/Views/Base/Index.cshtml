@@ -1,0 +1,21 @@
+﻿
+@{
+    ViewData["Title"] = "Главная";
+}
+<h2>Главная</h2>
+
+@using (Html.BeginForm("Search", "Publication"))
+{
+    <div class="row">
+        <div class="col-md-10">
+            <input name="character" class="form-control" placeholder="Введите название.." />
+        </div>
+        <div class="col-md-2" style="padding-left: 0">
+            <button class="btn btn-info" style="width: 100%">Найти</button>
+        </div>
+    </div>
+
+
+}
+
+

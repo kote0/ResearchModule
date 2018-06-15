@@ -2,6 +2,17 @@
 /.vs
 /ResearchModule/bin/
 /ResearchModule/obj/
+/ResearchModule/Files/
 /ResearchModule/Migrations/
 /ResearchModule/wwwroot/lib/
 /ResearchModule/TODOshki.txt
+/db.PNG
+
+/ResearchModule/wwwroot/my.html
+/ResearchModule/wwwroot/admin.html
+/ResearchModule/wwwroot/profile.html
+/packages
+/ResearchModule/wwwroot/changeUser.html
+/ResearchModule/wwwroot/filter.html
+/ResearchModule/wwwroot/indexChart.html
+/ResearchModule/wwwroot/searchUsers.html

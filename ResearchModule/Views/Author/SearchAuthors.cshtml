@@ -1,0 +1,31 @@
+﻿@using ResearchModule.Models
+@using static ResearchModule.Extensions.ValueExtension
+@model IEnumerable<Author>
+@{
+    var modelName = (ViewData["AuthorName"] != null) ? (string)ViewData["AuthorName"] : "Author";
+}
+
+@foreach (var item in Model)
+{
+    var name = string.Format("{0}[{1}].", modelName, item.Id);
+    <tr id="author_@item.Id">
+        <td></td>
+        <td>@item.Surname</td>
+        <td>@item.Name</td>
+        <td>@item.Lastname</td>
+        <td>@(item.BDay != DateTime.MinValue ? item.BDay.ToShortDateString() : "-")</td>
+        <td class="author">
+                <button type="button" class="btn btn-default" onclick="appendAuthor('@item.ToStringFormat()', @item.Id, this)">
+                    <span>
+                        <i class="glyphicon glyphicon-plus"></i>
+                    </span>
+                </button>
+        </td>
+        @Html.Hidden(string.Concat(name, "Id"), item.Id)
+        @Html.Hidden(string.Concat(name, "Surname"), item.Surname)
+        @Html.Hidden(string.Concat(name, "Name"), item.Name)
+        @Html.Hidden(string.Concat(name, "Lastname"), item.Lastname)
+        @Html.Hidden(string.Concat(name, "BDay"), item.BDay != DateTime.MinValue ? item.BDay.ToShortDateString() : "")
+        @Html.Hidden(string.Concat(name, "UserId"), item.UserId)
+    </tr>
+}

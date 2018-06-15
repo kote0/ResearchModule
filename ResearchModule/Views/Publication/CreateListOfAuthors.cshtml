@@ -1,22 +1,13 @@
-﻿@using ResearchModule.Components.Models.Card
-@using ResearchModule.Components
+﻿@using ResearchModule.Components
 @using Microsoft.AspNetCore.Html
-@inject ResearchModule.Service.PublicationService PublicationService
-@model long
-
-@*@Html.Card("Author").Collapse().Header("Список авторов").Row((Card a) =>
-{
-    a.For()
-    .Content(Render(CustomCreate()))
-        .Id("countResult");
-    return a;
-}).Render()*@
+@inject ResearchModule.Service.AuthorService AuthorService
+@model int
 
 <div class="panel panel-default">
    
     <div class="panel-heading">Список авторов</div>
     @*<div class="panel-body">
-        <p>Описание...</p>
+        <p><b><em>Вес</em></b> представлет собой вклад каждого из авторов, при создании публикации. Если форма работы аудиовизуальная или электронная, то вес не указывается.</p>
     </div>*@
     <table class="table">
         <thead>
@@ -26,7 +17,9 @@
                 <th>Имя</th>
                 <th>Отчество</th>
                 <th>Дата рождения</th>
-                <th data-toggle="tooltip" title="Определение веса каждого из авторов">Вес *<span id="count_Authors"></span></th>
+                <th data-toggle="tooltip" id="WeightTitle" 
+                    title="Вес представлет собой вклад каждого из авторов при создании публикации. Если форма работы аудиовизуальная или электронная, то вес не указывается.">
+                Вес *<span id="count_Authors"></span></th>
             </tr>
         </thead>
         <tbody id="createResult"></tbody>
@@ -34,7 +27,7 @@
         @{
             if (Model != 0)
             {
-                <tbody id="getResult">@Html.Partial("../Author/Search", PublicationService.GetAuthorsByPublication(Model))</tbody>
+                <tbody id="getResult">@Html.Partial("../Author/Search", AuthorService.GetAuthors(Model))</tbody>
             }
         }
     </table>

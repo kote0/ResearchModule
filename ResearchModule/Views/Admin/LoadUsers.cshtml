@@ -1,0 +1,40 @@
+﻿@using ResearchModule.Components.Models
+@using ResearchModule.Models
+@using static ResearchModule.Extensions.ValueExtension
+@model PageInfo
+@{
+    var users = Model.Model as IEnumerable<User>;
+}
+
+<hr />
+@Html.Partial("Components/Page", Model)
+
+<div class="row">
+    <div class="col-md-12">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Логин</th>
+                    <th>ФИО</th>
+                    <th>Почта</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in users)
+                {
+                    <tr>
+                        <td>@item.UserName</td>
+                        <td>@(item.Author != null ? item.Author.ToStringFormat() : "-")</td>
+                        <td>@(item.Email ?? "Не указано")</td>
+                        <th>
+                            <a href="@Url.Action("ChangeUser", "Account", new { name = item.UserName, returnUrl= Url.Action("Index", "Admin") })" class="btn btn-default" aria-label="Left Align">Редактировать</a>
+                        
+                            <a href="@Url.Action("DeleteUser", "Account", new { name = item.UserName, returnUrl= Url.Action("Index", "Admin") })" class="btn btn-danger" aria-label="Left Align">Удалить</a>
+                        </th>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

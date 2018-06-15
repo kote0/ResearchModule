@@ -1,42 +1,40 @@
 ﻿@using ResearchModule.Components
+@using  ResearchModule.ViewModels
+@using ResearchModule.Extensions
 @inject ResearchModule.Service.PublicationService PublicationService
-@model IEnumerable<ResearchModule.Models.Publication>
+@model ResearchModule.ViewModels.PublicationsViewModel
 
+<div class="toolbar">
+    <a href="@Url.Action("CreatePublicationNew", "Publication")" class="btn btn-default">Добавить</a>
+</div>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Навание</th>
-            <th>Раздел</th>
-            <th>Вид</th>
-            <th>Форма работы</th>
-            <th>Авторы</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @item.PublicationName
-            </td>
-            <td>
-                @PublicationService.GetPartitionName(item.PublicationPartition)
-            </td>
-            <td>
-                @PublicationService.GetTypeName(item.PublicationType)
-            </td>
-            <td>
-              @PublicationService.GetFormName(item.PublicationForm)
-            </td>
-            <td>
-                @foreach (var author in PublicationService.GetAuthorsByPublication(item.Id))
-                {
-                    <div>@author.ToStringFormat()</div>
-                }
-            </td>
-            <td><a href="@Url.Action("Edit", "Publication",  new { id = item.Id })" data-toggle="tooltip" title="Редактировать">@Html.Icon("pencil")</a></td>
-        </tr>
-}
-    </tbody>
-</table>
+<div class="row">
+    <div id="pageInfoResult">
+        @Html.Partial("PublicationView", Model)
+    </div>
+    <div class="publications_filters col-md-offset-1 col-md-4">
+        @Html.Partial("Filter", Model.PublicationFilter != null
+            ? Model.PublicationFilter
+            : new PublicationFilterViewModel())
+    </div>
+</div>
+
+<style>
+    .viewAurhors, .dater {
+        font-size: 11px;
+        color: #8e8f8f;
+    }
+
+    .right {
+        text-align: right;
+    }
+
+    .dater {
+        vertical-align: bottom;
+        bottom: 0;
+        right: 15px;
+    }
+    .propertyName {
+        margin-top: 10px;
+    }
+</style>

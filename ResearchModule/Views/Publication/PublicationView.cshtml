@@ -1,0 +1,55 @@
+﻿@using ResearchModule.Components
+@using  ResearchModule.ViewModels
+@using ResearchModule.Extensions
+@inject ResearchModule.Service.PublicationService PublicationService
+@model ResearchModule.ViewModels.PublicationsViewModel
+
+@{
+    Func<int, string> pageUrl = x => Url.Action("Publications", new { first = x });
+}
+
+
+<div class="publications col-md-7">
+    @if (Model == null || Model.Publications == null)
+    {
+        <div style="margin-top: 10px;">
+            <p>Публикации отсутствуют...</p>
+        </div>
+    }
+    else
+    {
+
+        <div class="row">
+            <div class="col-md-12">
+                @foreach (var item in Model.Publications)
+                {
+                    var publication = item.Publication;
+                    <div class="row">
+                        <div class="col-md-10">
+                            <a href="@Url.Action("View", "Publication", new { id = publication.Id })">
+                                <h4># @publication.PublicationName</h4>
+                            </a>
+                            <div class="viewAurhors">@item.Authors.ToStringThroughComma()</div>
+                            <div>@publication.OutputData</div>
+                        </div>
+                        <div class="col-md-2 right">
+                            <h4>
+                                @if (item.IsCurrentAuthor)
+                                {
+                                    <a href="@Url.Action("Edit", "Publication", new { id = publication.Id })" data-toggle="tooltip" title="Редактировать">@Html.Icon("pencil")</a>
+                                    <a href="@Url.Action("Delete", "Publication", new { id = publication.Id })" data-toggle="tooltip" title="Редактировать">@Html.Icon("remove")</a>
+                                }
+                            </h4>
+                            <div class="dater">
+                                <div>Дата изменения</div>
+                                <div>@publication.ModifyDate.ToShortDateString()</div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        @Html.Partial("Components/Page", Model.PageInfo)
+    }
+</div>

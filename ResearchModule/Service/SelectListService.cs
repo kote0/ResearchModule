@@ -1,87 +1,97 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using ResearchModule.Models;
-using System.Threading.Tasks;
-using ResearchModule.Managers;
+using ResearchModule.Extensions;
+using ResearchModule.Repository.Interfaces;
+using ResearchModule.Models.Interfaces;
 
 namespace ResearchModule.Service
 {
     public class SelectListService
     {
-        private readonly BaseManager manager = new BaseManager();
+        private readonly IBaseRepository manager;
 
-        #region select list
-        
-        public SelectList LoadSelectAuthor(long id = 0)
+        public SelectListService(IBaseRepository manager)
         {
-            var list = manager.GetByFunction<Author>(a => a.IsValid()) //сделать асинхронным
-                .Select(a =>
-                    new ResearchModule.Models.SelectListItem
-                    {
-                        Value = a.Id,
-                        Text = string.Format("{0}.{1}. {2}", a.Surname.Substring(0, 1), a.Lastname.Substring(0, 1), a.Name),
-                        Selected = (id != 0 && id == a.Id ? true : false)
-                    })
-                .ToList();
+            this.manager = manager;
+        }
 
+        public SelectListService()
+        {
+        }
+
+        public SelectList Create<T>(int? id) where T : class, IName
+        {
+            return Create<T>(manager.GetQuery<T>(p => p != null), id);
+        }
+
+        public SelectList Create<T>(IQueryable<T> list, int? id) where T : class, IName
+        {
+            return Create(list.ToList(), id);
+        }
+
+        public SelectList Create<T>(IEnumerable<T> list, int? id) where T : class, IName
+        {
+            var selectedId = id.HasValue ? id.Value : 0;
+            return selectListCreate(list.Select(a => CreateItem(a.Name, a.Id, selectedId)));
+        }
+
+        public SelectList Create<T>(IEnumerable<int> id) where T : class, IName
+        {
+            return selectListCreate(manager.GetQuery<T>(p => p != null)
+                .ToList()
+                .Select(a => CreateItem(a.Name, a.Id, id)));
+        }
+
+        public SelectList Create<T>(IEnumerable<T> list, IEnumerable<int> id) where T : class, IName
+        {
+            return selectListCreate(list.Select(a => CreateItem(a.Name, a.Id, id)));
+        }
+
+
+        public SelectList LoadSelectAuthor(int id = 0)
+        {
+            var list =  manager.Get<Author>(a => a.IsValid()) //сделать асинхронным
+                .Select(a => CreateItem(a.ToStringFormat(),a.Id, id));
             return selectListCreate(list, "Author");
         }
 
+        #region private
 
-        public SelectList LoadSelectPublicationPartition(long id = 0)
+        private SelectListItem CreateItem(string str, int id, int selectId)
         {
-            
-            var list = PublicationPartition.Partition
-                .Select(a =>
-                    new ResearchModule.Models.SelectListItem
-                    {
-                        Value = a.Key,
-                        Text = a.Value,
-                        Selected = (id != 0 && id == a.Key ? true : false)
-                    })
-                .ToList();
-            return selectListCreate(list, "Publication.PublicationPartition");
+            return new SelectListItem
+            {
+                Value = id,
+                Text = str,
+                Selected = (selectId != 0 && selectId.Equals(id) ? true : false)
+            };
         }
 
-        public SelectList LoadSelectPublicationType(long id = 0)
+        private SelectListItem CreateItem(string str, int id, IEnumerable<int> ids)
         {
-            var list = manager.GetByFunction<PublicationType>(a => a.IsValid())
-                .Select(a =>
-                    new ResearchModule.Models.SelectListItem
-                    {
-                        Value = a.Id,
-                        Text = a.Name,
-                        Selected = (id!= 0 && id == a.Id ? true : false)
-                    })
-                .ToList();
-            return selectListCreate(list, "Publication.PublicationType");
+            return new SelectListItem
+            {
+                Value = id,
+                Text = str,
+                Selected = (ids.Count() != 0 && ids.Count(a => a.Equals(id)) > 0 ? true : false)
+            };
         }
 
-        public SelectList LoadSelectPublicationForm(long id = 0)
-        {
-            var list = PublicationForm.Forms
-                .Select(a =>
-                    new ResearchModule.Models.SelectListItem
-                    {
-                        Value = a.Key,
-                        Text = a.Value.Name,
-                        Selected = (id != 0 && id == a.Key ? true : false)
-                    })
-                .ToList();
-            return selectListCreate(list, "Publication.PublicationForm");
-        }
-
-        private ResearchModule.Models.SelectList selectListCreate(List<ResearchModule.Models.SelectListItem> list, string name)
+        private SelectList selectListCreate(IEnumerable<SelectListItem> list, string name)
         {
             var selectList = new ResearchModule.Models.SelectList();
-            if (list.Count != 0)
-                selectList.AddRange(list);
-
+            selectList.AddRange(list);
             selectList.SetName(name);
             return selectList;
         }
 
+        private SelectList selectListCreate(IEnumerable<SelectListItem> list)
+        {
+            var selectList = new ResearchModule.Models.SelectList();
+            selectList.AddRange(list);
+            return selectList;
+        }
         #endregion
     }
 }

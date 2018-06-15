@@ -1,16 +1,13 @@
 ﻿using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewComponents;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.AspNetCore.Routing;
-using ResearchModule.Components.Models.Card;
-using ResearchModule.Managers;
-using ResearchModule.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Linq.Expressions;
 
 namespace ResearchModule.Components
 {
@@ -114,16 +111,21 @@ namespace ResearchModule.Components
             return tagBuilder;
         }
 
-        public static IHtmlContent SelectList(this IHtmlHelper html, ResearchModule.Models.SelectList selectList, string title = null)
+        public static IHtmlContent SelectList(this IHtmlHelper html, ResearchModule.Models.SelectList selectList, bool multiple = false)
         {
             var tagBuilder = new TagBuilder("select");
-            tagBuilder.AddCssClass("form-control selectpicker_" + selectList.GetName());
-
+            tagBuilder.AddCssClass("form-control selectpicker selectpicker_" + selectList.GetName());
+            var countElem = selectList.Elements.Count == 0;
             foreach (var elem in selectList.Elements)
             {
                 tagBuilder.InnerHtml.AppendHtml(html.Option(elem.Value, elem.Selected, elem.Text));
             }
-            tagBuilder.MergeAttributes(new RouteValueDictionary(new { title = title ?? "Ничего не выбрано", name=selectList.GetName() }), true);
+            var dictionary = new RouteValueDictionary(new { title = "Ничего не выбрано", name = selectList.GetName()});
+            if (multiple)
+            {
+                dictionary.Add("multiple", "");
+            }
+            tagBuilder.MergeAttributes(dictionary, true);
             tagBuilder.RenderSelfClosingTag();
 
             return tagBuilder;
@@ -132,14 +134,87 @@ namespace ResearchModule.Components
         #endregion
 
 
-        #region Card
-
-        public static Card Card(this IHtmlHelper html, string id)
+        public static IHtmlContent File(this IHtmlHelper html, string name, string displayName = null, string description = null)
         {
-            return new Card(html, id);
+            html.ViewData["filename"] = name;
+            html.ViewData["description"] = description;
+            html.ViewData["displayname"] = displayName;
+            return html.Partial(Components+"File");
         }
-        
-        #endregion
+
+        public static IHtmlContent FileFor<TModel, TValue>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression)
+        {
+            Func<ModelMetadata, string> propertyName = m => m.PropertyName;
+            var modelExplorer = ExpressionMetadataProvider.FromLambdaExpression(expression, html.ViewData, html.MetadataProvider);
+            if (modelExplorer != null && modelExplorer.Metadata != null)
+            {
+                html.ViewData["filename"] = propertyName(modelExplorer.Metadata);
+                var name = modelExplorer.GetExplorerForProperty("FileName");
+                html.ViewData["displayname"] = name == null ? "" : name.Model;
+            }
+            return html.Partial(Components + "File");
+
+        }
+
+        public static IHtmlContent FileFor<TModel, TValue, TDisplay>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, Expression<Func<TModel, TDisplay>> displayName)
+        {
+            Func<ModelMetadata, string> propertyName = m => m.PropertyName;
+            var explorerFile = GetExplorer(html, expression);
+            if (explorerFile != null && explorerFile.Metadata != null)
+            {
+                html.ViewData["filename"] = propertyName(explorerFile.Metadata);
+                var name = explorerFile.GetExplorerForProperty("FileName");
+                object fileDisplayName = null;
+                if (name != null && name.Model != null)
+                {
+                    fileDisplayName = name.Model;
+                }
+                else
+                {
+                    var explorerDisplay = GetExplorer(html, displayName);
+                    if (explorerDisplay != null && explorerDisplay.Model != null)
+                    {
+                        fileDisplayName = explorerDisplay.Model;
+                    }
+                }
+                html.ViewData["displayname"] = fileDisplayName;
+            }
+            return html.Partial(Components + "File");
+
+        }
+
+
+        private static ModelExplorer GetExplorer<TModel, TValue>(IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression)
+        {
+            return ExpressionMetadataProvider.FromLambdaExpression(expression, html.ViewData, html.MetadataProvider);
+
+        }
+
+        private static IHtmlContent MetaDataFor<TModel, TValue>(this IHtmlHelper<TModel> html,
+            Expression<Func<TModel, TValue>> expression,
+            Func<ModelMetadata, string> property)
+        {
+            if (html == null) throw new ArgumentNullException(nameof(html));
+            if (expression == null) throw new ArgumentNullException(nameof(expression));
+
+            var modelExplorer = ExpressionMetadataProvider.FromLambdaExpression(expression, html.ViewData, html.MetadataProvider);
+            if (modelExplorer == null) throw new InvalidOperationException($"Failed to get model explorer for {ExpressionHelper.GetExpressionText(expression)}");
+            return new HtmlString(property(modelExplorer.Metadata));
+        }
+
+
+        public static IHtmlContent DisplayNameFor<TModel, TValue>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression)
+        {
+            return html.MetaDataFor(expression, m => m.DisplayName);
+        }
+
+        public static string NameFor<TModel, TValue>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression)
+        {
+            Func<ModelMetadata, string> propertyName = m => m.PropertyName;
+            var modelExplorer = ExpressionMetadataProvider.FromLambdaExpression(expression, html.ViewData, html.MetadataProvider);
+            return modelExplorer != null ? propertyName(modelExplorer.Metadata) : "";
+        }
+
     }
     
 }

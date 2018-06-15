@@ -1,0 +1,121 @@
+﻿@using ResearchModule.Models
+@using static ResearchModule.Extensions.ValueExtension
+@inject ResearchModule.Service.PublicationService PublicationService
+@model Publication
+@{
+    ViewData["Title"] = Model.PublicationName;
+}
+<h3>@Model.PublicationName</h3>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+
+        <div class="row">
+            <div class="col-md-5">
+                @Html.LabelFor(m => m.OutputData)
+            </div>
+            <div class="col-md-7">
+                @Html.DisplayFor(m => m.OutputData)
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                @Html.LabelFor(m => m.CreateDate)
+            </div>
+            <div class="col-md-7">
+                @Html.DisplayFor(m => m.CreateDate)
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                @Html.LabelFor(m => m.ModifyDate)
+            </div>
+            <div class="col-md-7">
+                @Html.DisplayFor(m => m.ModifyDate)
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                @Html.LabelFor(m => m.PublicationForm)
+            </div>
+            <div class="col-md-7">
+                @PublicationElems.GetFormName(Model.PublicationForm)
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                @Html.LabelFor(m => m.PublicationPartition)
+            </div>
+            <div class="col-md-7">
+                @PublicationElems.GetPartionName(Model.PublicationPartition)
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                @Html.LabelFor(m => m.PublicationType)
+            </div>
+            <div class="col-md-7">
+                @Model.PublicationType.Name
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <label>Файл</label>
+            </div>
+            <div class="col-md-7">
+                <a href="@Url.Action("Download", "Publication", new { uid= Model.PublicationFile.Uid, name = Model.PublicationFile.Name })">
+                    <span class="glyphicon glyphicon-download-alt"></span> @Model.PublicationFile.Name (@Model.PublicationFile.Size Бит)
+                </a>
+                
+            </div>
+        </div>
+        @if (Model.Volume != Model.PublicationFile.Size)
+        {
+            <div class="row">
+                <div class="col-md-5">
+                    @Html.LabelFor(m => m.Volume)
+                </div>
+                <div class="col-md-7">
+                    @Model.Volume
+                </div>
+            </div>
+        }
+        @if (Model.Language.HasValue && !string.IsNullOrEmpty(Model.TranslateText))
+        {
+            <div class="row">
+                <div class="col-md-5">
+                    @Html.LabelFor(m => m.Language)
+                </div>
+                <div class="col-md-7">
+                    @(Model.Language.HasValue ? Model.Language.Value.ToString() : "русский")
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-5">
+                    @Html.LabelFor(m => m.TranslateText)
+                </div>
+                <div class="col-md-7">
+                    @(!string.IsNullOrEmpty(Model.TranslateText)? Model.TranslateText : "")
+                </div>
+            </div>
+        }
+    </div>
+    <div class="col-md-2">
+
+        <div class="row">
+            <div class="col-md-9">
+                <label>Авторы</label>
+            </div>
+        </div>
+        @foreach (var pa in Model.PAs)
+        {
+            <div class="row">
+                <div class="col-md-9">@pa.Multiple.ToStringFormat()</div>
+                @if (pa.Weight != 0)
+                {
+                    <div class="col-md-1">@pa.Weight</div>
+                }
+            </div>
+        }
+    </div>
+</div>

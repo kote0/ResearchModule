@@ -1,0 +1,50 @@
+﻿@using ResearchModule.Components.Models
+@model Chart
+@{
+    ViewData["Title"] = "Chart";
+}
+
+
+
+<script type="text/javascript">
+    function way() {
+        $.ajax({
+            url: "@Url.Action("Chart", "Account")",
+            data: { id : 2 },
+            type: 'POST',
+            success: function (data) {
+                $(".loadInfo").html(data);
+            }
+        });
+    }
+</script>
+<h2>Chart</h2>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+<button onclick="way()">Way</button>
+<canvas id="myChart"></canvas>
+
+<script type="text/javascript">
+    
+
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var chart = new Chart(ctx, {
+        // The type of chart we want to create
+        type: @Html.Raw(Model.Type),
+
+        // The data for our dataset
+        data: {
+            labels: [@Html.Raw(Model.Label)],
+            datasets: [{
+                label: "Количество публикаций",
+                backgroundColor: 'rgb(255, 99, 132)',
+                borderColor: 'rgb(255, 99, 132)',
+                data: [@Html.Raw(Model.Data)],
+            }]
+        },
+
+        // Configuration options go here
+        options: {}
+    });
+</script>
+
+

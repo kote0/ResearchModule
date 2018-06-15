@@ -1,0 +1,29 @@
+﻿@using ResearchModule.Components.Models
+@model Chart
+@{
+    ViewData["Title"] = "Статистика";
+    var now = (ViewData["DateTimeNow"] != null) ? (DateTime)ViewData["DateTimeNow"] : new DateTime();
+}
+
+<h2>Статистические данные за @(now.Year) год</h2>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+
+<div class="row">
+    <div class="col-md-1" style="padding-top: 16%;">
+        <a href="@Url.Action("PublicationChart", "Analyst", new { date = now.AddYears(-1)})">
+            <span class="glyphicon glyphicon-menu-left" aria-hidden="true" style="font-size: 40px; color: darkgray"></span>
+        </a>
+    </div>
+    <div class="col-md-10">
+        @Html.Partial("Components/Chart", Model)
+    </div>
+    <div class="col-md-1" style="padding-top: 16%;">
+        <a href="@Url.Action("PublicationChart", "Analyst", new { date = now.AddYears(1)})">
+            <span class="glyphicon glyphicon-menu-right" aria-hidden="true" style="font-size: 40px; color: darkgray"></span>
+        </a>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $.ajax();
+</script>

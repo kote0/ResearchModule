@@ -1,0 +1,11 @@
+﻿@using ResearchModule.Components.Models
+@{
+    if (!string.IsNullOrEmpty(Notify.Info))
+    {
+        <div id="notifyInfo">@Notify.Info</div>
+    }
+    if (!string.IsNullOrEmpty(Notify.Error))
+    {
+        <div id="notifyError">@Notify.Error</div>
+    }
+}

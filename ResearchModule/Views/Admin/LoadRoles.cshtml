@@ -1,0 +1,35 @@
+﻿@using ResearchModule.Components.Models
+@using Microsoft.AspNetCore.Identity
+@using static ResearchModule.Extensions.ValueExtension
+@model IEnumerable<IdentityRole>
+@{
+    var pageInfo = (PageInfo)ViewData["pageInfo"];
+    var i = 1;
+}
+<hr />
+@Html.Partial("Components/Page", pageInfo)
+
+<div class="row">
+    <div class="col-md-12">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Наименование роли</th>  
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@i</td>
+                        <td>@item.Name</td>
+                    </tr>
+
+                    i++;
+
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

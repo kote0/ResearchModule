@@ -1,0 +1,42 @@
+﻿@using ResearchModule.Components
+
+@{
+    ViewData["Title"] = "Администрирование";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>Администрирование</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="btn-group">
+            <button type="button" class="btn btn-default" onclick="loadInfo('@Url.Action("LoadUsers", "Admin")')">Пользователи</button>
+            <a href="@Url.Action("CreateUser", "Admin")" class="btn btn-default" aria-label="Left Align"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a>
+        </div>
+        <div class="btn-group">
+            <button type="button" class="btn btn-default" onclick="loadInfo('@Url.Action("LoadRoles", "Admin")')">Роли</button>
+        </div>
+    </div>
+</div>
+
+<div class="loadInfo" id="pageInfoResult">
+
+</div>
+<script type="text/javascript">
+
+    $(document).ready(function () { 
+        loadInfo('@Url.Action("LoadUsers", "Admin")');
+    });
+
+    function loadInfo(action) {
+        $.ajax({
+            url: action,
+            success: function (data) {
+                $(".loadInfo").html(data);
+            }
+        });
+    }
+</script>

@@ -1,0 +1,55 @@
+﻿
+@{
+    var action = ViewData["action"] != null ? (string)ViewData["action"] : "#";
+    var controller = ViewData["controller"] != null ? (string)ViewData["controller"] : "#";
+}
+
+@using (Html.BeginForm(action, controller, new { id = "searchAuhorsFormId" }))
+{
+    <div class="row">
+        <div class="col-md-12">
+            <button type="button" class="btn btn-default" onclick="authorsSubmit()">
+                <span>
+                    <i class="glyphicon glyphicon-menu-left"></i>
+                    Вернуться назад
+                </span>
+            </button>
+        </div>
+    </div>
+    <h3>Поиск пользователей</h3>
+    <div class="row">
+        <div class="col-md-12">
+            @Html.TextBox("SearchAuthor", "", new { @class = "form-control", placeholder = "Иванов", onkeyUp = "onkeyUpAurhor(this)" })
+        </div>
+    </div>
+    <div class="row" id="authors">
+    </div>
+}
+<div class="row">
+    <div class="col-md-12">
+        <hr />
+    </div>
+</div>
+<div class="row" style="margin-top: 10px">
+    <div class="col-md-12">
+        <div class="load"  style="display: none;">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Фамилия</th>
+                        <th>Имя</th>
+                        <th>Отчество</th>
+                        <th>Дата рождения</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="result"></tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+
+

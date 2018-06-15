@@ -1,5 +1,7 @@
-﻿using System;
+﻿using ResearchModule.Models.Interfaces;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -7,31 +9,38 @@ using System.Threading.Tasks;
 
 namespace ResearchModule.Models
 {
-    public partial class Author
+    public partial class Author : IName
     {
-        public long Id { get; set; }
+        public int Id { get; set; }
+
         [Required]
+        [DisplayName("Фамилия")]
         public string Surname { get; set; }
+
+        [DisplayName("Имя")]
         public string Name { get; set; }
+
+        [DisplayName("Отчество")]
         public string Lastname { get; set; }
+
+        [DisplayName("День рождения")]
         public DateTime BDay { get; set; }
 
-        // TODO: Убрать Selected
+        [NotMapped]
+        [DisplayName("Соавтор")]
+        public bool Coauthor { get; set; }
+
         [NotMapped]
         public bool Selected { get; set; }
+
         [NotMapped]
+        [DisplayName("Вес")]
         public double Weight { get; set; }
 
-        public bool IsValid()
-        {
-            if (!(string.IsNullOrEmpty(Surname) && string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(Lastname)))
-                return true;
-            return false;
-        }
+        public ICollection<PA> PAs { get; set; }
 
-        public string ToStringFormat()
-        {
-            return string.Format("{0} {1}.{2}.",Surname, Name.Substring(0,1), Lastname.Substring(0, 1));
-        }
+        public string UserId { get; set; }
+
+        public User User { get; set; }
     }
 }

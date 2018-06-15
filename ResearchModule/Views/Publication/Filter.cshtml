@@ -1,0 +1,34 @@
+﻿@using ResearchModule.Components
+@using  ResearchModule.ViewModels
+@inject ResearchModule.Service.SelectListService SelectListService
+@model PublicationFilterViewModel
+@{
+    var types = ViewData["types"] != null ? (ResearchModule.Models.SelectList)ViewData["types"] : null;
+}
+<div class="row">
+    @using (Html.BeginForm("Filter", "Publication", null, FormMethod.Post,false, new { id ="PublicationFilterFormId" }))
+    {
+        <div class="row propertyName">
+            @Html.LabelFor(m => m.Publication.PublicationName) 
+            @Html.TextBoxFor(m => m.Publication.PublicationName, new { @class = "form-control" })
+        </div>
+        <div class="row propertyName">
+            <label>Вид публикации</label>
+            <select-list items="types" name="@Html.NameFor(m=>m.PublicationTypesId)" multiple="true"></select-list>
+        </div>
+        <div class="row propertyName">
+            @Html.LabelFor(m => m.Publication.OutputData)
+            @Html.TextBoxFor(m => m.Publication.OutputData, new { @class = "form-control" })
+        </div>
+        <div class="row propertyName">
+            <label>@Html.LabelFor(m => m.Authors)</label>
+            <select-list items="@Model.AuthorList" name="@Html.NameFor(m=>m.Authors)" multiple="true" live-search="true"></select-list>
+        </div>
+        <div class="row propertyName">
+            <button  type="submit" class="btn btn-primary">Найти</button>
+        </div>
+
+        <div class="row"></div>
+
+    }
+</div>
